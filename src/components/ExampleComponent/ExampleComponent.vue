@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-    <div>ExampleComponent</div>
+  <div>ExampleComponent</div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss"></style>
