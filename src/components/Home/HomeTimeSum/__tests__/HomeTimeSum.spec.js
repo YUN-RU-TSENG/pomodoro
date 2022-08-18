@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import HomeTimeSum from '../HomeTimeSum.vue'
+import HomeTimeSum from "../HomeTimeSum.vue";
 
 describe("HelloWorld", () => {
   it("renders properly", () => {

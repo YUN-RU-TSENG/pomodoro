@@ -5,7 +5,7 @@ import HomeSidebar from "../HomeSidebar.vue";
 
 describe("HomeSidebar", () => {
   it("renders properly", () => {
-    const wrapper = mount(HomeSidebar)
+    const wrapper = mount(HomeSidebar);
     expect(wrapper.text()).not.toBeNull();
   });
 });
