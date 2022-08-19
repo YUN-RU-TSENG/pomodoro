@@ -262,6 +262,13 @@
             }
 
             .tomato {
+                font-size: 0;
+                line-height: 0;
+                span {
+                    font-size: 14px;
+                    line-height: 21px;
+                    color: $gray-4;
+                }
                 span,
                 img {
                     vertical-align: middle;
