@@ -9,8 +9,6 @@
 
 <style scoped lang="scss">
     .base-popover {
-        width: 200px;
-        height: 200px;
         margin-top: 12px;
         position: absolute;
         padding: 12px;
