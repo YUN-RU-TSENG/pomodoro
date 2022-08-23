@@ -14,9 +14,14 @@
         line-height: 21px;
         border: 1px solid $gray-1;
         text-align: center;
-        
+        transition: all .3s ease;
+
         &:not(:last-of-type) {
             margin-right: 8px;
+        }
+
+        &:hover {
+            background-color: $gray-1;
         }
     }
 </style>
