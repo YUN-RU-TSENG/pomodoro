@@ -2,7 +2,7 @@
 
 <template>
     <label for="input" class="base-input-label">
-        <input type="text" class="base-input" id="input" />
+        <input id="input" type="text" class="base-input" />
     </label>
 </template>
 
@@ -16,7 +16,7 @@
         font-size: 14px;
         line-height: 21px;
     }
-    
+
     .base-input-label {
         display: inline-block;
         width: 100%;

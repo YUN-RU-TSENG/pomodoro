@@ -3,7 +3,7 @@
 <template>
     <BasePopover class="home-dropdown" style="width: 160px">
         <label for="one" class="dropdown-item">
-            <input type="radio" name="select" id="one" />
+            <input id="one" type="radio" name="select" />
             <div class="box">
                 <div class="color"></div>
                 <p class="content">文字內容</p>
@@ -16,7 +16,7 @@
             </div>
         </label>
         <label for="two" class="dropdown-item">
-            <input type="radio" name="select" id="two" />
+            <input id="two" type="radio" name="select" />
             <div class="box">
                 <div class="color"></div>
                 <p class="content">文字內容</p>
@@ -29,7 +29,7 @@
             </div>
         </label>
         <label for="three" class="dropdown-item">
-            <input type="radio" name="select" id="three" />
+            <input id="three" type="radio" name="select" />
             <div class="box">
                 <div class="color"></div>
                 <p class="content">文字內容</p>
@@ -58,7 +58,6 @@
             align-items: center;
             cursor: pointer;
             padding: 4px 0;
-
 
             & > *:not(:last-child) {
                 margin-right: 12px;

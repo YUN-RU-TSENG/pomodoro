@@ -121,9 +121,9 @@
             <section class="description">
                 <form>
                     <textarea
+                        id=""
                         placeholder="任務描述..."
                         name=""
-                        id=""
                         cols="30"
                         rows="10"
                     ></textarea>

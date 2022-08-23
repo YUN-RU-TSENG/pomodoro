@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeTaskEditBar from '../HomeTaskEditBar.vue'
+import HomeCalenderPopConfirm from '../HomeCalenderPopConfirm.vue'
 
-describe('HomeTaskEditBar', () => {
+describe('HomeCalenderPopConfirm', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeTaskEditBar)
+        const wrapper = mount(HomeCalenderPopConfirm)
         expect(wrapper.text()).not.toBeNull()
     })
 })
