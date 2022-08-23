@@ -15,7 +15,10 @@
         border-radius: 4px;
         font-size: 14px;
         line-height: 21px;
-
-        
+    }
+    
+    .base-input-label {
+        display: inline-block;
+        width: 100%;
     }
 </style>
