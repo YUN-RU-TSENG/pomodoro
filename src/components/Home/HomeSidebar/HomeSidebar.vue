@@ -1,7 +1,6 @@
 <script setup></script>
 
 <template>
-    <!-- home-sidebar  -->
     <section class="home-sidebar">
         <!-- home-sidebar sidebar-base -->
         <section class="sidebar-base">

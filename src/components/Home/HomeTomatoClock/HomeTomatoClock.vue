@@ -2,9 +2,9 @@
 
 <template>
     <!-- home-tomato -->
-    <section class="home-tomato full">
+    <section class="home-tomato small">
         <!-- home-tomato tomato-full -->
-        <div class="tomato-full">
+        <div class="tomato-full un-show">
             <button class="toggle">
                 <img
                     src="https://img.icons8.com/windows/32/ffffff/full-page-view.png"
@@ -77,7 +77,7 @@
             </div>
         </div>
         <!-- home-tomato tomato-small -->
-        <div class="tomato-small un-show">
+        <div class="tomato-small">
             <button class="clock">
                 <svg height="36" width="36" viewBox="0 0 36 36" fill="red">
                     <circle r="16" cx="18" cy="18" stroke="#fff" fill="none" stroke-width="2" />
@@ -131,15 +131,8 @@
 
 <style scoped lang="scss">
     .home-tomato {
-        position: fixed;
-        top: auto;
-        bottom: 24px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-
         transition: all 0.3s ease;
-        background-color: $red-1;
+        background-color: $red-2;
         box-shadow: 0 0 4px $gray-2;
 
         &.full {

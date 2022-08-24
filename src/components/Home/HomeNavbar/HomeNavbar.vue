@@ -1,7 +1,6 @@
 <script setup></script>
 
 <template>
-    <!-- home-navbar -->
     <nav class="home-navbar">
         <!-- home-navbar navbar-user -->
         <div class="navbar-user">
