@@ -162,13 +162,13 @@
 
         border-radius: 4px;
         background-color: $white-1;
-        box-shadow: 0 0 4px $gray-2;
+        box-shadow: 0 0 4px $gray-1;
 
         button {
             font-size: 0;
             transition: all 0.3s ease;
             &:hover {
-                background-color: $gray-1;
+                background-color: $gray-0;
                 border-radius: 4px;
             }
         }

@@ -28,7 +28,7 @@
 
         background-color: $white-1;
         border-radius: 4px;
-        box-shadow: 0px 0px 4px $gray-2;
+        box-shadow: 0px 0px 4px $gray-1;
     }
 
     .time-sum-item {

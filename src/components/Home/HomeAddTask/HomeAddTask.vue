@@ -65,7 +65,7 @@
         align-items: center;
 
         background-color: $white-1;
-        box-shadow: 0px 0px 4px $gray-2;
+        box-shadow: 0px 0px 4px $gray-1;
         border-radius: 4px;
 
         button {
@@ -77,7 +77,7 @@
             font-size: 0;
 
             &:hover {
-                background-color: $gray-1;
+                background-color: $gray-0;
             }
         }
 

@@ -94,7 +94,7 @@
                     />
                     <text
                         x="50%"
-                        y="50%"
+                        y="51%"
                         dominant-baseline="middle"
                         text-anchor="middle"
                         style="font-size: 16px; fill: #fff"
@@ -180,7 +180,7 @@
 
             &:hover,
             &.active {
-                background-color: $gray-1;
+                background-color: $gray-0;
             }
 
             & > *:not(:last-child) {

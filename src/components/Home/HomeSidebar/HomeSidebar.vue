@@ -209,7 +209,7 @@
         width: 240px;
 
         background-color: $white-1;
-        box-shadow: 0px 0px 4px $gray-2;
+        box-shadow: 0px 0px 4px $gray-1;
 
         button {
             img,
@@ -280,7 +280,7 @@
             border-radius: 4px;
             transition: all 0.3s ease;
             &:hover {
-                background-color: $gray-1;
+                background-color: $gray-0;
             }
         }
 
@@ -321,7 +321,7 @@
         /* 點擊為當前項目時，當前項目會呈現選中狀態，添加 active */
         &.active,
         &:hover {
-            background-color: $gray-1;
+            background-color: $gray-0;
         }
 
         *:not(:last-child) {

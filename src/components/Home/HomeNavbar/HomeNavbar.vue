@@ -53,7 +53,7 @@
         padding: 10px 14px;
 
         background-color: $white-1;
-        box-shadow: 0px 0px 4px $gray-2;
+        box-shadow: 0px 0px 4px $gray-1;
     }
 
     .home-navbar .navbar-user {

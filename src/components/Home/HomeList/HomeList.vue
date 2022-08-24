@@ -101,7 +101,7 @@
 
         &:hover,
         &.active {
-            background-color: $gray-1;
+            background-color: $gray-0;
         }
 
         & > *:not(:last-child) {
