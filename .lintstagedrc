@@ -1,0 +1,4 @@
+{
+    "!(*spec).{js,vue}": ["eslint --fix --ignore-path .gitignore", "vitest --environment jsdom"],
+    "*.{md,json}": ["prettier --write"],
+}
