@@ -57,6 +57,8 @@
         padding: 12px;
         height: calc(100vh - 45px);
 
+        background-color: $gray-0;
+
         .task-list {
             flex: 1 1 auto;
             margin-right: 12px;
@@ -80,6 +82,7 @@
             h2 {
                 font-size: 24px;
                 line-height: 36px;
+                font-weight: 400;
             }
 
             button {

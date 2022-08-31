@@ -247,8 +247,10 @@
 
             h4 {
                 flex: 1 1 auto;
+                
                 font-size: 14px;
                 line-height: 21px;
+                font-weight: 300;
                 color: $gray-4;
             }
 

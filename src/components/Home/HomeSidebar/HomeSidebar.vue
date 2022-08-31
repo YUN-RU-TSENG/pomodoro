@@ -332,6 +332,7 @@
             font-size: 14px;
             line-height: 21px;
             color: $gray-4;
+            font-weight: 300;
         }
 
         p {
