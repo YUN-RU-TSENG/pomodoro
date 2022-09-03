@@ -12,9 +12,12 @@
         "prepare": "husky install"
     },
     "dependencies": {
+        "firebase": "^9.9.3",
         "pinia": "^2.0.16",
+        "vee-validate": "^4.6.7",
         "vue": "^3.2.37",
-        "vue-router": "^4.1.2"
+        "vue-router": "^4.1.2",
+        "yup": "^0.32.11"
     },
     "devDependencies": {
         "@rushstack/eslint-patch": "^1.1.0",

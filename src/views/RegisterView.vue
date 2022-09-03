@@ -6,7 +6,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const goRegisterPage = () => {
-    router.push({ name: 'register' })
+    router.push({ name: 'login' })
     userStore.resetUserForm()
 }
 </script>
@@ -14,11 +14,11 @@ const goRegisterPage = () => {
 <template>
     <AuthenticationLayout class="user-validate">
         <AuthenticationForm
-            title="Login"
+            title="Register"
             text="Tomato todo 優雅的使用待辦清單以及番茄鐘"
-            tip-text="沒有帳號？"
-            tip-button-text="註冊"
-            @submit-form="userStore.login"
+            tip-text="已有帳號？"
+            tip-button-text="登入"
+            @submit-form="userStore.register"
             @change-page="goRegisterPage"
         >
             <BaseInput
@@ -42,7 +42,7 @@ const goRegisterPage = () => {
                         : ''
                 "
             ></BaseInput>
-            <BaseButton color="red">登入</BaseButton>
+            <BaseButton color="red">註冊</BaseButton>
         </AuthenticationForm>
     </AuthenticationLayout>
 </template>

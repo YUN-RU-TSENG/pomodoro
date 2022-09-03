@@ -1,24 +1,83 @@
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+    id: {
+        type: String,
+        required: true,
+    },
+    error: {
+        type: String,
+        default: '',
+    },
+    value: {
+        type: String,
+        default: '',
+    },
+    type: {
+        type: String,
+        default: 'text',
+    },
+})
+
+const emits = defineEmits(['update:value'])
+
+const inputTrimValue = computed({
+    get() {
+        return props.value
+    },
+    set(event) {
+        emits('update:value', event)
+    },
+})
+</script>
+
+<script>
+export default {
+    inheritAttrs: false,
+}
+</script>
 
 <template>
-    <label for="input" class="base-input-label">
-        <input id="input" type="text" class="base-input" />
+    <label :for="id" class="base-input-label">
+        <input
+            :id="id"
+            v-bind="$attrs"
+            v-model="inputTrimValue"
+            :type="type"
+            class="base-input"
+            autocomplete
+        />
+        <p v-if="error" class="error">{{ error }}</p>
     </label>
 </template>
 
 <style scoped lang="scss">
-    .base-input {
-        width: 100%;
-        padding: 6px;
+.base-input {
+    width: 100%;
+    padding: 6px;
 
-        border: 1px solid $gray-1;
-        border-radius: 4px;
-        font-size: 14px;
-        line-height: 21px;
-    }
+    border: 1px solid $gray-1;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 21px;
+    transition: all 0.3s ease;
+}
 
-    .base-input-label {
-        display: inline-block;
-        width: 100%;
-    }
+.base-input:focus {
+    border: 1px solid $gray-3;
+}
+.base-input-label {
+    display: inline-block;
+    width: 100%;
+}
+
+.error {
+    padding-left: 6px;
+
+    font-size: 12px;
+    line-height: 18px;
+    color: $red-2;
+    text-align: left;
+}
 </style>
