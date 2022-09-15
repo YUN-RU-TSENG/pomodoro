@@ -44,6 +44,7 @@ const goRegisterPage = () => {
             ></BaseInput>
             <BaseButton color="red">登入</BaseButton>
         </AuthenticationForm>
+        <BaseLoading v-if="userStore.isLoading" />
     </AuthenticationLayout>
 </template>
 

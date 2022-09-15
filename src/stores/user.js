@@ -9,9 +9,16 @@ import {
 import { useForm } from 'vee-validate'
 import { string, object } from 'yup'
 import { useBaseAlert } from '@/components/Base/BaseAlert/index'
+import { useRouter } from 'vue-router'
 
 export const useUserStore = defineStore('user', () => {
+    // router ---
+    const router = useRouter()
+
     // state ----
+
+    // 加載中
+    const isLoading = ref(false)
 
     // 用戶資料
     const user = ref({
@@ -53,20 +60,27 @@ export const useUserStore = defineStore('user', () => {
      */
     const register = handleUserFormSubmit(async () => {
         try {
+            isLoading.value = true
+
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 userForm.value.email,
                 userForm.value.password
             )
+            resetUserForm()
 
             user.value = {
                 email: userCredential.user.email,
                 uid: userCredential.user.uid,
             }
+
+            router.push({ name: 'home' })
         } catch (error) {
             useBaseAlert({
                 text: '註冊失敗' + error,
             })
+        } finally {
+            isLoading.value = false
         }
     })
 
@@ -75,20 +89,28 @@ export const useUserStore = defineStore('user', () => {
      */
     const login = handleUserFormSubmit(async () => {
         try {
+            isLoading.value = true
+
             const userCredential = await signInWithEmailAndPassword(
                 auth,
                 userForm.value.email,
                 userForm.value.password
             )
 
+            resetUserForm()
+
             user.value = {
                 email: userCredential.user.email,
                 uid: userCredential.user.uid,
             }
+
+            router.push({ name: 'home' })
         } catch (error) {
             useBaseAlert({
                 text: '登入失敗 - ' + error.message,
             })
+        } finally {
+            isLoading.value = false
         }
     })
 
@@ -97,46 +119,20 @@ export const useUserStore = defineStore('user', () => {
      */
     const logout = async () => {
         try {
+            isLoading.value = true
+
             await signOut(auth)
 
             resetUserState()
+
+            router.push({ name: 'login' })
         } catch (error) {
             useBaseAlert({
                 text: '登出失敗' + error,
             })
+        } finally {
+            isLoading.value = false
         }
-    }
-
-    /**
-     * 監聽用戶 Auth 狀態
-     */
-    const watchUserAuthState = () => {
-        // 返回 promise
-        return new Promise((resolve) => {
-            const unsubscribe = auth.onAuthStateChanged(function (userData) {
-                resolve({
-                    // 用戶資料
-                    user: { email: userData.email, uid: userData.uid },
-                    // 取消監聽用戶 Auth 狀態
-                    cancelWatchUserAuthState: unsubscribe,
-                })
-            })
-        })
-    }
-
-    /**
-     * 確認用戶當前 Auth 狀態
-     * 由於 firebase 沒有取得一次 Auth 狀態的 methods，所以使用 onAuthStateChanged 方法，在取得用戶 Auth 後便取消監聽
-     */
-    //
-    const checkUserAuthState = async () => {
-        const { user: userData, cancelWatchUserAuthState } =
-            await watchUserAuthState()
-
-        user.value = userData
-
-        // 取消監聽用戶 Auth 狀態
-        cancelWatchUserAuthState()
     }
 
     /**
@@ -158,7 +154,7 @@ export const useUserStore = defineStore('user', () => {
         login,
         register,
         logout,
-        checkUserAuthState,
         resetUserForm,
+        isLoading,
     }
 })

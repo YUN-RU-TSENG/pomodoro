@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+</script>
 
 <template>
     <nav class="home-navbar">
@@ -41,50 +45,59 @@
                         />
                     </button>
                 </li>
+                <li>
+                    <button @click="userStore.logout">
+                        <img
+                            src="https://img.icons8.com/metro/48/7c7c7c/exit.png"
+                            alt=""
+                            width="24"
+                        />
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
 </template>
 
 <style scoped lang="scss">
-    .home-navbar {
-        display: flex;
-        align-items: center;
-        padding: 10px 14px;
+.home-navbar {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
 
-        background-color: $white-1;
-        box-shadow: 0px 0px 4px $gray-1;
+    background-color: $white-1;
+    box-shadow: 0px 0px 4px $gray-1;
+}
+
+.home-navbar .navbar-user {
+    img {
+        vertical-align: middle;
+        margin-right: 12px;
     }
 
-    .home-navbar .navbar-user {
-        img {
-            vertical-align: middle;
-            margin-right: 12px;
-        }
+    span {
+        color: $gray-4;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+}
 
-        span {
-            color: $gray-4;
-            vertical-align: middle;
-            font-size: 14px;
-        }
+.home-navbar .navbar-links {
+    margin-left: auto;
+
+    li {
+        display: inline-block;
+        margin-right: 12px;
     }
 
-    .home-navbar .navbar-links {
-        margin-left: auto;
-
-        li {
-            display: inline-block;
-            margin-right: 12px;
-        }
-
-        button {
-            display: inline-block;
-            width: auto;
-            height: auto;
-        }
-
-        img {
-            vertical-align: middle;
-        }
+    button {
+        display: inline-block;
+        width: auto;
+        height: auto;
     }
+
+    img {
+        vertical-align: middle;
+    }
+}
 </style>
