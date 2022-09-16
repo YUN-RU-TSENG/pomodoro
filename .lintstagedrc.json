@@ -1,4 +1,7 @@
 {
-    "!(*spec).{js,vue}": ["eslint --fix --ignore-path .gitignore"],
+    "!(*spec).{js,vue}": [
+        "prettier --write",
+        "eslint --fix --ignore-path .gitignore"
+    ],
     "*.{md,json}": ["prettier --write"]
 }

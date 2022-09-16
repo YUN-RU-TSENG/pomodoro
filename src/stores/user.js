@@ -12,13 +12,13 @@ import { useBaseAlert } from '@/components/Base/BaseAlert/index'
 import { useRouter } from 'vue-router'
 
 export const useUserStore = defineStore('user', () => {
-    // router ---
     const router = useRouter()
 
     // state ----
 
     // 加載中
-    const isLoading = ref(false)
+    const isLoading = ref(false) // 對應登入、登出、註冊時加載
+    const isLoadingForFirstWatchingUserState = ref(false) // 對應初次監聽用戶登入狀態的加載
 
     // 用戶資料
     const user = ref({
@@ -145,6 +145,25 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    /**
+     * 觀察用戶登入狀態，當有登入時就跳到 home 頁面，沒有登入時就跳到 login 頁面
+     * 需要注意此處的加載狀態為 isLoadingForFirstWatchingUserState，這是為了與對應 loading、register、logout 的 isLoading 區隔
+     */
+    const watchUserState = () => {
+        isLoadingForFirstWatchingUserState.value = true
+        auth.onAuthStateChanged(async function (userData) {
+            if (userData) {
+                user.value = { email: userData.email, uid: userData.uid }
+                await router.push({ name: 'home' }).catch(() => {})
+            } else {
+                await router.push({ name: 'login' }).catch(() => {})
+            }
+
+            if (isLoadingForFirstWatchingUserState.value)
+                isLoadingForFirstWatchingUserState.value = false
+        })
+    }
+
     return {
         user,
         userForm,
@@ -154,6 +173,7 @@ export const useUserStore = defineStore('user', () => {
         login,
         register,
         logout,
+        watchUserState,
         resetUserForm,
         isLoading,
     }
