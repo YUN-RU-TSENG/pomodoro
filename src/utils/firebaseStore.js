@@ -5,6 +5,9 @@ import {
     addDoc,
     deleteDoc,
     updateDoc,
+    query,
+    where,
+    serverTimestamp,
 } from 'firebase/firestore'
 
 import { app } from './firebaseApp'
@@ -19,6 +22,9 @@ export {
     addDoc,
     deleteDoc,
     updateDoc,
+    query,
+    where,
+    serverTimestamp,
     // ---- 上方為 firebase/firestore API  ----
     db,
 }

@@ -1,7 +1,11 @@
 <script setup>
-import { useUserStore } from '@/stores/user'
-
-const userStore = useUserStore()
+defineProps({
+    user: {
+        type: Object,
+        required: true,
+    },
+})
+defineEmits(['user-logout'])
 </script>
 
 <template>
@@ -13,7 +17,7 @@ const userStore = useUserStore()
                 alt=""
                 width="24"
             />
-            <span>RURU</span>
+            <span>{{ user.email }}</span>
         </div>
         <!-- home-navbar navbar-links -->
         <div class="navbar-links">
@@ -46,7 +50,7 @@ const userStore = useUserStore()
                     </button>
                 </li>
                 <li>
-                    <button @click="userStore.logout">
+                    <button @click="$emit('user-logout')">
                         <img
                             src="https://img.icons8.com/metro/48/7c7c7c/exit.png"
                             alt=""

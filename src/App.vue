@@ -9,8 +9,8 @@ userStore.watchUserState()
 
 <template>
     <div>
-        <RouterView />
         <BaseLoading v-if="userStore.isLoadingForFirstWatchingUserState" />
+        <RouterView />
     </div>
 </template>
 

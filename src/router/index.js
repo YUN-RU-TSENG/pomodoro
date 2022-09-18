@@ -41,11 +41,11 @@ const router = createRouter({
 router.beforeEach((to) => {
     const userStore = useUserStore()
 
-    if (to.meta.requiresAuth && !userStore.user.email) {
+    if (to.meta.requireAuth && !userStore.user.uid) {
         return { name: 'login' }
     }
 
-    if (to.meta.requireGuest && userStore.user.email) {
+    if (to.meta.requireGuest && userStore.user.uid) {
         return { name: 'home' }
     }
 })

@@ -115,6 +115,16 @@ export const useUserStore = defineStore('user', () => {
     })
 
     /**
+     * 重置 user 狀態
+     */
+    const resetUserState = () => {
+        user.value = {
+            email: null,
+            uid: null,
+        }
+    }
+
+    /**
      * 登出
      */
     const logout = async () => {
@@ -132,16 +142,6 @@ export const useUserStore = defineStore('user', () => {
             })
         } finally {
             isLoading.value = false
-        }
-    }
-
-    /**
-     * 重置 user 狀態
-     */
-    const resetUserState = () => {
-        user.value = {
-            email: null,
-            uid: null,
         }
     }
 
@@ -176,5 +176,6 @@ export const useUserStore = defineStore('user', () => {
         watchUserState,
         resetUserForm,
         isLoading,
+        isLoadingForFirstWatchingUserState,
     }
 })

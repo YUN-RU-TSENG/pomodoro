@@ -1,20 +1,29 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
+import { useTasksStore } from '@/stores/tasks'
 
 const userStore = useUserStore()
+const tasksStore = useTasksStore()
+
+tasksStore.getTasks()
 </script>
 
 <template>
     <section class="home">
+        <BaseLoading v-if="userStore.isTaskLoading" />
         <!-- home home-navbar -->
-        <HomeNavbar class="home-navbar"></HomeNavbar>
+        <HomeNavbar
+            class="home-navbar"
+            :user="userStore.user"
+            @user-logout="userStore.logout"
+        />
         <!-- home home-workspace -->
         <main class="home-workspace">
             <!-- workspace-sidebar -->
             <HomeSidebar
                 class="workspace-sidebar"
                 style="height: calc(100vh - 45px)"
-            ></HomeSidebar>
+            />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
                 <div class="task-list">
@@ -28,8 +37,31 @@ const userStore = useUserStore()
                             />1
                         </button>
                     </div>
-                    <HomeAddTask></HomeAddTask>
-                    <HomeList></HomeList>
+                    <HomeAddTask
+                        :tomato-time="tasksStore.cacheAddTaskForm.tomatoTime"
+                        @add-tasks="tasksStore.addTask"
+                        @update:total-expect-time="
+                            tasksStore.cacheAddTaskForm.totalExpectTime = $event
+                        "
+                    >
+                        <template #name>
+                            <HomeAddInput
+                                v-model:value="tasksStore.cacheAddTaskForm.name"
+                                placeholder="輸入待辦 task，例如: 閱讀書籍"
+                            />
+                        </template>
+                        <template #clocks>
+                            <HomeAddTaskClocks
+                                v-model:totalExpectTime="
+                                    tasksStore.cacheAddTaskForm.totalExpectTime
+                                "
+                                :tomato-time="
+                                    tasksStore.cacheAddTaskForm.tomatoTime
+                                "
+                            />
+                        </template>
+                    </HomeAddTask>
+                    <HomeList :tasks="tasksStore.tasks"></HomeList>
                 </div>
                 <div class="task-detail">
                     <HomeTaskEditBar
@@ -40,7 +72,6 @@ const userStore = useUserStore()
         </main>
         <!-- home-tomato-clock -->
         <HomeTomatoClock class="home-tomato-clock"></HomeTomatoClock>
-        <BaseLoading v-if="userStore.isLoading" />
     </section>
 </template>
 
@@ -116,5 +147,6 @@ const userStore = useUserStore()
     left: 0;
     right: 0;
     margin: 0 auto;
+    z-index: 999;
 }
 </style>

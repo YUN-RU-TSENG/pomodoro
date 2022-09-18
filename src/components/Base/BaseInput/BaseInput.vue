@@ -11,7 +11,7 @@ const props = defineProps({
         default: '',
     },
     value: {
-        type: String,
+        type: [String, Number],
         default: '',
     },
     type: {
@@ -39,10 +39,10 @@ export default {
 </script>
 
 <template>
-    <label :for="id" class="base-input-label">
+    <label :for="id" class="base-input-label" :class="$attrs.class">
         <input
             :id="id"
-            v-bind="$attrs"
+            v-bind="{ ...$attrs, class: '' }"
             v-model="inputTrimValue"
             :type="type"
             class="base-input"

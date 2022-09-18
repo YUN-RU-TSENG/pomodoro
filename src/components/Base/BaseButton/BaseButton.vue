@@ -1,7 +1,17 @@
-<script setup></script>
+<script setup>
+defineProps({
+    color: {
+        type: String,
+        default: 'default',
+        validator(value) {
+            return ['default', 'primary'].includes(value)
+        },
+    },
+})
+</script>
 
 <template>
-    <button class="base-button"><slot>確定</slot></button>
+    <button :class="['base-button', color]"><slot>確定</slot></button>
 </template>
 
 <style scoped lang="scss">
@@ -12,13 +22,28 @@
     border-radius: 4px;
     font-size: 14px;
     line-height: 21px;
-    border: 1px solid $gray-1;
+
     text-align: center;
     transition: all 0.3s ease;
 
     &:not(:last-of-type) {
         margin-right: 8px;
     }
+}
+
+.base-button.primary {
+    border: 1px solid $red-2;
+    background-color: $red-2;
+    color: $white-1;
+
+    &:hover {
+        background-color: $red-3;
+    }
+}
+
+.base-button.default {
+    border: 1px solid $gray-1;
+    background-color: $white-1;
 
     &:hover {
         background-color: $gray-0;
