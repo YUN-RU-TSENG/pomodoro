@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-    <BasePopover class="home-dropdown" style="width: 160px">
+    <div class="home-dropdown" style="width: 160px">
         <label for="one" class="dropdown-item">
             <input id="one" type="radio" name="select" />
             <div class="box">
@@ -41,48 +41,48 @@
                 />
             </div>
         </label>
-    </BasePopover>
+    </div>
 </template>
 
 <style scoped lang="scss">
-    .home-dropdown {
+.home-dropdown {
+}
+
+.home-dropdown .dropdown-item {
+    input {
+        display: none;
     }
 
-    .home-dropdown .dropdown-item {
-        input {
-            display: none;
-        }
+    .box {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 4px 0;
 
-        .box {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 4px 0;
-
-            & > *:not(:last-child) {
-                margin-right: 12px;
-            }
-        }
-
-        .color {
-            width: 6px;
-            height: 6px;
-            border-radius: 6px;
-            background-color: $red-2;
-        }
-
-        .content {
-            font-size: 14px;
-            line-height: 21px;
-        }
-
-        .checked {
-            visibility: collapse;
-            margin-left: auto;
-        }
-
-        input:checked ~ .box .checked {
-            visibility: visible;
+        & > *:not(:last-child) {
+            margin-right: 12px;
         }
     }
+
+    .color {
+        width: 6px;
+        height: 6px;
+        border-radius: 6px;
+        background-color: $red-2;
+    }
+
+    .content {
+        font-size: 14px;
+        line-height: 21px;
+    }
+
+    .checked {
+        visibility: collapse;
+        margin-left: auto;
+    }
+
+    input:checked ~ .box .checked {
+        visibility: visible;
+    }
+}
 </style>

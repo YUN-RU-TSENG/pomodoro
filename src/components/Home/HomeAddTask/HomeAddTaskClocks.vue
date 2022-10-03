@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import getImageUrl from '@/utils/getImageUrl'
-import useCovertBetweenTimeAndTomato from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
 
 const props = defineProps({
     tomatoTime: {

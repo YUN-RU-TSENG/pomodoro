@@ -15,7 +15,7 @@ defineProps({
 </template>
 
 <style scoped lang="scss">
-.base-button {
+button.base-button {
     padding: 4px 12px;
     width: 96px;
 

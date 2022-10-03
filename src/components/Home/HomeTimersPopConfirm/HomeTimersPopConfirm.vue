@@ -12,14 +12,14 @@
 </template>
 
 <style scoped lang="scss">
-    .home-number {
-    }
-    .home-number .number-input {
-        margin-bottom: 12px;
-    }
+.home-number {
+}
+.home-number .number-input {
+    margin-bottom: 12px;
+}
 
-    .home-number .mention-check {
-        display: flex;
-        justify-content: space-between;
-    }
+.home-number .mention-check {
+    display: flex;
+    justify-content: space-between;
+}
 </style>

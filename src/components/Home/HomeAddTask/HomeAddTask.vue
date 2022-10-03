@@ -1,16 +1,15 @@
 <script setup>
 import { ref } from 'vue'
-import useCovertBetweenTimeAndTomato from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
 
 const props = defineProps({
     tomatoTime: {
-        type: Object,
+        type: Number,
         required: true,
     },
 })
 
 const emits = defineEmits(['add-tasks', 'update:total-expect-time'])
-
 const { covertTomatoToTime } = useCovertBetweenTimeAndTomato()
 const { updateTotalTimeByPopUp, counts } = useUpdateTotalTimeByPopUp({
     covertTomatoToTime,
@@ -36,7 +35,7 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
 
 <template>
     <form class="home-add-task" @submit.prevent="$emit('add-tasks')">
-        <button class="add-task-button" type="submit">
+        <button class="add-task-button home-add-task-button" type="submit">
             <img src="@/assets/images/add--v1.png" alt="" width="22" />
         </button>
 
@@ -47,25 +46,53 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
         <section class="add-task-watch">
             <!-- slot -->
             <slot name="clocks"></slot>
-
-            <button class="arrow">
-                <img
-                    src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
-                    alt=""
-                    width="12"
-                    @click.prevent="$refs.counter.toggle()"
-                />
-                <HomeNumberPopConfirm
-                    ref="counter"
-                    v-model:value.number="counts"
-                    class="tomato-counter"
-                    @confirm="updateTotalTimeByPopUp(), $refs.counter.close()"
-                    @cancel="$refs.counter.close()"
-                />
-            </button>
+            <div>
+                <BasePopover width="200px">
+                    <template #button>
+                        <button
+                            class="arrow home-add-task-button"
+                            type="button"
+                        >
+                            <img
+                                src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
+                                alt=""
+                                width="12"
+                            />
+                        </button>
+                    </template>
+                    <template #model="slotProps">
+                        <form>
+                            <BaseInput
+                                id="tomato-cache-add-form"
+                                v-model:value.number="counts"
+                                class="number-input"
+                                type="number"
+                                placeholder="輸入數字"
+                                min="0"
+                                max="30"
+                            >
+                            </BaseInput>
+                            <section class="mention-check">
+                                <BaseButton
+                                    color="primary"
+                                    @click.prevent="
+                                        updateTotalTimeByPopUp(),
+                                            slotProps.close()
+                                    "
+                                >
+                                    確定
+                                </BaseButton>
+                                <BaseButton @click.prevent="slotProps.close()">
+                                    取消
+                                </BaseButton>
+                            </section>
+                        </form>
+                    </template>
+                </BasePopover>
+            </div>
         </section>
         <div class="add-task-line"></div>
-        <button class="add-task-color">
+        <button class="add-task-color home-add-task-button" type="button">
             <img src="@/assets/images/circled-dot.png" width="18" alt="" />
         </button>
     </form>
@@ -83,21 +110,21 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
     border-radius: 4px;
     margin-bottom: 24px;
 
-    button {
-        padding: 2px;
-
-        border-radius: 4px;
-        transition: all 0.3s ease;
-        background-color: $white-1;
-        font-size: 0;
-
-        &:hover {
-            background-color: $gray-0;
-        }
-    }
-
     & > *:not(:last-child) {
         margin-right: 8px;
+    }
+}
+
+.home-add-task-button {
+    padding: 2px;
+
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background-color: $white-1;
+    font-size: 0;
+
+    &:hover {
+        background-color: $gray-0;
     }
 }
 
@@ -137,5 +164,14 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.number-input {
+    margin-bottom: 12px;
+}
+
+.mention-check {
+    display: flex;
+    justify-content: space-between;
 }
 </style>

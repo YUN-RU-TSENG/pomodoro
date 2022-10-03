@@ -4,7 +4,7 @@ import { computed } from 'vue'
 const props = defineProps({
     id: {
         type: String,
-        required: true,
+        default: () => new Date().getTime().toString(),
     },
     error: {
         type: String,

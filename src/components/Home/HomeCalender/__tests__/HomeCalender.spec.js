@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeCalenderPopConfirm from '../HomeCalenderPopConfirm.vue'
+import HomeCalender from '../HomeCalender.vue'
 
-describe('HomeCalenderPopConfirm', () => {
+describe('HomeCalender', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeCalenderPopConfirm)
+        const wrapper = mount(HomeCalender)
         expect(wrapper.text()).not.toBeNull()
     })
 })

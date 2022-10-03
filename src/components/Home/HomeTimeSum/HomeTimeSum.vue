@@ -22,29 +22,29 @@
 </template>
 
 <style scoped lang="scss">
-    .home-time-sum {
-        display: flex;
-        padding: 10px;
+.home-time-sum {
+    display: flex;
+    padding: 10px;
 
-        background-color: $white-1;
-        border-radius: 4px;
-        box-shadow: 0px 0px 4px $gray-1;
+    background-color: $white-1;
+    border-radius: 4px;
+    box-shadow: 0px 0px 4px $gray-1;
+}
+
+.time-sum-item {
+    flex: 0 1 25%;
+    text-align: center;
+
+    h3 {
+        font-size: 20px;
+        line-height: 28px;
+        color: $red-1;
     }
 
-    .time-sum-item {
-        flex: 0 1 25%;
-        text-align: center;
-
-        h3 {
-            font-size: 20px;
-            line-height: 28px;
-            color: $red-1;
-        }
-
-        p {
-            font-size: 14px;
-            line-height: 21px;
-            color: $gray-3;
-        }
+    p {
+        font-size: 14px;
+        line-height: 21px;
+        color: $gray-3;
     }
+}
 </style>

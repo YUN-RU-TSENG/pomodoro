@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import {
     collection,
     getDocs,
     addDoc,
-    // deleteDoc,
-    // updateDoc,
+    deleteDoc,
+    updateDoc,
     query,
+    doc,
     where,
     db,
     serverTimestamp,
@@ -26,12 +27,17 @@ export const useTasksStore = defineStore('tasks', () => {
 
     // tasks
     const { tasks, getTasks } = useGetTasks({ firebaseRefUserTask, isLoading })
-    const { addTask, cacheAddTaskForm, cacheAddTaskFormErrorMessage } =
-        useAddTask({
-            firebaseRefTask,
-            getTasks,
-            isLoading,
-        })
+    const { addTask, cacheAddForm, cacheAddFormErrorMessage } = useAddTask({
+        firebaseRefTask,
+        getTasks,
+        isLoading,
+    })
+    const { cacheUpdateForm, cacheUpdateTaskId, updateTask } = useUpdateTask({
+        isLoading,
+        tasks,
+        getTasks,
+    })
+    const { deleteTask } = useDeleteTask({ isLoading, getTasks })
 
     return {
         isTaskLoading: isLoading,
@@ -40,8 +46,12 @@ export const useTasksStore = defineStore('tasks', () => {
         tasks,
         getTasks,
         addTask,
-        cacheAddTaskForm,
-        cacheAddTaskFormErrorMessage,
+        cacheAddForm,
+        cacheAddFormErrorMessage,
+        cacheUpdateForm,
+        cacheUpdateTaskId,
+        updateTask,
+        deleteTask,
     }
 })
 
@@ -74,7 +84,10 @@ function useGetTasks({ firebaseRefUserTask, isLoading }) {
             const tasksSnapshotData = []
 
             taskSnapshot.forEach((taskSnapshotData) => {
-                tasksSnapshotData.push(taskSnapshotData.data())
+                tasksSnapshotData.push({
+                    ...taskSnapshotData.data(),
+                    id: taskSnapshotData.id,
+                })
             })
 
             tasks.value = tasksSnapshotData
@@ -96,11 +109,11 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
 
     const {
         handleSubmit,
-        resetForm: resetCacheAddTaskForm,
-        errors: cacheAddTaskFormErrorMessage,
+        resetForm: resetCacheAddForm,
+        errors: cacheAddFormErrorMessage,
         useFieldModel,
-        meta: cacheAddTaskFormMeta,
-        submitCount: cacheAddTaskFormSubmitCount,
+        meta: cacheAddFormMeta,
+        submitCount: cacheAddFormSubmitCount,
     } = useForm({
         validationSchema: object({
             isFinish: boolean().required(),
@@ -157,7 +170,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         'expectEndDate',
     ])
 
-    const cacheAddTaskForm = ref({
+    const cacheAddForm = ref({
         isFinish,
         name,
         description,
@@ -178,11 +191,11 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
 
             await addDoc(firebaseRefTask, {
                 uid: userStore.user.uid,
-                ...cacheAddTaskForm.value,
+                ...cacheAddForm.value,
                 createAt: serverTimestamp(),
             })
 
-            resetCacheAddTaskForm()
+            resetCacheAddForm()
             getTasks()
         } catch (error) {
             console.error(error)
@@ -193,34 +206,158 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
 
     return {
         addTask,
-        cacheAddTaskForm,
-        cacheAddTaskFormErrorMessage,
-        cacheAddTaskFormMeta,
-        cacheAddTaskFormSubmitCount,
+        cacheAddForm,
+        cacheAddFormErrorMessage,
+        cacheAddFormMeta,
+        cacheAddFormSubmitCount,
     }
 }
 
-// function useUpdateTask({ isLoading }) {
-//     const cacheUpdateTask = ref({})
-//     const cacheUpdateTaskId = ref()
+function useUpdateTask({ isLoading, tasks, getTasks }) {
+    const cacheUpdateTaskId = ref(null)
 
-//     // 修改 task
-//     const updateTask = () => {
-//         try {
-//         } catch (error) {}
-//     }
+    const {
+        handleSubmit,
+        resetForm: resetCacheUpdateForm,
+        errors: cacheUpdateFormErrorMessage,
+        useFieldModel,
+        meta: cacheUpdateFormMeta,
+        submitCount: cacheUpdateFormSubmitCount,
+        setValues: setUpdateFormValues,
+    } = useForm({
+        validationSchema: object({
+            isFinish: boolean().required(),
+            name: string().trim().required(),
+            description: string(),
+            tags: array(),
+            folder: string(),
+            totalSpendTime: number().integer(),
+            tomatoTime: number(),
+            totalExpectTime: number().integer(),
+            subtasks: array(),
+            createAt: '',
+            expectEndDate: '',
+        }),
+        keepValuesOnUnmount: true,
+    })
 
-//     return { cacheUpdateTask, cacheUpdateTaskId, updateTask }
-// }
+    const [
+        isFinish,
+        name,
+        description,
+        tags,
+        folder,
+        totalSpendTime,
+        tomatoTime,
+        totalExpectTime,
+        subtasks,
+        createAt,
+        expectEndDate,
+    ] = useFieldModel([
+        'isFinish',
+        'name',
+        'description',
+        'tags',
+        'folder',
+        'totalSpendTime',
+        'tomatoTime',
+        'totalExpectTime',
+        'subtasks',
+        'createAt',
+        'expectEndDate',
+    ])
 
-// function useDeleteTask({ isLoading }) {
-//     const cacheDeleteTaskId = ref()
+    const cacheUpdateForm = ref({
+        isFinish,
+        name,
+        description,
+        tags,
+        folder,
+        totalSpendTime,
+        tomatoTime,
+        totalExpectTime,
+        subtasks,
+        createAt,
+        expectEndDate,
+    })
 
-//     // 刪除 task
-//     const deleteTask = () => {
-//         try {
-//         } catch (error) {}
-//     }
+    // 當 cacheUpdateTaskId 更新時，更新 cacheUpdateTask 表單
+    watchEffect(() => {
+        if (!cacheUpdateTaskId.value) return
 
-//     return { cacheDeleteTaskId, useDeleteTask }
-// }
+        // 快取的 updateTask 不需要 id 屬性，故將其去除，該屬性並非 firebase doc 值，而是 doc key，是透過 format 而成
+        const [result] = tasks.value
+            .filter((task) => task.id === cacheUpdateTaskId.value)
+            .slice()
+
+        setUpdateFormValues(JSON.parse(JSON.stringify(result)))
+    })
+
+    // 更新 task
+    const updateTask = handleSubmit(async () => {
+        try {
+            isLoading.value = true
+
+            const currentEditTaskReference = doc(
+                db,
+                'tasks',
+                cacheUpdateTaskId.value
+            )
+
+            // eslint-disable-next-line no-unused-vars
+            const { id, ...updateTask } = cacheUpdateForm.value
+
+            await updateDoc(currentEditTaskReference, {
+                ...updateTask,
+            })
+
+            getTasks()
+        } catch (error) {
+            console.error(error)
+        } finally {
+            isLoading.value = true
+        }
+    })
+
+    // 自動儲存
+    // 監聽 cacheUpdateForm 一但變動就存到 localStorage，當沒有失敗的情況下，更新到遠端 (使用 debounce 包裹防止過多請求)，一但請求失敗則會顯示錯誤，並且自動重複更新到遠端直到成功
+    watchEffect(
+        handleSubmit(() => {
+            // 監聽 cacheUpdateForm 一但變動就存到 localStorage
+            // 是否有失敗的情況下
+            // 否，更新到遠端 (使用 debounce 包裹防止過多請求)
+            // 是，一但請求失敗則會顯示錯誤，並且自動重複更新到遠端直到成功
+        })
+    )
+
+    return {
+        cacheUpdateForm,
+        cacheUpdateTaskId,
+        updateTask,
+        resetCacheUpdateForm,
+        cacheUpdateFormErrorMessage,
+        cacheUpdateFormMeta,
+        cacheUpdateFormSubmitCount,
+    }
+}
+
+function useDeleteTask({ isLoading, getTasks }) {
+    // 刪除 task
+    const deleteTask = async (cacheDeleteTaskId) => {
+        try {
+            isLoading.value = true
+
+            const currentDocumentReference = doc(db, 'tasks', cacheDeleteTaskId)
+
+            await deleteDoc(currentDocumentReference)
+
+            getTasks()
+        } catch (error) {
+            console.error(error)
+        } finally {
+            isLoading.value = true
+        }
+    }
+
+    return { deleteTask }
+}

@@ -202,147 +202,147 @@
 </template>
 
 <style scoped lang="scss">
-    .home-sidebar {
+.home-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 240px;
+
+    background-color: $white-1;
+    box-shadow: 0px 0px 4px $gray-1;
+
+    button {
+        img,
+        span {
+            vertical-align: middle;
+        }
+    }
+
+    li {
+        display: block;
+    }
+}
+
+.home-sidebar .sidebar-base {
+    flex: 0 1 auto;
+    padding: 10px;
+}
+
+.home-sidebar .sidebar-folder {
+    flex: 1 1 auto;
+    overflow: hidden;
+    padding: 10px;
+
+    .subitem {
         display: flex;
-        flex-direction: column;
-        height: 100vh;
-        width: 240px;
+        margin-top: 12px;
 
-        background-color: $white-1;
-        box-shadow: 0px 0px 4px $gray-1;
-
-        button {
-            img,
-            span {
-                vertical-align: middle;
-            }
-        }
-
-        li {
-            display: block;
+        /* 隱藏 folder 子項目時，添加 un-show  */
+        &.un-show {
+            display: none;
         }
     }
 
-    .home-sidebar .sidebar-base {
-        flex: 0 1 auto;
-        padding: 10px;
-    }
-
-    .home-sidebar .sidebar-folder {
-        flex: 1 1 auto;
-        overflow: hidden;
-        padding: 10px;
-
-        .subitem {
-            display: flex;
-            margin-top: 12px;
-
-            /* 隱藏 folder 子項目時，添加 un-show  */
-            &.un-show {
-                display: none;
-            }
-        }
-
-        .line {
-            flex: 0 1 1px;
-            margin-left: 18px;
-            margin-right: 8px;
-
-            background-color: $gray-1;
-        }
-
-        .list {
-            flex: 1 1 auto;
-        }
-    }
-
-    .home-sidebar .sidebar-line {
-        flex: 0 1 auto;
-        margin: 10px 6px;
-        height: 1px;
+    .line {
+        flex: 0 1 1px;
+        margin-left: 18px;
+        margin-right: 8px;
 
         background-color: $gray-1;
     }
 
-    .home-sidebar .sidebar-footer {
-        flex: 0 1 auto;
-        align-items: center;
-        border-top: 1px solid $gray-1;
+    .list {
+        flex: 1 1 auto;
+    }
+}
 
-        display: flex;
-        padding: 10px 6px;
+.home-sidebar .sidebar-line {
+    flex: 0 1 auto;
+    margin: 10px 6px;
+    height: 1px;
 
-        & > *:not(:last-child) {
-            margin-right: 6px;
-        }
+    background-color: $gray-1;
+}
 
-        button {
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            &:hover {
-                background-color: $gray-0;
-            }
-        }
+.home-sidebar .sidebar-footer {
+    flex: 0 1 auto;
+    align-items: center;
+    border-top: 1px solid $gray-1;
 
-        button.add {
-            flex: 0 1 auto;
+    display: flex;
+    padding: 10px 6px;
 
-            img {
-                margin-right: 6px;
-            }
-
-            span {
-                font-size: 14px;
-                line-height: 21px;
-                color: $red-1;
-            }
-        }
-
-        button.tag {
-            flex: 0 1 auto;
-            margin-left: auto;
-        }
-
-        button.folder {
-            flex: 0 1 auto;
-        }
+    & > *:not(:last-child) {
+        margin-right: 6px;
     }
 
-    /* 頁面的 subitem 樣式相同，樣式統一使用 sidebar-item  */
-    .home-sidebar .sidebar-item {
-        display: flex;
-        padding: 10px 6px;
-        align-items: center;
-
+    button {
         border-radius: 4px;
-        cursor: pointer;
         transition: all 0.3s ease;
-
-        /* 點擊為當前項目時，當前項目會呈現選中狀態，添加 active */
-        &.active,
         &:hover {
             background-color: $gray-0;
         }
+    }
 
-        *:not(:last-child) {
-            margin-right: 12px;
+    button.add {
+        flex: 0 1 auto;
+
+        img {
+            margin-right: 6px;
         }
 
-        h3 {
+        span {
             font-size: 14px;
             line-height: 21px;
-            color: $gray-4;
-            font-weight: 300;
-        }
-
-        p {
-            font-size: 12px;
-            line-height: 18px;
-            color: $gray-3;
-        }
-
-        p.total-spend-time {
-            margin-left: auto;
+            color: $red-1;
         }
     }
+
+    button.tag {
+        flex: 0 1 auto;
+        margin-left: auto;
+    }
+
+    button.folder {
+        flex: 0 1 auto;
+    }
+}
+
+/* 頁面的 subitem 樣式相同，樣式統一使用 sidebar-item  */
+.home-sidebar .sidebar-item {
+    display: flex;
+    padding: 10px 6px;
+    align-items: center;
+
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    /* 點擊為當前項目時，當前項目會呈現選中狀態，添加 active */
+    &.active,
+    &:hover {
+        background-color: $gray-0;
+    }
+
+    *:not(:last-child) {
+        margin-right: 12px;
+    }
+
+    h3 {
+        font-size: 14px;
+        line-height: 21px;
+        color: $gray-4;
+        font-weight: 300;
+    }
+
+    p {
+        font-size: 12px;
+        line-height: 18px;
+        color: $gray-3;
+    }
+
+    p.total-spend-time {
+        margin-left: auto;
+    }
+}
 </style>

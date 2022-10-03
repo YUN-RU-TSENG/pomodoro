@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export default function useToggleComponent() {
+export function useToggleComponent() {
     const visible = ref(false)
 
     const open = () => {

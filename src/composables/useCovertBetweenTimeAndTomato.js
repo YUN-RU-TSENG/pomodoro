@@ -1,4 +1,4 @@
-export default function useCovertBetweenTimeAndTomato() {
+export function useCovertBetweenTimeAndTomato() {
     const covertTimeToTomato = ({ time, tomatoTime }) => {
         return time / tomatoTime
     }

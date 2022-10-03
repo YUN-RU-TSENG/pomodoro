@@ -13,7 +13,7 @@
                 />
             </button>
             <section class="item">
-                <BaseCheckbox class="checkbox" />
+                <BaseCheckbox class="checkbox" :value="false" />
 
                 <section class="content">
                     <p class="text">預想文字</p>
@@ -43,7 +43,14 @@
             </section>
             <div class="clock">
                 <svg height="400" width="400" viewBox="0 0 400 400" fill="red">
-                    <circle r="190" cx="200" cy="200" stroke="#fff" fill="none" stroke-width="10" />
+                    <circle
+                        r="190"
+                        cx="200"
+                        cy="200"
+                        stroke="#fff"
+                        fill="none"
+                        stroke-width="10"
+                    />
                     <circle
                         r="190"
                         cx="200"
@@ -80,7 +87,14 @@
         <div class="tomato-small">
             <button class="clock">
                 <svg height="36" width="36" viewBox="0 0 36 36" fill="red">
-                    <circle r="16" cx="18" cy="18" stroke="#fff" fill="none" stroke-width="2" />
+                    <circle
+                        r="16"
+                        cx="18"
+                        cy="18"
+                        stroke="#fff"
+                        fill="none"
+                        stroke-width="2"
+                    />
                     <circle
                         r="16"
                         cx="18"
@@ -130,145 +144,145 @@
 </template>
 
 <style scoped lang="scss">
-    .home-tomato {
-        transition: all 0.3s ease;
-        background-color: $red-2;
-        box-shadow: 0 0 4px $gray-2;
+.home-tomato {
+    transition: all 0.3s ease;
+    background-color: $red-2;
+    box-shadow: 0 0 4px $gray-2;
 
-        &.full {
-            width: 100vw;
-            height: 100vh;
-            bottom: 0;
-            top: 0;
-            border-radius: 0px;
-        }
-
-        &.small {
-            width: 196px;
-            height: 48px;
-            border-radius: 4px;
-        }
-
-        button {
-            font-size: 0;
-            img {
-                vertical-align: middle;
-            }
-        }
+    &.full {
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        top: 0;
+        border-radius: 0px;
     }
 
-    .home-tomato .tomato-full {
-        padding-top: 120px;
-        .toggle {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-        }
-
-        .item {
-            width: 400px;
-            margin: 0 auto;
-
-            display: flex;
-            align-items: center;
-            padding: 6px;
-
-            box-shadow: 0 1px 3px $gray-1;
-            transition: all 0.3s ease;
-            background-color: $white-1;
-            border-radius: 4px;
-
-            &:hover,
-            &.active {
-                background-color: $gray-0;
-            }
-
-            & > *:not(:last-child) {
-                margin-right: 6px;
-            }
-
-            .checkbox {
-                flex: 0 1 auto;
-            }
-
-            .content {
-                flex: 1 1 auto;
-
-                .text {
-                    width: 100%;
-                    margin-bottom: 4px;
-
-                    font-size: 12px;
-                    line-height: 18px;
-                }
-
-                .timers {
-                    font-size: 12px;
-                    line-height: 18px;
-
-                    & > *:not(:last-child) {
-                        margin-right: 4px;
-                    }
-
-                    img,
-                    span {
-                        vertical-align: middle;
-                    }
-                }
-            }
-
-            .close {
-                flex: 0 1 auto;
-                align-self: flex-start;
-            }
-        }
-
-        .clock {
-            margin: 48px auto 0;
-            text-align: center;
-        }
-
-        .stop {
-            margin: 24px auto 0;
-            text-align: center;
-        }
+    &.small {
+        width: 196px;
+        height: 48px;
+        border-radius: 4px;
     }
 
-    .home-tomato .tomato-small {
+    button {
+        font-size: 0;
+        img {
+            vertical-align: middle;
+        }
+    }
+}
+
+.home-tomato .tomato-full {
+    padding-top: 120px;
+    .toggle {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+    }
+
+    .item {
+        width: 400px;
+        margin: 0 auto;
+
         display: flex;
-        padding: 6px;
         align-items: center;
+        padding: 6px;
+
+        box-shadow: 0 1px 3px $gray-1;
+        transition: all 0.3s ease;
+        background-color: $white-1;
+        border-radius: 4px;
+
+        &:hover,
+        &.active {
+            background-color: $gray-0;
+        }
 
         & > *:not(:last-child) {
             margin-right: 6px;
         }
 
-        .clock {
-            flex: 0 0 auto;
+        .checkbox {
+            flex: 0 1 auto;
+        }
 
-            svg {
-                vertical-align: middle;
+        .content {
+            flex: 1 1 auto;
+
+            .text {
+                width: 100%;
+                margin-bottom: 4px;
+
+                font-size: 12px;
+                line-height: 18px;
+            }
+
+            .timers {
+                font-size: 12px;
+                line-height: 18px;
+
+                & > *:not(:last-child) {
+                    margin-right: 4px;
+                }
+
+                img,
+                span {
+                    vertical-align: middle;
+                }
             }
         }
 
-        .text {
-            flex: 1 1 auto;
-            font-size: 14px;
-            line-height: 21px;
-            color: $white-1;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .stop,
-        .play,
-        .break {
-            flex: 0 0 auto;
+        .close {
+            flex: 0 1 auto;
+            align-self: flex-start;
         }
     }
 
-    .home-tomato .un-show {
-        display: none;
+    .clock {
+        margin: 48px auto 0;
+        text-align: center;
     }
+
+    .stop {
+        margin: 24px auto 0;
+        text-align: center;
+    }
+}
+
+.home-tomato .tomato-small {
+    display: flex;
+    padding: 6px;
+    align-items: center;
+
+    & > *:not(:last-child) {
+        margin-right: 6px;
+    }
+
+    .clock {
+        flex: 0 0 auto;
+
+        svg {
+            vertical-align: middle;
+        }
+    }
+
+    .text {
+        flex: 1 1 auto;
+        font-size: 14px;
+        line-height: 21px;
+        color: $white-1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .stop,
+    .play,
+    .break {
+        flex: 0 0 auto;
+    }
+}
+
+.home-tomato .un-show {
+    display: none;
+}
 </style>

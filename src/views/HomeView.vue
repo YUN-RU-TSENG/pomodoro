@@ -1,16 +1,18 @@
 <script setup>
+import { onBeforeMount } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
 
 const userStore = useUserStore()
 const tasksStore = useTasksStore()
 
-tasksStore.getTasks()
+onBeforeMount(() => {
+    tasksStore.getTasks()
+})
 </script>
 
 <template>
     <section class="home">
-        <BaseLoading v-if="userStore.isTaskLoading" />
         <!-- home home-navbar -->
         <HomeNavbar
             class="home-navbar"
@@ -38,33 +40,47 @@ tasksStore.getTasks()
                         </button>
                     </div>
                     <HomeAddTask
-                        :tomato-time="tasksStore.cacheAddTaskForm.tomatoTime"
+                        :tomato-time="tasksStore.cacheAddForm.tomatoTime"
                         @add-tasks="tasksStore.addTask"
                         @update:total-expect-time="
-                            tasksStore.cacheAddTaskForm.totalExpectTime = $event
+                            tasksStore.cacheAddForm.totalExpectTime = $event
                         "
                     >
                         <template #name>
                             <HomeAddInput
-                                v-model:value="tasksStore.cacheAddTaskForm.name"
+                                v-model:value="tasksStore.cacheAddForm.name"
                                 placeholder="輸入待辦 task，例如: 閱讀書籍"
                             />
                         </template>
                         <template #clocks>
                             <HomeAddTaskClocks
                                 v-model:totalExpectTime="
-                                    tasksStore.cacheAddTaskForm.totalExpectTime
+                                    tasksStore.cacheAddForm.totalExpectTime
                                 "
                                 :tomato-time="
-                                    tasksStore.cacheAddTaskForm.tomatoTime
+                                    tasksStore.cacheAddForm.tomatoTime
                                 "
                             />
                         </template>
                     </HomeAddTask>
-                    <HomeList :tasks="tasksStore.tasks"></HomeList>
+                    <HomeList class="home-list">
+                        <HomeListItem
+                            v-for="task of tasksStore.tasks"
+                            :key="task.id"
+                            :task="task"
+                            @open-task-detail="
+                                tasksStore.cacheUpdateTaskId = task.id
+                            "
+                            @close-task-detail="() => {}"
+                            @update:task="log('@update:task')"
+                            @play-tomato="log('@play-tomato')"
+                        />
+                    </HomeList>
                 </div>
-                <div class="task-detail">
+                <div v-if="tasksStore.cacheUpdateTaskId" class="task-detail">
+                    <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
+                        v-model:cacheUpdateForm="tasksStore.cacheUpdateForm"
                         style="height: calc(100vh - 45px - 24px)"
                     />
                 </div>
@@ -72,6 +88,7 @@ tasksStore.getTasks()
         </main>
         <!-- home-tomato-clock -->
         <HomeTomatoClock class="home-tomato-clock"></HomeTomatoClock>
+        <BaseLoading v-if="tasksStore.isTaskLoading" />
     </section>
 </template>
 
@@ -90,6 +107,9 @@ tasksStore.getTasks()
     display: flex;
     position: relative;
     z-index: 1;
+}
+
+.home-list {
 }
 
 .workspace-current-task {
