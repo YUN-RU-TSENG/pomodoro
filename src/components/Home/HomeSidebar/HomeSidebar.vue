@@ -83,7 +83,7 @@ function useFileType() {
                         ]"
                     >
                         <img
-                            src="@/assets/images/calendar--v1 (1).png"
+                            src="@/assets/images/calendar--v1-1.png"
                             alt=""
                             width="22"
                         />
@@ -103,7 +103,7 @@ function useFileType() {
                         ]"
                     >
                         <img
-                            src="@/assets/images/calendar--v1 (2).png"
+                            src="@/assets/images/calendar--v1-2.png"
                             alt=""
                             width="22"
                         />
@@ -200,7 +200,7 @@ function useFileType() {
         <footer class="sidebar-footer">
             <button class="add" @click="visible = true">
                 <img
-                    src="@/assets/images/add--v1 (1).png"
+                    src="@/assets/images/add--v1-1.png"
                     width="22"
                     alt=""
                 /><span>新增項目</span>
@@ -219,13 +219,13 @@ function useFileType() {
             >
                 <img
                     v-show="!isLoadingFileTypesAdd"
-                    src="@/assets/images/folder-invoices--v1 (2).png"
+                    src="@/assets/images/folder-invoices--v1-2.png"
                     width="22"
                     alt=""
                 />
                 <img
                     v-show="isLoadingFileTypesAdd"
-                    src="@/assets/images/external-Load-interface-those-icons-lineal-those-icons (1).png"
+                    src="@/assets/images/external-Load-interface-those-icons-lineal-those-icons-1.png"
                     width="22"
                     alt=""
                 />
