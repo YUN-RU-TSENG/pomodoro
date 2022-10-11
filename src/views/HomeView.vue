@@ -2,12 +2,15 @@
 import { onBeforeMount } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
+import { useFileTypesStore } from '@/stores/fileTypes'
 
 const userStore = useUserStore()
 const tasksStore = useTasksStore()
+const fileTypesStore = useFileTypesStore()
 
 onBeforeMount(() => {
     tasksStore.getTasks()
+    fileTypesStore.getFileTypes()
 })
 
 function deleteTask(deleteId) {
@@ -32,7 +35,14 @@ function deleteTask(deleteId) {
                 class="workspace-sidebar"
                 style="height: calc(100vh - 45px)"
                 :filter-type="tasksStore.filterType"
-                @update:filterType="tasksStore.changeFilterType($event)"
+                :each-file-type-total-task-time="
+                    fileTypesStore.eachFileTypeTotalTaskTime
+                "
+                :is-loading-file-types-add="
+                    fileTypesStore.isLoadingFileTypesAdd
+                "
+                @add-file-type="fileTypesStore.addFileType($event)"
+                @update:filter-type="tasksStore.changeFilterType($event)"
             />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
@@ -49,9 +59,14 @@ function deleteTask(deleteId) {
                     </div>
                     <HomeAddTask
                         :tomato-time="tasksStore.cacheAddForm.tomatoTime"
+                        :file-types="fileTypesStore.fileTypes"
+                        :cache-add-form="tasksStore.cacheAddForm"
                         @add-tasks="tasksStore.addTask"
                         @update:total-expect-time="
                             tasksStore.cacheAddForm.totalExpectTime = $event
+                        "
+                        @update:cache-add-form="
+                            tasksStore.cacheAddForm.folder = $event
                         "
                     >
                         <template #name>
@@ -91,8 +106,9 @@ function deleteTask(deleteId) {
                 <div v-if="tasksStore.cacheUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
-                        :cache-update-form="tasksStore.cacheUpdateForm"
                         style="height: calc(100vh - 45px - 24px)"
+                        :cache-update-form="tasksStore.cacheUpdateForm"
+                        :file-types="fileTypesStore.fileTypes"
                         @update:cacheUpdateForm="
                             tasksStore.setUpdateFormValues($event)
                         "

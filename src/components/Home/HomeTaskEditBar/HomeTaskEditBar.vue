@@ -9,6 +9,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    fileTypes: {
+        type: Array,
+        required: true,
+    },
 })
 
 defineEmits([
@@ -22,6 +26,7 @@ const isPlay = ref(false)
 const cacheTotalTimes = ref(0)
 const cacheExpectEndDate = ref(null)
 const cacheMentionDate = ref(null)
+const cacheFileType = ref('')
 
 const { covertTimeToTomato, covertTomatoToTime } =
     useCovertBetweenTimeAndTomato()
@@ -188,11 +193,27 @@ const currentSpendTomato = computed(() => {
                         <h4>資料夾</h4>
                         <BasePopover width="200px">
                             <template #button>
-                                <button class="folder">文字</button>
+                                <button class="folder">
+                                    {{
+                                        cacheUpdateForm.folder
+                                            ? cacheUpdateForm.folder
+                                            : '無'
+                                    }}
+                                </button>
                             </template>
-                            <template>
-                                <!-- <template #model="slotProps"> -->
-                                <HomeDropdownConfirm />
+                            <template #model="slotProps">
+                                <HomeDropdownConfirm
+                                    :contents="fileTypes"
+                                    :value="cacheFileType"
+                                    name="detail-task-file-name"
+                                    @update:value="
+                                        $emit('update:cacheUpdateForm', {
+                                            ...cacheUpdateForm,
+                                            folder: $event,
+                                        }),
+                                            slotProps.close()
+                                    "
+                                />
                             </template>
                         </BasePopover>
                     </li>

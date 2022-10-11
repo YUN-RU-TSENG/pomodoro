@@ -1,40 +1,43 @@
-<script setup></script>
+<script setup>
+defineProps({
+    contents: {
+        type: Array,
+        required: true,
+    },
+    value: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+})
+
+defineEmits(['update:value'])
+</script>
 
 <template>
     <div class="home-dropdown" style="width: 160px">
-        <label for="one" class="dropdown-item">
-            <input id="one" type="radio" name="select" />
+        <label
+            v-for="(content, index) of contents"
+            :key="index"
+            :for="content.id"
+            class="dropdown-item"
+        >
+            <input
+                :id="content.id"
+                type="radio"
+                :name="name"
+                :value="content.file"
+                :checked="content.file === value"
+                @change="$emit('update:value', $event.target.value)"
+            />
             <div class="box">
                 <div class="color"></div>
-                <p class="content">文字內容</p>
+                <p class="content">{{ content.file }}</p>
                 <img
-                    src="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/000000/external-checked-interface-dreamstale-lineal-dreamstale.png"
-                    alt=""
-                    width="12"
-                    class="checked"
-                />
-            </div>
-        </label>
-        <label for="two" class="dropdown-item">
-            <input id="two" type="radio" name="select" />
-            <div class="box">
-                <div class="color"></div>
-                <p class="content">文字內容</p>
-                <img
-                    src="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/000000/external-checked-interface-dreamstale-lineal-dreamstale.png"
-                    alt=""
-                    width="12"
-                    class="checked"
-                />
-            </div>
-        </label>
-        <label for="three" class="dropdown-item">
-            <input id="three" type="radio" name="select" />
-            <div class="box">
-                <div class="color"></div>
-                <p class="content">文字內容</p>
-                <img
-                    src="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/000000/external-checked-interface-dreamstale-lineal-dreamstale.png"
+                    src="@/assets/images/external-checked-interface-dreamstale-lineal-dreamstale.png"
                     alt=""
                     width="12"
                     class="checked"

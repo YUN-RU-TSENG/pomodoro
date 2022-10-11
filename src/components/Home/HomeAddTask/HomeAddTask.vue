@@ -7,9 +7,21 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    cacheAddForm: {
+        type: Object,
+        required: true,
+    },
+    fileTypes: {
+        type: Array,
+        required: true,
+    },
 })
 
-const emits = defineEmits(['add-tasks', 'update:total-expect-time'])
+const emits = defineEmits([
+    'add-tasks',
+    'update:total-expect-time',
+    'update:cache-add-form-folder',
+])
 const { covertTomatoToTime } = useCovertBetweenTimeAndTomato()
 const { updateTotalTimeByPopUp, counts } = useUpdateTotalTimeByPopUp({
     covertTomatoToTime,
@@ -92,9 +104,31 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
             </div>
         </section>
         <div class="add-task-line"></div>
-        <button class="add-task-color home-add-task-button" type="button">
-            <img src="@/assets/images/circled-dot.png" width="18" alt="" />
-        </button>
+        <BasePopover width="200px">
+            <template #button>
+                <button
+                    class="add-task-color home-add-task-button"
+                    type="button"
+                >
+                    <img
+                        src="@/assets/images/circled-dot.png"
+                        width="18"
+                        alt=""
+                    />
+                </button>
+            </template>
+            <template #model="slotProps">
+                <HomeDropdownConfirm
+                    :contents="fileTypes"
+                    :value="cacheAddForm.folder"
+                    name="detail-task-file-name"
+                    @update:value="
+                        $emit('update:cache-add-form-folder', $event),
+                            slotProps.close()
+                    "
+                />
+            </template>
+        </BasePopover>
     </form>
 </template>
 

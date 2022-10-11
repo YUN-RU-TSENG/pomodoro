@@ -1,12 +1,31 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
-const props = defineProps({ filterType: { type: String, required: true } })
-defineEmits(['update:filterType'])
-
-const selectSidebarItem = computed(() => (sidebarItem) => {
-    return sidebarItem === props.filterType
+const props = defineProps({
+    filterType: { type: String, required: true },
+    eachFileTypeTotalTaskTime: { type: Array, required: true },
+    isLoadingFileTypesAdd: { type: Boolean, required: true },
 })
+
+defineEmits(['add-file-type', 'update:filter-type'])
+
+// file types
+const { isFileConfirmVisible } = useFileType()
+// sidebar item
+const { selectSidebarItem } = useSelectSidebarItem({ props })
+
+function useSelectSidebarItem({ props }) {
+    const selectSidebarItem = computed(() => (sidebarItem) => {
+        return sidebarItem === props.filterType
+    })
+    return { selectSidebarItem }
+}
+
+function useFileType() {
+    const isFileConfirmVisible = ref(false)
+
+    return { isFileConfirmVisible }
+}
 </script>
 
 <template>
@@ -18,7 +37,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                 <!-- home-sidebar sidebar-item -->
                 <li
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filterType', 0)"
+                    @click="$emit('update:filter-type', 0)"
                 >
                     <a
                         :class="[
@@ -34,7 +53,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                 </li>
                 <li
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filterType', 1)"
+                    @click="$emit('update:filter-type', 1)"
                 >
                     <!-- 點擊為當前項目時，當前項目會呈現選中狀態，添加 active -->
                     <a
@@ -55,7 +74,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                 </li>
                 <li
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filterType', 5)"
+                    @click="$emit('update:filter-type', 5)"
                 >
                     <a
                         :class="[
@@ -75,7 +94,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                 </li>
                 <li
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filterType', 7)"
+                    @click="$emit('update:filter-type', 7)"
                 >
                     <a
                         :class="[
@@ -95,7 +114,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                 </li>
                 <li
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filterType', 6)"
+                    @click="$emit('update:filter-type', 6)"
                 >
                     <a
                         :class="[
@@ -120,16 +139,22 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
         <!-- home-sidebar sidebar-folder -->
         <section class="sidebar-folder">
             <ul class="sidebar-list">
-                <li class="sidebar-item-wrapper">
+                <li
+                    v-for="fileType of eachFileTypeTotalTaskTime"
+                    :key="fileType.id"
+                    class="sidebar-item-wrapper"
+                >
                     <a class="sidebar-item">
                         <img
                             src="@/assets/images/folder-invoices--v1.png"
                             alt=""
                             width="22"
                         />
-                        <h3>名稱</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <h3>{{ fileType.file }}</h3>
+                        <p class="total-spend-time">
+                            {{ fileType.time + 'h' }}
+                        </p>
+                        <p class="tomato-time">{{ fileType.tasks }}</p>
                         <button class="arrow">
                             <img
                                 src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
@@ -173,7 +198,7 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
         </section>
         <!-- home-sidebar sidebar-footer -->
         <footer class="sidebar-footer">
-            <button class="add">
+            <button class="add" @click="visible = true">
                 <img
                     src="@/assets/images/add--v1 (1).png"
                     width="22"
@@ -187,14 +212,29 @@ const selectSidebarItem = computed(() => (sidebarItem) => {
                     alt=""
                 />
             </button>
-            <button class="folder">
+            <button
+                class="folder"
+                :disabled="isLoadingFileTypesAdd"
+                @click="isFileConfirmVisible = true"
+            >
                 <img
+                    v-show="!isLoadingFileTypesAdd"
                     src="@/assets/images/folder-invoices--v1 (2).png"
+                    width="22"
+                    alt=""
+                />
+                <img
+                    v-show="isLoadingFileTypesAdd"
+                    src="@/assets/images/external-Load-interface-those-icons-lineal-those-icons (1).png"
                     width="22"
                     alt=""
                 />
             </button>
         </footer>
+        <HomeFileModelConfirm
+            v-model:visible="isFileConfirmVisible"
+            @on-submit="$emit('add-file-type', $event)"
+        />
     </section>
 </template>
 
