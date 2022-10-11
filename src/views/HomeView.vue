@@ -9,6 +9,12 @@ const tasksStore = useTasksStore()
 onBeforeMount(() => {
     tasksStore.getTasks()
 })
+
+function deleteTask(deleteId) {
+    // 由於刪除的是當前快取編輯的 task，所以刪除時同時需要清除當前快取編輯的 task id
+    tasksStore.clearCacheUpdateTaskId()
+    tasksStore.deleteTask(deleteId)
+}
 </script>
 
 <template>
@@ -25,6 +31,8 @@ onBeforeMount(() => {
             <HomeSidebar
                 class="workspace-sidebar"
                 style="height: calc(100vh - 45px)"
+                :filter-type="tasksStore.filterType"
+                @update:filterType="tasksStore.changeFilterType($event)"
             />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
@@ -63,9 +71,12 @@ onBeforeMount(() => {
                             />
                         </template>
                     </HomeAddTask>
-                    <HomeList class="home-list">
+                    <HomeList
+                        class="home-list"
+                        :is-loading="tasksStore.isLoadingTaskGet"
+                    >
                         <HomeListItem
-                            v-for="task of tasksStore.tasks"
+                            v-for="task of tasksStore.filterTasks"
                             :key="task.id"
                             :task="task"
                             @open-task-detail="
@@ -80,15 +91,19 @@ onBeforeMount(() => {
                 <div v-if="tasksStore.cacheUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
-                        v-model:cacheUpdateForm="tasksStore.cacheUpdateForm"
+                        :cache-update-form="tasksStore.cacheUpdateForm"
                         style="height: calc(100vh - 45px - 24px)"
+                        @update:cacheUpdateForm="
+                            tasksStore.setUpdateFormValues($event)
+                        "
+                        @delete-task="deleteTask(tasksStore.cacheUpdateTaskId)"
+                        @close-task-detail="tasksStore.clearCacheUpdateTaskId()"
                     />
                 </div>
             </section>
         </main>
         <!-- home-tomato-clock -->
         <HomeTomatoClock class="home-tomato-clock"></HomeTomatoClock>
-        <BaseLoading v-if="tasksStore.isTaskLoading" />
     </section>
 </template>
 
@@ -98,6 +113,7 @@ onBeforeMount(() => {
         font-size: 0px;
     }
 }
+
 .home-navbar {
     z-index: 9;
     position: relative;

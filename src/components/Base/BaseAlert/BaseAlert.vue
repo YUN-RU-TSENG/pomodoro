@@ -49,26 +49,36 @@ function useModalToggle() {
 </script>
 
 <template>
-    <div v-if="isOpen" class="base-alert">
-        <button class="close" @click="close">
+    <div v-if="isOpen" class="base-alert-wrapper">
+        <div class="base-alert">
+            <button class="close" @click="close">
+                <img
+                    src="https://img.icons8.com/ios/50/000000/delete-sign--v1.png"
+                    alt=""
+                    width="12"
+                />
+            </button>
             <img
-                src="https://img.icons8.com/ios/50/000000/delete-sign--v1.png"
+                src="https://img.icons8.com/external-anggara-glyph-anggara-putra/32/000000/external-alert-user-interface-anggara-glyph-anggara-putra.png"
                 alt=""
-                width="12"
+                width="20"
             />
-        </button>
-        <img
-            src="https://img.icons8.com/external-anggara-glyph-anggara-putra/32/000000/external-alert-user-interface-anggara-glyph-anggara-putra.png"
-            alt=""
-            width="20"
-        />
-        <p>{{ text }}</p>
+            <p>{{ text }}</p>
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
-.base-alert {
+.base-alert-wrapper {
     position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.base-alert {
+    position: absolute;
     top: 50%;
     left: 50%;
     width: 240px;

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { formatTimestamp } from '@/utils/dayjsFormat.js'
 import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
 import { formaDate } from '@/utils/dayjsFormat'
+
 const props = defineProps({
     cacheUpdateForm: {
         type: Object,
@@ -122,7 +123,7 @@ const currentSpendTomato = computed(() => {
                                 </button>
                             </template>
                             <template #model="slotProps">
-                                <HomeNumberPopConfirm
+                                <HomeNumberConfirm
                                     :value="cacheTotalTimes"
                                     @cancel="slotProps.close()"
                                     @confirm="
@@ -190,7 +191,8 @@ const currentSpendTomato = computed(() => {
                                 <button class="folder">文字</button>
                             </template>
                             <template>
-                                <HomeDropdownPopConfirm></HomeDropdownPopConfirm>
+                                <!-- <template #model="slotProps"> -->
+                                <HomeDropdownConfirm />
                             </template>
                         </BasePopover>
                     </li>
@@ -232,17 +234,17 @@ const currentSpendTomato = computed(() => {
                 </ul>
             </section>
             <section class="subtask">
-                <ul>
-                    <li>
+                <ul v-if="cacheUpdateForm.subtasks.length">
+                    <li v-for="(task, index) in subtasks" :key="index">
                         <BaseCheckbox
-                            :value="cacheUpdateForm.isFinish"
+                            :value="task.isFinish"
                             @update:value="$emit('update:cacheUpdateForm')"
                         />
                         <HomeStartTimer
                             :value="isPlay"
                             @input="$emit('play-tomato')"
                         />
-                        <h3>任務名稱</h3>
+                        <h3>{{ task }}</h3>
                     </li>
                 </ul>
 
@@ -286,7 +288,7 @@ const currentSpendTomato = computed(() => {
                 {{
                     formatTimestamp({
                         timestampSecond: cacheUpdateForm.createAt.seconds,
-                        formatString: 'YYYY 年 MM 月 DD 日',
+                        formatString: 'YYYY年MM月DD日',
                     })
                 }}
             </p>
@@ -303,7 +305,6 @@ const currentSpendTomato = computed(() => {
     flex-direction: column;
     height: 100vh;
     width: 280px;
-
     border-radius: 4px;
     background-color: $white-1;
     box-shadow: 0 0 4px $gray-1;
@@ -344,11 +345,9 @@ const currentSpendTomato = computed(() => {
         .tag {
             display: inline-block;
             padding: 0 6px;
-
             border-radius: 12px;
             font-size: 12px;
             line-height: 18px;
-
             background-color: $red-1;
             border: 1px solid $red-2;
             &:not(:last-child) {
@@ -373,7 +372,6 @@ const currentSpendTomato = computed(() => {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-
     padding: 0 12px;
 
     .list {
@@ -391,7 +389,6 @@ const currentSpendTomato = computed(() => {
 
         h4 {
             flex: 1 1 auto;
-
             font-size: 14px;
             line-height: 21px;
             font-weight: 300;

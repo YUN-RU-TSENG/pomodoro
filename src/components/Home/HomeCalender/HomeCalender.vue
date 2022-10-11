@@ -76,7 +76,7 @@ const {
                                         ' ' +
                                         date,
                                     'YYYY MMM DD'
-                                )
+                                ).toISOString()
                             )
                         "
                     >

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watchEffect } from 'vue'
+import { ref, watch, computed } from 'vue'
 import {
     collection,
     getDocs,
@@ -13,45 +13,65 @@ import {
     serverTimestamp,
 } from '@/utils/firebaseStore'
 import { useUserStore } from './user'
+import { watchDebounced } from '@vueuse/core'
 import { useForm } from 'vee-validate'
 import { string, object, number, boolean, array } from 'yup'
+import dayjs from 'dayjs'
 
 export const useTasksStore = defineStore('tasks', () => {
-    // state ----
-
-    // isLoading
-    const isLoading = ref(false)
-
     // firebaseTaskRef
     const { firebaseRefTask, firebaseRefUserTask } = useFirebaseTaskRef()
 
     // tasks
-    const { tasks, getTasks } = useGetTasks({ firebaseRefUserTask, isLoading })
-    const { addTask, cacheAddForm, cacheAddFormErrorMessage } = useAddTask({
+    const { tasks, getTasks, isLoadingTaskGet } = useGetTasks({
+        firebaseRefUserTask,
+    })
+    const {
+        addTask,
+        isLoadingTaskAdd,
+        cacheAddForm,
+        cacheAddFormErrorMessage,
+    } = useAddTask({
         firebaseRefTask,
         getTasks,
-        isLoading,
     })
-    const { cacheUpdateForm, cacheUpdateTaskId, updateTask } = useUpdateTask({
-        isLoading,
+    const {
+        cacheUpdateTaskId,
+        cacheUpdateForm,
+        updateTask,
+        isLoadingTaskUpdate,
+        setUpdateFormValues,
+        clearCacheUpdateTaskId,
+    } = useUpdateTask({
         tasks,
         getTasks,
     })
-    const { deleteTask } = useDeleteTask({ isLoading, getTasks })
+    const { deleteTask, isLoadingTaskDelete } = useDeleteTask({
+        getTasks,
+    })
+    const { filterTasks, changeFilterType, filterType } = useFilterTask({
+        tasks,
+    })
 
     return {
-        isTaskLoading: isLoading,
-        firebaseRefTask,
-        firebaseRefUserTask,
         tasks,
         getTasks,
+        isLoadingTaskGet,
         addTask,
+        isLoadingTaskAdd,
         cacheAddForm,
         cacheAddFormErrorMessage,
         cacheUpdateForm,
         cacheUpdateTaskId,
+        setUpdateFormValues,
+        clearCacheUpdateTaskId,
         updateTask,
+        isLoadingTaskUpdate,
         deleteTask,
+        isLoadingTaskDelete,
+        filterTasks,
+        changeFilterType,
+        filterType,
     }
 })
 
@@ -71,15 +91,17 @@ function useFirebaseTaskRef() {
     }
 }
 
-function useGetTasks({ firebaseRefUserTask, isLoading }) {
+function useGetTasks({ firebaseRefUserTask }) {
     const tasks = ref([])
+    const isLoadingTaskGet = ref(false)
 
     /**
      * 讀取 task
      */
     const getTasks = async () => {
         try {
-            isLoading.value = true
+            isLoadingTaskGet.value = true
+
             const taskSnapshot = await getDocs(firebaseRefUserTask)
             const tasksSnapshotData = []
 
@@ -94,18 +116,20 @@ function useGetTasks({ firebaseRefUserTask, isLoading }) {
         } catch (error) {
             console.error(error)
         } finally {
-            isLoading.value = false
+            isLoadingTaskGet.value = false
         }
     }
 
     return {
         tasks,
         getTasks,
+        isLoadingTaskGet,
     }
 }
 
-function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
+function useAddTask({ firebaseRefTask, getTasks }) {
     const userStore = useUserStore()
+    const isLoadingTaskAdd = ref(false)
 
     const {
         handleSubmit,
@@ -127,6 +151,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
             subtasks: array(),
             createAt: '',
             expectEndDate: '',
+            mentionDate: '',
         }),
         keepValuesOnUnmount: true,
         initialValues: {
@@ -141,6 +166,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
             subtasks: [],
             createAt: null,
             expectEndDate: null,
+            mentionDate: null,
         },
     })
 
@@ -156,6 +182,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         subtasks,
         createAt,
         expectEndDate,
+        mentionDate,
     ] = useFieldModel([
         'isFinish',
         'name',
@@ -168,6 +195,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         'subtasks',
         'createAt',
         'expectEndDate',
+        'mentionDate',
     ])
 
     const cacheAddForm = ref({
@@ -182,12 +210,13 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         subtasks,
         createAt,
         expectEndDate,
+        mentionDate,
     })
 
     // 新增 task
     const addTask = handleSubmit(async () => {
         try {
-            isLoading.value = true
+            isLoadingTaskAdd.value = true
 
             await addDoc(firebaseRefTask, {
                 uid: userStore.user.uid,
@@ -200,7 +229,7 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         } catch (error) {
             console.error(error)
         } finally {
-            isLoading.value = true
+            isLoadingTaskAdd.value = true
         }
     })
 
@@ -210,11 +239,13 @@ function useAddTask({ firebaseRefTask, getTasks, isLoading }) {
         cacheAddFormErrorMessage,
         cacheAddFormMeta,
         cacheAddFormSubmitCount,
+        isLoadingTaskAdd,
     }
 }
 
-function useUpdateTask({ isLoading, tasks, getTasks }) {
+function useUpdateTask({ tasks, getTasks }) {
     const cacheUpdateTaskId = ref(null)
+    const isLoadingTaskUpdate = ref(false)
 
     const {
         handleSubmit,
@@ -237,6 +268,7 @@ function useUpdateTask({ isLoading, tasks, getTasks }) {
             subtasks: array(),
             createAt: '',
             expectEndDate: '',
+            mentionDate: '',
         }),
         keepValuesOnUnmount: true,
     })
@@ -253,6 +285,7 @@ function useUpdateTask({ isLoading, tasks, getTasks }) {
         subtasks,
         createAt,
         expectEndDate,
+        mentionDate,
     ] = useFieldModel([
         'isFinish',
         'name',
@@ -265,6 +298,7 @@ function useUpdateTask({ isLoading, tasks, getTasks }) {
         'subtasks',
         'createAt',
         'expectEndDate',
+        'mentionDate',
     ])
 
     const cacheUpdateForm = ref({
@@ -279,73 +313,96 @@ function useUpdateTask({ isLoading, tasks, getTasks }) {
         subtasks,
         createAt,
         expectEndDate,
+        mentionDate,
     })
 
+    // 依照快取 id 自 tasks 中取得 task
+    function getTaskByCacheUpdateTaskId() {
+        return tasks.value
+            .filter((task) => task.id === cacheUpdateTaskId.value)
+            .slice()
+    }
+
     // 當 cacheUpdateTaskId 更新時，更新 cacheUpdateTask 表單
-    watchEffect(() => {
+    watch(cacheUpdateTaskId, () => {
+        // 當 cacheUpdateTaskId 更新時，表單會依照 cacheUpdateTaskId 更動，首先我們先重置目前表單
+        resetCacheUpdateForm()
+
         if (!cacheUpdateTaskId.value) return
 
         // 快取的 updateTask 不需要 id 屬性，故將其去除，該屬性並非 firebase doc 值，而是 doc key，是透過 format 而成
-        const [result] = tasks.value
-            .filter((task) => task.id === cacheUpdateTaskId.value)
-            .slice()
+        // eslint-disable-next-line no-unused-vars
+        const [{ id, ...result }] = getTaskByCacheUpdateTaskId()
 
         setUpdateFormValues(JSON.parse(JSON.stringify(result)))
     })
 
+    // 清除 cache update task id
+    const clearCacheUpdateTaskId = () => {
+        cacheUpdateTaskId.value = null
+    }
+
     // 更新 task
-    const updateTask = handleSubmit(async () => {
-        try {
-            isLoading.value = true
+    const updateTask = handleSubmit(
+        async () => {
+            try {
+                // ! 由於每當 cacheUpdateTaskId 更動表單就會更新，這樣在只是切換表單 id 時也會送出更新，這不是我們需要的效果，在這裏只有在二次更新時表單有真正的變動，此時才會送出更新
+                if (cacheUpdateFormSubmitCount.value <= 1) return
 
-            const currentEditTaskReference = doc(
-                db,
-                'tasks',
-                cacheUpdateTaskId.value
-            )
+                isLoadingTaskUpdate.value = true
 
-            // eslint-disable-next-line no-unused-vars
-            const { id, ...updateTask } = cacheUpdateForm.value
+                const currentEditTaskReference = doc(
+                    db,
+                    'tasks',
+                    cacheUpdateTaskId.value
+                )
 
-            await updateDoc(currentEditTaskReference, {
-                ...updateTask,
-            })
+                // 此行刪除不需要的 id，id 是自 firebase doc format 來的屬性
+                // eslint-disable-next-line no-unused-vars
+                const { id, ...updateTask } = cacheUpdateForm.value
 
-            getTasks()
-        } catch (error) {
-            console.error(error)
-        } finally {
-            isLoading.value = true
+                await updateDoc(currentEditTaskReference, updateTask)
+
+                getTasks()
+            } catch (error) {
+                console.error(error)
+            } finally {
+                isLoadingTaskUpdate.value = false
+            }
+        },
+        (e) => {
+            console.error(e)
         }
-    })
+    )
 
     // 自動儲存
-    // 監聽 cacheUpdateForm 一但變動就存到 localStorage，當沒有失敗的情況下，更新到遠端 (使用 debounce 包裹防止過多請求)，一但請求失敗則會顯示錯誤，並且自動重複更新到遠端直到成功
-    watchEffect(
-        handleSubmit(() => {
-            // 監聽 cacheUpdateForm 一但變動就存到 localStorage
-            // 是否有失敗的情況下
-            // 否，更新到遠端 (使用 debounce 包裹防止過多請求)
-            // 是，一但請求失敗則會顯示錯誤，並且自動重複更新到遠端直到成功
-        })
-    )
+    // 監聽 cacheUpdateForm 一但變動就更新到遠端 (使用 debounce 包裹防止過多請求)，一但請求失敗則會顯示錯誤，並且自動重複更新到遠端直到成功
+    watchDebounced(cacheUpdateForm.value, updateTask, {
+        debounce: 500,
+        maxWait: 1000,
+    })
 
     return {
         cacheUpdateForm,
         cacheUpdateTaskId,
         updateTask,
+        setUpdateFormValues,
         resetCacheUpdateForm,
         cacheUpdateFormErrorMessage,
         cacheUpdateFormMeta,
         cacheUpdateFormSubmitCount,
+        clearCacheUpdateTaskId,
+        isLoadingTaskUpdate,
     }
 }
 
-function useDeleteTask({ isLoading, getTasks }) {
+function useDeleteTask({ getTasks }) {
+    const isLoadingTaskDelete = ref(false)
+
     // 刪除 task
     const deleteTask = async (cacheDeleteTaskId) => {
         try {
-            isLoading.value = true
+            isLoadingTaskDelete.value = true
 
             const currentDocumentReference = doc(db, 'tasks', cacheDeleteTaskId)
 
@@ -355,9 +412,85 @@ function useDeleteTask({ isLoading, getTasks }) {
         } catch (error) {
             console.error(error)
         } finally {
-            isLoading.value = true
+            isLoadingTaskDelete.value = false
         }
     }
 
-    return { deleteTask }
+    return { deleteTask, isLoadingTaskDelete }
+}
+
+function useFilterTask({ tasks }) {
+    const filterTypes = [
+        'taskOfToday', // 0
+        'taskOfFuture', // 1
+        'taskOfPrimary', // 2
+        'taskOfSecondary', // 3
+        'taskOfTertiary', // 4
+        'taskOfNoTime', // 5
+        'taskOfFinish', // 6
+        'all', // 7
+    ]
+    const filterType = ref('all')
+
+    // 更新 filterType 為 filterTypes 中的任意一種
+    const changeFilterType = (type) => {
+        filterType.value = filterTypes[type]
+    }
+
+    const taskOfToday = computed(() => {
+        return tasks.value.filter((task) => {
+            if (!task.expectEndDate) return
+            return dayjs(task.expectEndDate).isSame(dayjs(), 'day')
+        })
+    })
+
+    const taskOfFuture = computed(() => {
+        return tasks.value.filter((task) => {
+            if (!task.expectEndDate) return
+            return dayjs(task.expectEndDate).isAfter(dayjs(), 'day')
+        })
+    })
+
+    const taskOfNoTime = computed(() => {
+        return tasks.value.filter((task) => {
+            return !task.expectEndDate
+        })
+    })
+
+    const taskOfPrimary = computed(() => {
+        return tasks.value.filter((task) => {
+            return task.level === 'primary'
+        })
+    })
+
+    const taskOfSecondary = computed(() => {
+        return tasks.value.filter((task) => {
+            return task.level === 'secondary'
+        })
+    })
+
+    const taskOfTertiary = computed(() => {
+        return tasks.value.filter((task) => {
+            return task.level === 'tertiary'
+        })
+    })
+
+    const taskOfFinish = computed(() => {
+        return tasks.value.filter((task) => {
+            return task.isFinish
+        })
+    })
+
+    const filterTasks = computed(() => {
+        if (filterType.value === 'taskOfToday') return taskOfToday.value
+        if (filterType.value === 'taskOfFuture') return taskOfFuture.value
+        if (filterType.value === 'taskOfPrimary') return taskOfPrimary.value
+        if (filterType.value === 'taskOfSecondary') return taskOfSecondary.value
+        if (filterType.value === 'taskOfTertiary') return taskOfTertiary.value
+        if (filterType.value === 'taskOfNoTime') return taskOfNoTime.value
+        if (filterType.value === 'taskOfFinish') return taskOfFinish.value
+        return tasks.value // all
+    })
+
+    return { filterTasks, changeFilterType, filterType }
 }

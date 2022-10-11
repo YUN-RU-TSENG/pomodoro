@@ -1,4 +1,13 @@
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({ filterType: { type: String, required: true } })
+defineEmits(['update:filterType'])
+
+const selectSidebarItem = computed(() => (sidebarItem) => {
+    return sidebarItem === props.filterType
+})
+</script>
 
 <template>
     <section class="home-sidebar">
@@ -7,63 +16,99 @@
             <!-- home-sidebar sidebar-list -->
             <ul class="sidebar-list">
                 <!-- home-sidebar sidebar-item -->
-                <li class="sidebar-item-wrapper">
-                    <a class="sidebar-item">
-                        <img
-                            src="https://img.icons8.com/android/48/4EA936/sun.png"
-                            alt=""
-                            width="22"
-                        />
-                        <h3>名稱</h3>
+                <li
+                    class="sidebar-item-wrapper"
+                    @click="$emit('update:filterType', 0)"
+                >
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            selectSidebarItem('taskOfToday') ? 'active' : '',
+                        ]"
+                    >
+                        <img src="@/assets/images/sun.png" alt="" width="22" />
+                        <h3>今天</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="tomato-time">6</p>
                     </a>
                 </li>
-                <li class="sidebar-item-wrapper">
+                <li
+                    class="sidebar-item-wrapper"
+                    @click="$emit('update:filterType', 1)"
+                >
                     <!-- 點擊為當前項目時，當前項目會呈現選中狀態，添加 active -->
-                    <a class="sidebar-item active">
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            selectSidebarItem('taskOfFuture') ? 'active' : '',
+                        ]"
+                    >
                         <img
-                            src="https://img.icons8.com/external-royyan-wijaya-basic-outline-royyan-wijaya/48/EE7337/external-sunset-weather-royyan-wijaya-basic-outline-royyan-wijaya-3.png"
+                            src="@/assets/images/external-sunset-weather-royyan-wijaya-basic-outline-royyan-wijaya-3.png"
                             alt=""
                             width="22"
                         />
-                        <h3>名稱</h3>
+                        <h3>稍後</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="tomato-time">6</p>
                     </a>
                 </li>
-                <li class="sidebar-item-wrapper">
-                    <a class="sidebar-item">
+                <li
+                    class="sidebar-item-wrapper"
+                    @click="$emit('update:filterType', 5)"
+                >
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            selectSidebarItem('taskOfNoTime') ? 'active' : '',
+                        ]"
+                    >
                         <img
-                            src="https://img.icons8.com/material-outlined/48/3990F7/calendar--v1.png"
+                            src="@/assets/images/calendar--v1 (1).png"
                             alt=""
                             width="22"
                         />
-                        <h3>名稱</h3>
+                        <h3>尚未安排</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="tomato-time">6</p>
                     </a>
                 </li>
-                <li class="sidebar-item-wrapper">
-                    <a class="sidebar-item">
+                <li
+                    class="sidebar-item-wrapper"
+                    @click="$emit('update:filterType', 7)"
+                >
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            selectSidebarItem('all') ? 'active' : '',
+                        ]"
+                    >
                         <img
-                            src="https://img.icons8.com/material-outlined/48/7461EF/calendar--v1.png"
+                            src="@/assets/images/calendar--v1 (2).png"
                             alt=""
                             width="22"
                         />
-                        <h3>名稱</h3>
+                        <h3>全部</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="tomato-time">6</p>
                     </a>
                 </li>
-                <li class="sidebar-item-wrapper">
-                    <a class="sidebar-item">
+                <li
+                    class="sidebar-item-wrapper"
+                    @click="$emit('update:filterType', 6)"
+                >
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            selectSidebarItem('taskOfFinish') ? 'active' : '',
+                        ]"
+                    >
                         <img
-                            src="https://img.icons8.com/metro/26/7c7c7c/checked.png"
+                            src="@/assets/images/checked.png"
                             alt=""
                             width="22"
                         />
-                        <h3>名稱</h3>
+                        <h3>已完成</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="tomato-time">6</p>
                     </a>
@@ -78,7 +123,7 @@
                 <li class="sidebar-item-wrapper">
                     <a class="sidebar-item">
                         <img
-                            src="https://img.icons8.com/ios-glyphs/60/7CC1E4/folder-invoices--v1.png"
+                            src="@/assets/images/folder-invoices--v1.png"
                             alt=""
                             width="22"
                         />
@@ -87,20 +132,20 @@
                         <p class="tomato-time">6</p>
                         <button class="arrow">
                             <img
-                                src="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/ededed/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
+                                src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
                                 width="12"
                                 alt=""
                             />
                         </button>
                     </a>
                     <!-- 隱藏 folder 子項目時，添加 un-show -->
-                    <div class="subitem un-show">
+                    <!-- <div class="subitem un-show">
                         <div class="line"></div>
                         <ul class="list">
                             <li class="sidebar-item-wrapper">
                                 <a class="sidebar-item">
                                     <img
-                                        src="https://img.icons8.com/ios-glyphs/60/ededed/circled-dot.png"
+                                        src="@/assets/images/circled-dot.png"
                                         alt=""
                                         width="22"
                                     />
@@ -112,7 +157,7 @@
                             <li class="sidebar-item-wrapper">
                                 <a class="sidebar-item">
                                     <img
-                                        src="https://img.icons8.com/ios-glyphs/60/ededed/circled-dot.png"
+                                        src="@/assets/images/circled-dot.png"
                                         alt=""
                                         width="22"
                                     />
@@ -122,55 +167,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </div>
-                </li>
-                <li class="sidebar-item-wrapper">
-                    <a class="sidebar-item">
-                        <img
-                            src="https://img.icons8.com/ios-glyphs/60/7CC1E4/folder-invoices--v1.png"
-                            alt=""
-                            width="22"
-                        />
-                        <h3>名稱</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
-                        <button class="arrow">
-                            <img
-                                src="https://img.icons8.com/external-dreamstale-lineal-dreamstale/32/ededed/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
-                                width="12"
-                                alt=""
-                            />
-                        </button>
-                    </a>
-                    <div class="subitem">
-                        <div class="line"></div>
-                        <ul class="list">
-                            <li class="sidebar-item-wrapper">
-                                <a class="sidebar-item">
-                                    <img
-                                        src="https://img.icons8.com/ios-glyphs/60/ededed/circled-dot.png"
-                                        alt=""
-                                        width="22"
-                                    />
-                                    <h3>名稱</h3>
-                                    <p class="total-spend-time">6h</p>
-                                    <p class="tomato-time">6</p>
-                                </a>
-                            </li>
-                            <li class="sidebar-item-wrapper">
-                                <a class="sidebar-item">
-                                    <img
-                                        src="https://img.icons8.com/ios-glyphs/60/ededed/circled-dot.png"
-                                        alt=""
-                                        width="22"
-                                    />
-                                    <h3>名稱</h3>
-                                    <p class="total-spend-time">6h</p>
-                                    <p class="tomato-time">6</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    </div> -->
                 </li>
             </ul>
         </section>
@@ -178,21 +175,21 @@
         <footer class="sidebar-footer">
             <button class="add">
                 <img
-                    src="https://img.icons8.com/ios-glyphs/60/eb635c/add--v1.png"
+                    src="@/assets/images/add--v1 (1).png"
                     width="22"
                     alt=""
                 /><span>新增項目</span>
             </button>
             <button class="tag">
                 <img
-                    src="https://img.icons8.com/material-outlined/24/eb635c/sale-price-tag.png"
+                    src="@/assets/images/sale-price-tag.png"
                     width="22"
                     alt=""
                 />
             </button>
             <button class="folder">
                 <img
-                    src="https://img.icons8.com/ios-glyphs/60/eb635c/folder-invoices--v1.png"
+                    src="@/assets/images/folder-invoices--v1 (2).png"
                     width="22"
                     alt=""
                 />

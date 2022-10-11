@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeDropdownPopConfirm from '../HomeDropdownPopConfirm.vue'
+import HomeDropdownConfirm from '../HomeDropdownConfirm.vue'
 
 describe('HelloWorld', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeDropdownPopConfirm)
+        const wrapper = mount(HomeDropdownConfirm)
         expect(wrapper.text()).not.toBeNull()
     })
 })
