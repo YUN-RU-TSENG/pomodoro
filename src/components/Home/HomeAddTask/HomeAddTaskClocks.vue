@@ -1,10 +1,10 @@
 <script setup>
 import { computed } from 'vue'
 import getImageUrl from '@/utils/getImageUrl'
-import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
 const props = defineProps({
-    tomatoTime: {
+    pomorodoTime: {
         type: Number,
         required: true,
     },
@@ -16,19 +16,19 @@ const props = defineProps({
 
 defineEmits(['update:totalExpectTime'])
 
-const { covertTimeToTomato, covertTomatoToTime } =
-    useCovertBetweenTimeAndTomato()
+const { covertTimeToPomorodo, covertPomorodoToTime } =
+    useCovertBetweenTimeAndPomorodo()
 
-const currentTomato = computed(() => {
-    return covertTimeToTomato({
+const currentPomorodo = computed(() => {
+    return covertTimeToPomorodo({
         time: props.totalExpectTime,
-        tomatoTime: props.tomatoTime,
+        pomorodoTime: props.pomorodoTime,
     })
 })
 
 // 傳入大於時鐘 index 的時候時中呈現紅色
 const currentClockStyle = computed(() => (index) => {
-    if (index <= currentTomato.value)
+    if (index <= currentPomorodo.value)
         return getImageUrl('retro-alarm-clock-red.png')
     return getImageUrl('retro-alarm-clock.png')
 })
@@ -36,7 +36,7 @@ const currentClockStyle = computed(() => (index) => {
 
 <template>
     <!-- 傳入小於五的數值變化呈現五個時鐘 -->
-    <template v-if="currentTomato <= 5">
+    <template v-if="currentPomorodo <= 5">
         <button
             v-for="index of 5"
             :key="index"
@@ -44,19 +44,19 @@ const currentClockStyle = computed(() => (index) => {
             @click.prevent="
                 $emit(
                     'update:totalExpectTime',
-                    covertTomatoToTime({ tomato: index, tomatoTime })
+                    covertPomorodoToTime({ pomorodo: index, pomorodoTime })
                 )
             "
         >
-            <img :src="currentClockStyle(index)" alt="" width="22" />
+            <img :src="currentClockStyle(index)" width="22" />
         </button>
     </template>
     <!-- 傳入大於五的數值變化呈現一個時鐘加上數字 -->
     <template v-else>
         <button v-for="index of 1" :key="index" class="watch">
-            <img :src="currentClockStyle(index)" alt="" width="22" />
+            <img :src="currentClockStyle(index)" width="22" />
         </button>
-        <p class="count">{{ currentTomato }}</p>
+        <p class="count">{{ currentPomorodo }}</p>
     </template>
 </template>
 

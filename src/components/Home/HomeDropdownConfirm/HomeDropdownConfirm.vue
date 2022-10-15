@@ -22,23 +22,22 @@ defineEmits(['update:value'])
         <label
             v-for="(content, index) of contents"
             :key="index"
-            :for="content.id"
+            :for="name + index"
             class="dropdown-item"
         >
             <input
-                :id="content.id"
+                :id="name + index"
                 type="radio"
                 :name="name"
                 :value="content.file"
-                :checked="content.file === value"
-                @change="$emit('update:value', $event.target.value)"
+                :checked="content.file == value"
+                @input="$emit('update:value', $event.target.value)"
             />
             <div class="box">
                 <div class="color"></div>
                 <p class="content">{{ content.file }}</p>
                 <img
                     src="@/assets/images/external-checked-interface-dreamstale-lineal-dreamstale.png"
-                    alt=""
                     width="12"
                     class="checked"
                 />
@@ -52,6 +51,8 @@ defineEmits(['update:value'])
 }
 
 .home-dropdown .dropdown-item {
+    display: block;
+
     input {
         display: none;
     }

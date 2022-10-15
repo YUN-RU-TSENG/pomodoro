@@ -2,22 +2,31 @@
 defineProps({
     id: {
         type: String,
-        default: () => new Date().getTime().toString(),
-    },
-    value: {
-        type: Boolean,
         required: true,
     },
+    value: {
+        type: String,
+        required: true,
+    },
+    checkedValue: {
+        type: String,
+        required: true,
+    },
+    name: { type: String, required: true },
 })
+
+defineEmits(['update:value'])
 </script>
 
 <template>
     <label :for="id" class="home-start-timer"
         ><input
             :id="id"
-            type="checkbox"
-            :checked="value"
-            @change="$emit('update:value', $event.target.checked)" />
+            type="radio"
+            :name="name"
+            :value="value"
+            :checked="checkedValue === value"
+            @change="$emit('update:value', value)" />
         <div class="box"></div
     ></label>
 </template>

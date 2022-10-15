@@ -54,13 +54,11 @@ function useModalToggle() {
             <button class="close" @click="close">
                 <img
                     src="https://img.icons8.com/ios/50/000000/delete-sign--v1.png"
-                    alt=""
                     width="12"
                 />
             </button>
             <img
                 src="https://img.icons8.com/external-anggara-glyph-anggara-putra/32/000000/external-alert-user-interface-anggara-glyph-anggara-putra.png"
-                alt=""
                 width="20"
             />
             <p>{{ text }}</p>

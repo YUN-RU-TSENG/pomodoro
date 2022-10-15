@@ -15,7 +15,7 @@ const goRegisterPage = () => {
     <AuthenticationLayout class="user-validate">
         <AuthenticationForm
             title="Register"
-            text="Tomato todo 優雅的使用待辦清單以及番茄鐘"
+            text="Pomorodo todo 優雅的使用待辦清單以及番茄鐘"
             tip-text="已有帳號？"
             tip-button-text="登入"
             @submit-form="userStore.register"

@@ -146,7 +146,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
             tags: array(),
             folder: string(),
             totalSpendTime: number().integer(),
-            tomatoTime: number(),
+            pomorodoTime: number(),
             totalExpectTime: number().integer(),
             subtasks: array(),
             createAt: '',
@@ -161,7 +161,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
             tags: [],
             folder: '',
             totalSpendTime: 0,
-            tomatoTime: 1000 * 60 * 60,
+            pomorodoTime: 1000 * 60 * 60,
             totalExpectTime: 0,
             subtasks: [],
             createAt: null,
@@ -177,7 +177,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
         tags,
         folder,
         totalSpendTime,
-        tomatoTime,
+        pomorodoTime,
         totalExpectTime,
         subtasks,
         createAt,
@@ -190,7 +190,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
         'tags',
         'folder',
         'totalSpendTime',
-        'tomatoTime',
+        'pomorodoTime',
         'totalExpectTime',
         'subtasks',
         'createAt',
@@ -205,7 +205,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
         tags,
         folder,
         totalSpendTime,
-        tomatoTime,
+        pomorodoTime,
         totalExpectTime,
         subtasks,
         createAt,
@@ -257,13 +257,14 @@ function useUpdateTask({ tasks, getTasks }) {
         setValues: setUpdateFormValues,
     } = useForm({
         validationSchema: object({
+            id: string().trim().required(),
             isFinish: boolean().required(),
             name: string().trim().required(),
             description: string(),
             tags: array(),
             folder: string(),
             totalSpendTime: number().integer(),
-            tomatoTime: number(),
+            pomorodoTime: number(),
             totalExpectTime: number().integer(),
             subtasks: array(),
             createAt: '',
@@ -274,26 +275,28 @@ function useUpdateTask({ tasks, getTasks }) {
     })
 
     const [
+        id,
         isFinish,
         name,
         description,
         tags,
         folder,
         totalSpendTime,
-        tomatoTime,
+        pomorodoTime,
         totalExpectTime,
         subtasks,
         createAt,
         expectEndDate,
         mentionDate,
     ] = useFieldModel([
+        'id',
         'isFinish',
         'name',
         'description',
         'tags',
         'folder',
         'totalSpendTime',
-        'tomatoTime',
+        'pomorodoTime',
         'totalExpectTime',
         'subtasks',
         'createAt',
@@ -302,13 +305,14 @@ function useUpdateTask({ tasks, getTasks }) {
     ])
 
     const cacheUpdateForm = ref({
+        id,
         isFinish,
         name,
         description,
         tags,
         folder,
         totalSpendTime,
-        tomatoTime,
+        pomorodoTime,
         totalExpectTime,
         subtasks,
         createAt,
@@ -330,9 +334,7 @@ function useUpdateTask({ tasks, getTasks }) {
 
         if (!cacheUpdateTaskId.value) return
 
-        // 快取的 updateTask 不需要 id 屬性，故將其去除，該屬性並非 firebase doc 值，而是 doc key，是透過 format 而成
-        // eslint-disable-next-line no-unused-vars
-        const [{ id, ...result }] = getTaskByCacheUpdateTaskId()
+        const [result] = getTaskByCacheUpdateTaskId()
 
         setUpdateFormValues(JSON.parse(JSON.stringify(result)))
     })

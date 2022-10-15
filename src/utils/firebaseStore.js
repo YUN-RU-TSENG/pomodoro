@@ -9,6 +9,8 @@ import {
     query,
     where,
     serverTimestamp,
+    getDoc,
+    setDoc,
 } from 'firebase/firestore'
 
 import { app } from './firebaseApp'
@@ -23,6 +25,8 @@ export {
     addDoc,
     deleteDoc,
     doc,
+    getDoc,
+    setDoc,
     updateDoc,
     query,
     where,

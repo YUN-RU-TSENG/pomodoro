@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { formatTimestamp } from '@/utils/dayjsFormat.js'
-import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 import { formaDate } from '@/utils/dayjsFormat'
 
 const props = defineProps({
@@ -13,34 +13,37 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    pomorodoSelectedTaskId: {
+        type: String,
+        required: true,
+    },
 })
 
 defineEmits([
-    'play-tomato',
-    'update:cacheUpdateForm',
+    'play-pomorodo',
+    'update:cache-update-form',
     'delete-task',
     'close-task-detail',
+    'update:pomorodoSelectedTaskId',
 ])
 
-const isPlay = ref(false)
 const cacheTotalTimes = ref(0)
 const cacheExpectEndDate = ref(null)
 const cacheMentionDate = ref(null)
-const cacheFileType = ref('')
 
-const { covertTimeToTomato, covertTomatoToTime } =
-    useCovertBetweenTimeAndTomato()
+const { covertTimeToPomorodo, covertPomorodoToTime } =
+    useCovertBetweenTimeAndPomorodo()
 
-const currentTomato = computed(() => {
-    return covertTimeToTomato({
+const currentPomorodo = computed(() => {
+    return covertTimeToPomorodo({
         time: props.cacheUpdateForm.totalExpectTime,
-        tomatoTime: props.cacheUpdateForm.tomatoTime,
+        pomorodoTime: props.cacheUpdateForm.pomorodoTime,
     })
 })
-const currentSpendTomato = computed(() => {
-    return covertTimeToTomato({
+const currentSpendPomorodo = computed(() => {
+    return covertTimeToPomorodo({
         time: props.cacheUpdateForm.totalSpendTime,
-        tomatoTime: props.cacheUpdateForm.tomatoTime,
+        pomorodoTime: props.cacheUpdateForm.pomorodoTime,
     })
 })
 </script>
@@ -54,32 +57,36 @@ const currentSpendTomato = computed(() => {
                 <BaseCheckbox
                     :value="cacheUpdateForm.isFinish"
                     @update:value="
-                        $emit('update:cacheUpdateForm', {
+                        $emit('update:cache-update-form', {
                             ...cacheUpdateForm,
                             isFinish: $event,
                         })
                     "
                 />
                 <HomeStartTimer
-                    :value="isPlay"
-                    @update:value="$emit('play-tomato')"
+                    :id="'poromodo-selected-task-editor' + cacheUpdateForm.id"
+                    name="poromodo-selected-task-editor"
+                    :value="cacheUpdateForm.id"
+                    :checked-value="pomorodoSelectedTaskId"
+                    @update:value="
+                        $emit(
+                            'update:pomorodoSelectedTaskId',
+                            cacheUpdateForm.id
+                        )
+                    "
                 />
                 <input
                     type="text"
                     :value="cacheUpdateForm.name"
                     @input="
-                        $emit('update:cacheUpdateForm', {
+                        $emit('update:cache-update-form', {
                             ...cacheUpdateForm,
                             name: $event.target.value,
                         })
                     "
                 />
                 <button>
-                    <img
-                        src="@/assets/images/empty-flag.png"
-                        alt=""
-                        width="20"
-                    />
+                    <img src="@/assets/images/empty-flag.png" width="20" />
                 </button>
             </section>
             <section class="tags">
@@ -87,11 +94,7 @@ const currentSpendTomato = computed(() => {
                     <span>標籤名稱</span>
                 </div>
                 <button class="add-tag tag">
-                    <img
-                        src="@/assets/images/plus-math--v1.png"
-                        alt=""
-                        width="12"
-                    />
+                    <img src="@/assets/images/plus-math--v1.png" width="12" />
                     <span>標籤</span>
                 </button>
             </section>
@@ -105,26 +108,23 @@ const currentSpendTomato = computed(() => {
                     <li>
                         <img
                             src="@/assets/images/retro-alarm-clock.png"
-                            alt=""
                             width="20"
                         />
                         <h4>番茄鐘</h4>
                         <BasePopover width="200px">
                             <template #button>
-                                <button class="tomato">
+                                <button class="pomorodo">
                                     <img
                                         src="@/assets/images/retro-alarm-clock.png"
-                                        alt=""
                                         width="14"
                                     />
-                                    <span>{{ currentSpendTomato }}</span>
+                                    <span>{{ currentSpendPomorodo }}</span>
                                     <span class="gray">/</span>
                                     <img
                                         src="@/assets/images/retro-alarm-clock.png"
-                                        alt=""
                                         width="14"
                                     />
-                                    <span>{{ currentTomato }}</span>
+                                    <span>{{ currentPomorodo }}</span>
                                 </button>
                             </template>
                             <template #model="slotProps">
@@ -132,15 +132,14 @@ const currentSpendTomato = computed(() => {
                                     :value="cacheTotalTimes"
                                     @cancel="slotProps.close()"
                                     @confirm="
-                                        $emit('update:cacheUpdateForm', {
+                                        $emit('update:cache-update-form', {
                                             ...cacheUpdateForm,
-                                            totalExpectTime: covertTomatoToTime(
-                                                {
-                                                    tomatoTime:
-                                                        cacheUpdateForm.tomatoTime,
-                                                    tomato: cacheTotalTimes,
-                                                }
-                                            ),
+                                            totalExpectTime:
+                                                covertPomorodoToTime({
+                                                    pomorodoTime:
+                                                        cacheUpdateForm.pomorodoTime,
+                                                    pomorodo: cacheTotalTimes,
+                                                }),
                                         }),
                                             slotProps.close()
                                     "
@@ -152,7 +151,6 @@ const currentSpendTomato = computed(() => {
                     <li>
                         <img
                             src="@/assets/images/calendar--v1.png"
-                            alt=""
                             width="20"
                         />
                         <h4>預計完成日</h4>
@@ -172,7 +170,7 @@ const currentSpendTomato = computed(() => {
                                 <HomeCalender
                                     :value="cacheExpectEndDate"
                                     @confirm="
-                                        $emit('update:cacheUpdateForm', {
+                                        $emit('update:cache-update-form', {
                                             ...cacheUpdateForm,
                                             expectEndDate: cacheExpectEndDate,
                                         }),
@@ -187,7 +185,6 @@ const currentSpendTomato = computed(() => {
                     <li>
                         <img
                             src="@/assets/images/folder-invoices--v1.png"
-                            alt=""
                             width="20"
                         />
                         <h4>資料夾</h4>
@@ -204,10 +201,10 @@ const currentSpendTomato = computed(() => {
                             <template #model="slotProps">
                                 <HomeDropdownConfirm
                                     :contents="fileTypes"
-                                    :value="cacheFileType"
+                                    :value="cacheUpdateForm.folder"
                                     name="detail-task-file-name"
                                     @update:value="
-                                        $emit('update:cacheUpdateForm', {
+                                        $emit('update:cache-update-form', {
                                             ...cacheUpdateForm,
                                             folder: $event,
                                         }),
@@ -218,11 +215,7 @@ const currentSpendTomato = computed(() => {
                         </BasePopover>
                     </li>
                     <li>
-                        <img
-                            src="@/assets/images/bell--v1.png"
-                            alt=""
-                            width="20"
-                        />
+                        <img src="@/assets/images/bell--v1.png" width="20" />
                         <h4>提醒</h4>
                         <BasePopover width="200px">
                             <template #button>
@@ -240,7 +233,7 @@ const currentSpendTomato = computed(() => {
                                 <HomeCalender
                                     :value="cacheMentionDate"
                                     @confirm="
-                                        $emit('update:cacheUpdateForm', {
+                                        $emit('update:cache-update-form', {
                                             ...cacheUpdateForm,
                                             mentionDate: cacheMentionDate,
                                         }),
@@ -256,16 +249,24 @@ const currentSpendTomato = computed(() => {
             </section>
             <section class="subtask">
                 <ul v-if="cacheUpdateForm.subtasks.length">
-                    <li v-for="(task, index) in subtasks" :key="index">
+                    <li v-for="(subtask, index) in subtasks" :key="index">
                         <BaseCheckbox
-                            :value="task.isFinish"
-                            @update:value="$emit('update:cacheUpdateForm')"
+                            :value="subtask.isFinish"
+                            @update:value="$emit('update:cache-update-form')"
                         />
                         <HomeStartTimer
-                            :value="isPlay"
-                            @input="$emit('play-tomato')"
+                            :id="'poromodo-selected-task' + task.id"
+                            name="poromodo-selected-task"
+                            :value="cacheUpdateForm.id"
+                            :checked-value="pomorodoSelectedTaskId"
+                            @update:value="
+                                $emit(
+                                    'update:pomorodoSelectedTaskId',
+                                    cacheUpdateForm.id
+                                )
+                            "
                         />
-                        <h3>{{ task }}</h3>
+                        <h3>{{ subtask }}</h3>
                     </li>
                 </ul>
 
@@ -273,7 +274,6 @@ const currentSpendTomato = computed(() => {
                     <button>
                         <img
                             src="@/assets/images/plus-math--v1.png"
-                            alt=""
                             width="20"
                         />
                     </button>
@@ -285,7 +285,7 @@ const currentSpendTomato = computed(() => {
                 <HomeTaskEditBarTextArea
                     :value="cacheUpdateForm.description"
                     @input="
-                        $emit('update:cacheUpdateForm', {
+                        $emit('update:cache-update-form', {
                             ...cacheUpdateForm,
                             description: $event.target.value,
                         })
@@ -298,11 +298,7 @@ const currentSpendTomato = computed(() => {
         <!-- home-task-edit-box edit-box-footer -->
         <footer class="edit-box-footer">
             <button @click="$emit('close-task-detail')">
-                <img
-                    src="@/assets/images/full-page-view.png"
-                    alt=""
-                    width="20"
-                />
+                <img src="@/assets/images/full-page-view.png" width="20" />
             </button>
             <p>
                 創建於
@@ -314,7 +310,7 @@ const currentSpendTomato = computed(() => {
                 }}
             </p>
             <button @click="$emit('delete-task')">
-                <img src="@/assets/images/trash--v1.png" alt="" width="20" />
+                <img src="@/assets/images/trash--v1.png" width="20" />
             </button>
         </footer>
     </section>
@@ -425,7 +421,7 @@ const currentSpendTomato = computed(() => {
             color: $gray-4;
         }
 
-        .tomato {
+        .pomorodo {
             font-size: 0;
             line-height: 0;
             span {

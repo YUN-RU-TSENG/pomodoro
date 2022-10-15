@@ -3,6 +3,10 @@ import { ref, nextTick } from 'vue'
 import { formatTimestamp } from '@/utils/dayjsFormat.js'
 
 defineProps({
+    pomorodoSelectedTaskId: {
+        type: String,
+        required: true,
+    },
     task: {
         type: Object,
         required: true,
@@ -13,11 +17,11 @@ defineEmits([
     'open-task-detail',
     'close-task-detail',
     'update:task',
-    'play-tomato',
+    'play-pomorodo',
+    'update:pomorodoSelectedTaskId',
 ])
 
 const isEdit = ref(false)
-const isTimeStart = ref(false)
 const input = ref(null)
 
 function focusInput() {
@@ -46,9 +50,12 @@ function focusInput() {
                 @click.stop
             />
             <HomeStartTimer
+                :id="'poromodo-selected-task' + task.id"
                 class="start-timer"
-                :value="isTimeStart"
-                @update:value="$emit('play-tomato', isTimeStart)"
+                name="poromodo-selected-task"
+                :value="task.id"
+                :checked-value="pomorodoSelectedTaskId"
+                @update:value="$emit('update:pomorodoSelectedTaskId', task.id)"
             />
             <section class="content">
                 <input
@@ -72,7 +79,7 @@ function focusInput() {
                 }}</span>
                 <HomeListClocks
                     :total-expect-time="task.totalExpectTime"
-                    :tomato-time="task.tomatoTime"
+                    :pomorodo-time="task.pomorodoTime"
                     @click.stop
                 />
             </section>

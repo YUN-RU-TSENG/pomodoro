@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeTomatoClock from '../HomeTomatoClock.vue'
+import HomePomorodoClock from '../HomePomorodoClock.vue'
 
-describe('HomeTomatoClock', () => {
+describe('HomePomorodoClock', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeTomatoClock)
+        const wrapper = mount(HomePomorodoClock)
         expect(wrapper.text()).not.toBeNull()
     })
 })

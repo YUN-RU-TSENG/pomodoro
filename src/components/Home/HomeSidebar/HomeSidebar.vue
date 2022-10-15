@@ -45,10 +45,10 @@ function useFileType() {
                             selectSidebarItem('taskOfToday') ? 'active' : '',
                         ]"
                     >
-                        <img src="@/assets/images/sun.png" alt="" width="22" />
+                        <img src="@/assets/images/sun.png" width="22" />
                         <h3>今天</h3>
                         <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <p class="pomorodo-time">6</p>
                     </a>
                 </li>
                 <li
@@ -64,12 +64,11 @@ function useFileType() {
                     >
                         <img
                             src="@/assets/images/external-sunset-weather-royyan-wijaya-basic-outline-royyan-wijaya-3.png"
-                            alt=""
                             width="22"
                         />
                         <h3>稍後</h3>
                         <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <p class="pomorodo-time">6</p>
                     </a>
                 </li>
                 <li
@@ -84,12 +83,11 @@ function useFileType() {
                     >
                         <img
                             src="@/assets/images/calendar--v1-1.png"
-                            alt=""
                             width="22"
                         />
                         <h3>尚未安排</h3>
                         <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <p class="pomorodo-time">6</p>
                     </a>
                 </li>
                 <li
@@ -104,12 +102,11 @@ function useFileType() {
                     >
                         <img
                             src="@/assets/images/calendar--v1-2.png"
-                            alt=""
                             width="22"
                         />
                         <h3>全部</h3>
                         <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <p class="pomorodo-time">6</p>
                     </a>
                 </li>
                 <li
@@ -122,14 +119,10 @@ function useFileType() {
                             selectSidebarItem('taskOfFinish') ? 'active' : '',
                         ]"
                     >
-                        <img
-                            src="@/assets/images/checked.png"
-                            alt=""
-                            width="22"
-                        />
+                        <img src="@/assets/images/checked.png" width="22" />
                         <h3>已完成</h3>
                         <p class="total-spend-time">6h</p>
-                        <p class="tomato-time">6</p>
+                        <p class="pomorodo-time">6</p>
                     </a>
                 </li>
             </ul>
@@ -147,19 +140,17 @@ function useFileType() {
                     <a class="sidebar-item">
                         <img
                             src="@/assets/images/folder-invoices--v1.png"
-                            alt=""
                             width="22"
                         />
                         <h3>{{ fileType.file }}</h3>
                         <p class="total-spend-time">
                             {{ fileType.time + 'h' }}
                         </p>
-                        <p class="tomato-time">{{ fileType.tasks }}</p>
+                        <p class="pomorodo-time">{{ fileType.tasks }}</p>
                         <button class="arrow">
                             <img
                                 src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
                                 width="12"
-                                alt=""
                             />
                         </button>
                     </a>
@@ -171,24 +162,24 @@ function useFileType() {
                                 <a class="sidebar-item">
                                     <img
                                         src="@/assets/images/circled-dot.png"
-                                        alt=""
+
                                         width="22"
                                     />
                                     <h3>名稱</h3>
                                     <p class="total-spend-time">6h</p>
-                                    <p class="tomato-time">6</p>
+                                    <p class="pomorodo-time">6</p>
                                 </a>
                             </li>
                             <li class="sidebar-item-wrapper">
                                 <a class="sidebar-item">
                                     <img
                                         src="@/assets/images/circled-dot.png"
-                                        alt=""
+
                                         width="22"
                                     />
                                     <h3>名稱</h3>
                                     <p class="total-spend-time">6h</p>
-                                    <p class="tomato-time">6</p>
+                                    <p class="pomorodo-time">6</p>
                                 </a>
                             </li>
                         </ul>
@@ -199,18 +190,12 @@ function useFileType() {
         <!-- home-sidebar sidebar-footer -->
         <footer class="sidebar-footer">
             <button class="add" @click="visible = true">
-                <img
-                    src="@/assets/images/add--v1-1.png"
-                    width="22"
-                    alt=""
-                /><span>新增項目</span>
+                <img src="@/assets/images/add--v1-1.png" width="22" /><span
+                    >新增項目</span
+                >
             </button>
             <button class="tag">
-                <img
-                    src="@/assets/images/sale-price-tag.png"
-                    width="22"
-                    alt=""
-                />
+                <img src="@/assets/images/sale-price-tag.png" width="22" />
             </button>
             <button
                 class="folder"
@@ -221,13 +206,11 @@ function useFileType() {
                     v-show="!isLoadingFileTypesAdd"
                     src="@/assets/images/folder-invoices--v1-2.png"
                     width="22"
-                    alt=""
                 />
                 <img
                     v-show="isLoadingFileTypesAdd"
                     src="@/assets/images/external-Load-interface-those-icons-lineal-those-icons-1.png"
                     width="22"
-                    alt=""
                 />
             </button>
         </footer>

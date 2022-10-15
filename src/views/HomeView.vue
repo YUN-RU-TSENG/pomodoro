@@ -2,10 +2,12 @@
 import { onBeforeMount } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
+import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFileTypesStore } from '@/stores/fileTypes'
 
 const userStore = useUserStore()
 const tasksStore = useTasksStore()
+const pomorodoClockStore = usePomorodoClockStore()
 const fileTypesStore = useFileTypesStore()
 
 onBeforeMount(() => {
@@ -52,20 +54,19 @@ function deleteTask(deleteId) {
                         <button class="sort">
                             <img
                                 src="https://img.icons8.com/fluency-systems-filled/48/000000/sort.png"
-                                alt=""
                                 width="20"
                             />1
                         </button>
                     </div>
                     <HomeAddTask
-                        :tomato-time="tasksStore.cacheAddForm.tomatoTime"
+                        :pomorodo-time="tasksStore.cacheAddForm.pomorodoTime"
                         :file-types="fileTypesStore.fileTypes"
                         :cache-add-form="tasksStore.cacheAddForm"
                         @add-tasks="tasksStore.addTask"
                         @update:total-expect-time="
                             tasksStore.cacheAddForm.totalExpectTime = $event
                         "
-                        @update:cache-add-form="
+                        @update:cache-add-form-folder="
                             tasksStore.cacheAddForm.folder = $event
                         "
                     >
@@ -80,8 +81,8 @@ function deleteTask(deleteId) {
                                 v-model:totalExpectTime="
                                     tasksStore.cacheAddForm.totalExpectTime
                                 "
-                                :tomato-time="
-                                    tasksStore.cacheAddForm.tomatoTime
+                                :pomorodo-time="
+                                    tasksStore.cacheAddForm.pomorodoTime
                                 "
                             />
                         </template>
@@ -93,23 +94,29 @@ function deleteTask(deleteId) {
                         <HomeListItem
                             v-for="task of tasksStore.filterTasks"
                             :key="task.id"
+                            v-model:pomorodoSelectedTaskId="
+                                pomorodoClockStore.selectedTaskId
+                            "
                             :task="task"
                             @open-task-detail="
                                 tasksStore.cacheUpdateTaskId = task.id
                             "
                             @close-task-detail="() => {}"
                             @update:task="log('@update:task')"
-                            @play-tomato="log('@play-tomato')"
+                            @play-pomorodo="log('@play-pomorodo')"
                         />
                     </HomeList>
                 </div>
                 <div v-if="tasksStore.cacheUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
+                        v-model:pomorodoSelectedTaskId="
+                            pomorodoClockStore.selectedTaskId
+                        "
                         style="height: calc(100vh - 45px - 24px)"
                         :cache-update-form="tasksStore.cacheUpdateForm"
                         :file-types="fileTypesStore.fileTypes"
-                        @update:cacheUpdateForm="
+                        @update:cache-update-form="
                             tasksStore.setUpdateFormValues($event)
                         "
                         @delete-task="deleteTask(tasksStore.cacheUpdateTaskId)"
@@ -118,8 +125,19 @@ function deleteTask(deleteId) {
                 </div>
             </section>
         </main>
-        <!-- home-tomato-clock -->
-        <HomeTomatoClock class="home-tomato-clock"></HomeTomatoClock>
+        <!-- home-pomorodo-clock -->
+        <HomePomorodoClock
+            class="home-pomorodo-clock"
+            :timer="pomorodoClockStore.timer"
+            :selected-task-id="pomorodoClockStore.selectedTaskId"
+            :selected-task="pomorodoClockStore.selectedTask"
+            :is-show-pomorodo-modal="pomorodoClockStore.isShowPomorodoModal"
+            :start-pomorodo="pomorodoClockStore.startPomorodo"
+            :stop-pomorodo="pomorodoClockStore.stopPomorodo"
+            :break-pomorodo="pomorodoClockStore.breakPomorodo"
+            :open-pomorodo-modal="pomorodoClockStore.openPomorodoModal"
+            :close-pomorodo-modal="pomorodoClockStore.closePomorodoModal"
+        />
     </section>
 </template>
 
@@ -192,7 +210,7 @@ function deleteTask(deleteId) {
     }
 }
 
-.home-tomato-clock {
+.home-pomorodo-clock {
     position: fixed;
     top: auto;
     bottom: 24px;

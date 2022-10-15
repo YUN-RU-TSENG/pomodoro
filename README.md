@@ -1,6 +1,6 @@
-# tomato-todo
+# pomorodo-todo
 
-tomato todo reop
+pomorodo todo reop
 
 ## Project Setup
 

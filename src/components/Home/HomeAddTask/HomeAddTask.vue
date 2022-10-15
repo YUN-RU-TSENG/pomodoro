@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
 const props = defineProps({
-    tomatoTime: {
+    pomorodoTime: {
         type: Number,
         required: true,
     },
@@ -22,20 +22,20 @@ const emits = defineEmits([
     'update:total-expect-time',
     'update:cache-add-form-folder',
 ])
-const { covertTomatoToTime } = useCovertBetweenTimeAndTomato()
+const { covertPomorodoToTime } = useCovertBetweenTimeAndPomorodo()
 const { updateTotalTimeByPopUp, counts } = useUpdateTotalTimeByPopUp({
-    covertTomatoToTime,
-    tomatoTime: props.tomatoTime,
+    covertPomorodoToTime,
+    pomorodoTime: props.pomorododoTime,
 })
 
-function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
+function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
     const counts = ref(0)
     const updateTotalTimeByPopUp = () => {
         emits(
             'update:total-expect-time',
-            covertTomatoToTime({
-                tomatoTime: tomatoTime,
-                tomato: counts.value,
+            covertPomorodoToTime({
+                pomorodoTime: pomorodoTime,
+                pomorodo: counts.value,
             })
         )
         counts.value = 0
@@ -48,7 +48,7 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
 <template>
     <form class="home-add-task" @submit.prevent="$emit('add-tasks')">
         <button class="add-task-button home-add-task-button" type="submit">
-            <img src="@/assets/images/add--v1.png" alt="" width="22" />
+            <img src="@/assets/images/add--v1.png" width="22" />
         </button>
 
         <div class="add-task-input">
@@ -67,7 +67,6 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
                         >
                             <img
                                 src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
-                                alt=""
                                 width="12"
                             />
                         </button>
@@ -75,7 +74,7 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
                     <template #model="slotProps">
                         <form>
                             <BaseInput
-                                id="tomato-cache-add-form"
+                                id="pomorodo-cache-add-form"
                                 v-model:value.number="counts"
                                 class="number-input"
                                 type="number"
@@ -110,18 +109,14 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
                     class="add-task-color home-add-task-button"
                     type="button"
                 >
-                    <img
-                        src="@/assets/images/circled-dot.png"
-                        width="18"
-                        alt=""
-                    />
+                    <img src="@/assets/images/circled-dot.png" width="18" />
                 </button>
             </template>
             <template #model="slotProps">
                 <HomeDropdownConfirm
                     :contents="fileTypes"
                     :value="cacheAddForm.folder"
-                    name="detail-task-file-name"
+                    name="add-task-file-name"
                     @update:value="
                         $emit('update:cache-add-form-folder', $event),
                             slotProps.close()
@@ -177,7 +172,7 @@ function useUpdateTotalTimeByPopUp({ covertTomatoToTime, tomatoTime }) {
     .arrow {
         padding: 7px;
         position: relative;
-        .tomato-counter {
+        .pomorodo-counter {
             position: absolute;
             top: 100%;
             left: 0px;

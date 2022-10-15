@@ -1,46 +1,41 @@
 <script setup>
 import { computed } from 'vue'
-import { useCovertBetweenTimeAndTomato } from '@/composables/useCovertBetweenTimeAndTomato'
+import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
 const props = defineProps({
     totalExpectTime: {
         type: Number,
         required: true,
     },
-    tomatoTime: {
+    pomorodoTime: {
         type: Number,
         required: true,
     },
 })
 
-const { covertTimeToTomato } = useCovertBetweenTimeAndTomato()
+const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 
-const currentTomato = computed(() => {
-    return covertTimeToTomato({
+const currentPomorodo = computed(() => {
+    return covertTimeToPomorodo({
         time: props.totalExpectTime,
-        tomatoTime: props.tomatoTime,
+        pomorodoTime: props.pomorodoTime,
     })
 })
 </script>
 
 <template>
     <div class="timers">
-        <template v-if="currentTomato <= 7">
+        <template v-if="currentPomorodo <= 7">
             <img
-                v-for="index of currentTomato"
+                v-for="index of currentPomorodo"
                 :key="index"
                 src="@/assets/images/retro-alarm-clock.png"
                 width="12"
-                alt=""
             />
         </template>
         <template v-else>
-            <img
-                src="@/assets/images/retro-alarm-clock.png"
-                width="12"
-                alt=""
-            />
-            <span class="counts">{{ currentTomato }}</span>
+            <img src="@/assets/images/retro-alarm-clock.png" width="12" />
+            <span class="counts">{{ currentPomorodo }}</span>
         </template>
     </div>
 </template>
