@@ -82,6 +82,17 @@ const currentDeg = computed(() => {
     const white = 360 - red
     return `calc(${white} * 3.14 * 190 * 2 / 360) calc(${red} * 3.14 * 190 * 2 / 360)`
 })
+
+const currentSmallDeg = computed(() => {
+    if (!props.timer?.countDownTime) return
+    const red = Math.floor(
+        Math.floor(
+            (props.timer.countDownTime / props.timer[props.timer.mode]) * 100
+        ) * 3.6
+    )
+    const white = 360 - red
+    return `calc(${white} * 3.14 * 16 * 2 / 360) calc(${red} * 3.14 * 16 * 2 / 360)`
+})
 </script>
 
 <template>
@@ -181,7 +192,7 @@ const currentDeg = computed(() => {
                             cy="18"
                             stroke="#D56140"
                             fill="none"
-                            :stroke-dasharray="currentDeg"
+                            :stroke-dasharray="currentSmallDeg"
                             stroke-width="2"
                             transform-origin="center"
                             transform="rotate(270)"

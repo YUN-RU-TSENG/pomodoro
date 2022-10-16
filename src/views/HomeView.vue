@@ -1,50 +1,82 @@
 <script setup>
-import { onBeforeMount } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
-import { useFileTypesStore } from '@/stores/fileTypes'
+import { useFolderTypesStore } from '@/stores/folderTypes'
+import { storeToRefs } from 'pinia'
 
+// ========== pinia ==========
+
+// pinia - userStore
 const userStore = useUserStore()
+const { user, logout } = storeToRefs(userStore)
+
+// pinia - tasksStore
 const tasksStore = useTasksStore()
+const {
+    filterType,
+    cacheAddForm,
+    isLoadingTaskGet,
+    cacheUpdateTaskId,
+    cacheUpdateForm,
+    filterTasks,
+} = storeToRefs(tasksStore)
+const {
+    getTasks,
+    deleteTask,
+    clearCacheUpdateTaskId,
+    changeFilterType,
+    addTask,
+    setUpdateFormValues,
+} = tasksStore
+
+// pinia - pomorodoClockStore
 const pomorodoClockStore = usePomorodoClockStore()
-const fileTypesStore = useFileTypesStore()
+const { selectedTaskId, timer, selectedTask, isShowPomorodoModal } =
+    storeToRefs(pomorodoClockStore)
+const {
+    startPomorodo,
+    stopPomorodo,
+    breakPomorodo,
+    openPomorodoModal,
+    closePomorodoModal,
+} = pomorodoClockStore
 
-onBeforeMount(() => {
-    tasksStore.getTasks()
-    fileTypesStore.getFileTypes()
-})
+// pinia - folderTypesStore
+const folderTypesStore = useFolderTypesStore()
+const { eachFolderTypeTotalTaskTime, isLoadingFolderTypesAdd, folderTypes } =
+    storeToRefs(folderTypesStore)
+const { getFolderTypes, addFolderType } = folderTypesStore
 
-function deleteTask(deleteId) {
-    // 由於刪除的是當前快取編輯的 task，所以刪除時同時需要清除當前快取編輯的 task id
-    tasksStore.clearCacheUpdateTaskId()
-    tasksStore.deleteTask(deleteId)
+// ========== component logic ==========
+
+getTasks()
+getFolderTypes()
+
+// ========== component scoped composables function ==========
+
+// 由於刪除的是當前快取編輯的 task，所以刪除時同時需要清除當前快取編輯的 task id
+function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
+    clearCacheUpdateTaskId()
+    deleteTask(deleteId)
 }
 </script>
 
 <template>
     <section class="home">
         <!-- home home-navbar -->
-        <HomeNavbar
-            class="home-navbar"
-            :user="userStore.user"
-            @user-logout="userStore.logout"
-        />
+        <HomeNavbar class="home-navbar" :user="user" @user-logout="logout" />
         <!-- home home-workspace -->
         <main class="home-workspace">
             <!-- workspace-sidebar -->
             <HomeSidebar
                 class="workspace-sidebar"
                 style="height: calc(100vh - 45px)"
-                :filter-type="tasksStore.filterType"
-                :each-file-type-total-task-time="
-                    fileTypesStore.eachFileTypeTotalTaskTime
-                "
-                :is-loading-file-types-add="
-                    fileTypesStore.isLoadingFileTypesAdd
-                "
-                @add-file-type="fileTypesStore.addFileType($event)"
-                @update:filter-type="tasksStore.changeFilterType($event)"
+                :filter-type="filterType"
+                :each-folder-type-total-task-time="eachFolderTypeTotalTaskTime"
+                :is-loading-folder-types-add="isLoadingFolderTypesAdd"
+                @add-folder-type="addFolderType($event)"
+                @update:filter-type="changeFilterType($event)"
             />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
@@ -59,68 +91,57 @@ function deleteTask(deleteId) {
                         </button>
                     </div>
                     <HomeAddTask
-                        :pomorodo-time="tasksStore.cacheAddForm.pomorodoTime"
-                        :file-types="fileTypesStore.fileTypes"
-                        :cache-add-form="tasksStore.cacheAddForm"
-                        @add-tasks="tasksStore.addTask"
+                        :pomorodo-time="cacheAddForm.pomorodoTime"
+                        :folder-types="folderTypes"
+                        :cache-add-form="cacheAddForm"
+                        @add-tasks="addTask"
                         @update:total-expect-time="
-                            tasksStore.cacheAddForm.totalExpectTime = $event
+                            cacheAddForm.totalExpectTime = $event
                         "
                         @update:cache-add-form-folder="
-                            tasksStore.cacheAddForm.folder = $event
+                            cacheAddForm.folder = $event
                         "
                     >
                         <template #name>
                             <HomeAddInput
-                                v-model:value="tasksStore.cacheAddForm.name"
+                                v-model:value="cacheAddForm.name"
                                 placeholder="輸入待辦 task，例如: 閱讀書籍"
                             />
                         </template>
                         <template #clocks>
                             <HomeAddTaskClocks
                                 v-model:totalExpectTime="
-                                    tasksStore.cacheAddForm.totalExpectTime
+                                    cacheAddForm.totalExpectTime
                                 "
-                                :pomorodo-time="
-                                    tasksStore.cacheAddForm.pomorodoTime
-                                "
+                                :pomorodo-time="cacheAddForm.pomorodoTime"
                             />
                         </template>
                     </HomeAddTask>
-                    <HomeList
-                        class="home-list"
-                        :is-loading="tasksStore.isLoadingTaskGet"
-                    >
+                    <HomeList class="home-list" :is-loading="isLoadingTaskGet">
                         <HomeListItem
-                            v-for="task of tasksStore.filterTasks"
+                            v-for="task of filterTasks"
                             :key="task.id"
-                            v-model:pomorodoSelectedTaskId="
-                                pomorodoClockStore.selectedTaskId
-                            "
+                            v-model:cache-update-task-id="cacheUpdateTaskId"
+                            v-model:pomorodo-selected-task-id="selectedTaskId"
                             :task="task"
-                            @open-task-detail="
-                                tasksStore.cacheUpdateTaskId = task.id
-                            "
-                            @close-task-detail="() => {}"
                             @update:task="log('@update:task')"
-                            @play-pomorodo="log('@play-pomorodo')"
                         />
                     </HomeList>
                 </div>
-                <div v-if="tasksStore.cacheUpdateTaskId" class="task-detail">
+                <div v-if="cacheUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
-                        v-model:pomorodoSelectedTaskId="
-                            pomorodoClockStore.selectedTaskId
-                        "
+                        v-model:pomorodoSelectedTaskId="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
-                        :cache-update-form="tasksStore.cacheUpdateForm"
-                        :file-types="fileTypesStore.fileTypes"
-                        @update:cache-update-form="
-                            tasksStore.setUpdateFormValues($event)
+                        :cache-update-form="cacheUpdateForm"
+                        :folder-types="folderTypes"
+                        @update:cache-update-form="setUpdateFormValues($event)"
+                        @delete-task="
+                            deleteTaskAndClearCacheUpdateTaskId(
+                                cacheUpdateTaskId
+                            )
                         "
-                        @delete-task="deleteTask(tasksStore.cacheUpdateTaskId)"
-                        @close-task-detail="tasksStore.clearCacheUpdateTaskId()"
+                        @close-task-detail="clearCacheUpdateTaskId"
                     />
                 </div>
             </section>
@@ -128,15 +149,15 @@ function deleteTask(deleteId) {
         <!-- home-pomorodo-clock -->
         <HomePomorodoClock
             class="home-pomorodo-clock"
-            :timer="pomorodoClockStore.timer"
-            :selected-task-id="pomorodoClockStore.selectedTaskId"
-            :selected-task="pomorodoClockStore.selectedTask"
-            :is-show-pomorodo-modal="pomorodoClockStore.isShowPomorodoModal"
-            :start-pomorodo="pomorodoClockStore.startPomorodo"
-            :stop-pomorodo="pomorodoClockStore.stopPomorodo"
-            :break-pomorodo="pomorodoClockStore.breakPomorodo"
-            :open-pomorodo-modal="pomorodoClockStore.openPomorodoModal"
-            :close-pomorodo-modal="pomorodoClockStore.closePomorodoModal"
+            :timer="timer"
+            :selected-task-id="selectedTaskId"
+            :selected-task="selectedTask"
+            :is-show-pomorodo-modal="isShowPomorodoModal"
+            :start-pomorodo="startPomorodo"
+            :stop-pomorodo="stopPomorodo"
+            :break-pomorodo="breakPomorodo"
+            :open-pomorodo-modal="openPomorodoModal"
+            :close-pomorodo-modal="closePomorodoModal"
         />
     </section>
 </template>
@@ -159,9 +180,6 @@ function deleteTask(deleteId) {
     z-index: 1;
 }
 
-.home-list {
-}
-
 .workspace-current-task {
     flex: 1 1 auto;
     display: flex;
@@ -174,6 +192,18 @@ function deleteTask(deleteId) {
         flex: 1 1 auto;
         margin-right: 12px;
         transition: all 0.3s ease;
+
+        h2 {
+            font-size: 24px;
+            line-height: 36px;
+            font-weight: 400;
+        }
+
+        button {
+            padding: 4px;
+            background-color: $gray-1;
+            border-radius: 4px;
+        }
 
         .list-title {
             display: flex;
@@ -188,18 +218,6 @@ function deleteTask(deleteId) {
 
         .home-list {
             margin-bottom: 24px;
-        }
-
-        h2 {
-            font-size: 24px;
-            line-height: 36px;
-            font-weight: 400;
-        }
-
-        button {
-            padding: 4px;
-            background-color: $gray-1;
-            border-radius: 4px;
         }
     }
 

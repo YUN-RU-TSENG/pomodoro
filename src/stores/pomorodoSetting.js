@@ -7,6 +7,7 @@ export const usePomorodoSetting = defineStore('pomorodoSetting', () => {
     // userStore
     const userStore = useUserStore()
 
+    // pomorodoSettings
     const {
         pomorodoSettings,
         isLoadingPomorodoSettingGet,
@@ -22,6 +23,7 @@ export const usePomorodoSetting = defineStore('pomorodoSetting', () => {
     }
 })
 
+// pomorodoSettings
 function useGetPomorodoSettings({ userStore }) {
     const pomorodoSettings = ref({})
     const isLoadingPomorodoSettingGet = ref(false)
@@ -35,6 +37,7 @@ function useGetPomorodoSettings({ userStore }) {
             longBreakTime: 15 * 60, // longBreakTime 時長(秒)
             longBreakInterval: 4 * 60, // longBreakTime 間隔回數
             uid: userStore.user.uid,
+            autoContinue: false, // 是否自動繼續 Pomorodo
         }
 
         try {
@@ -56,12 +59,12 @@ function useGetPomorodoSettings({ userStore }) {
 
             pomorodoSettings.value = initPomorodoSetting
         } catch (error) {
-            console.log(error)
             errorOfPomorodoSettingGet.value = error
         } finally {
             isLoadingPomorodoSettingGet.value = false
         }
     }
+
     return {
         pomorodoSettings,
         isLoadingPomorodoSettingGet,

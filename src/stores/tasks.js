@@ -10,7 +10,6 @@ import {
     doc,
     where,
     db,
-    serverTimestamp,
 } from '@/utils/firebaseStore'
 import { useUserStore } from './user'
 import { watchDebounced } from '@vueuse/core'
@@ -221,7 +220,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
             await addDoc(firebaseRefTask, {
                 uid: userStore.user.uid,
                 ...cacheAddForm.value,
-                createAt: serverTimestamp(),
+                createAt: dayjs().toISOString(),
             })
 
             resetCacheAddForm()
@@ -244,7 +243,7 @@ function useAddTask({ firebaseRefTask, getTasks }) {
 }
 
 function useUpdateTask({ tasks, getTasks }) {
-    const cacheUpdateTaskId = ref(null)
+    const cacheUpdateTaskId = ref('')
     const isLoadingTaskUpdate = ref(false)
 
     const {

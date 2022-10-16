@@ -13,18 +13,18 @@ const props = defineProps({
 
 const emits = defineEmits(['update:visible', 'on-submit'])
 
-const { onSubmit } = useFileForm({ props })
+const { onSubmit } = useFolderForm({ props })
 
-function useFileForm({ props }) {
+function useFolderForm({ props }) {
     const visible = toRef(props, 'visible')
 
     const { handleSubmit, resetForm } = useForm({
         validationSchema: yup.object({
-            file: yup.string().required(),
+            name: yup.string().required(),
             color: yup.string().required(),
         }),
         initialValues: {
-            file: '',
+            name: '',
             color: '',
         },
     })
@@ -52,12 +52,12 @@ function useFileForm({ props }) {
 <template>
     <BaseModal
         v-if="visible"
-        class="home-file-modal-confirm"
+        class="home-folder-modal-confirm"
         @update:modal="$emit('update:visible', $event)"
     >
         <template #header> 創建標籤 </template>
         <template #body>
-            <HomeInput id="file-type-name" name="file"></HomeInput>
+            <HomeInput id="folder-type-name" name="name"></HomeInput>
             <div class="colors">
                 <div v-for="color in colors" :key="color" class="color">
                     <HomeRadio

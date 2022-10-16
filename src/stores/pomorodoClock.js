@@ -69,10 +69,10 @@ export const usePomorodoClockStore = defineStore('pomorodoClock', () => {
     })
 
     return {
-        timer,
-        startPomorodo,
         selectedTaskId,
         selectedTask,
+        timer,
+        startPomorodo,
         stopPomorodo,
         breakPomorodo,
         isShowPomorodoModal,
@@ -94,12 +94,14 @@ function useWatchTaskToAutoStartPomorodo({
     pomorodoSettingStore,
 }) {
     watch(selectedTaskId, (newSelectedTaskId, oldSelectedTaskId) => {
-        // ? 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
+        // 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
         if (pomorodoSettingStore.isLoadingPomorodoSettingGet) return
+
+        // 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
         if (pomorodoSettingStore.errorOfPomorodoSettingGet) return
 
+        // 先前有選擇任務 -->
         if (oldSelectedTaskId) {
-            // 先前有選擇任務 -->
             // - 1. interval 清空
             clearInterval(intervalId.value)
 
@@ -138,6 +140,7 @@ function useWatchTaskToAutoStartPomorodo({
 async function usePreLoadingPomorodoSetting({ pomorodoSettingStore, timer }) {
     await pomorodoSettingStore.getPomorodoSettingAndAutoCreateDefaultValue()
     const userSetting = pomorodoSettingStore.pomorodoSettings
+
     timer.value = {
         ...timer.value,
         pomorodo: userSetting.pomorodo, // pomorodo 時長(秒)

@@ -29,13 +29,13 @@ defineEmits(['update:value'])
                 :id="name + index"
                 type="radio"
                 :name="name"
-                :value="content.file"
-                :checked="content.file == value"
+                :value="content.name"
+                :checked="content.name == value"
                 @input="$emit('update:value', $event.target.value)"
             />
             <div class="box">
                 <div class="color"></div>
-                <p class="content">{{ content.file }}</p>
+                <p class="content">{{ content.name }}</p>
                 <img
                     src="@/assets/images/external-checked-interface-dreamstale-lineal-dreamstale.png"
                     width="12"

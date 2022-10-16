@@ -8,7 +8,6 @@ import {
     updateDoc,
     query,
     where,
-    serverTimestamp,
     getDoc,
     setDoc,
 } from 'firebase/firestore'
@@ -30,7 +29,6 @@ export {
     updateDoc,
     query,
     where,
-    serverTimestamp,
     // ---- 上方為 firebase/firestore API  ----
     db,
 }

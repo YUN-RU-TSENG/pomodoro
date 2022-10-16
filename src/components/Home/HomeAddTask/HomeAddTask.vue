@@ -11,7 +11,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    fileTypes: {
+    folderTypes: {
         type: Array,
         required: true,
     },
@@ -114,9 +114,9 @@ function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
             </template>
             <template #model="slotProps">
                 <HomeDropdownConfirm
-                    :contents="fileTypes"
+                    :contents="folderTypes"
                     :value="cacheAddForm.folder"
-                    name="add-task-file-name"
+                    name="add-task-folder-name"
                     @update:value="
                         $emit('update:cache-add-form-folder', $event),
                             slotProps.close()

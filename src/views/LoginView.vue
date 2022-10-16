@@ -49,9 +49,6 @@ const goRegisterPage = () => {
 </template>
 
 <style lang="scss" scoped>
-.user-validate {
-}
-
 .user-validate .base-input-label {
     margin-bottom: 12px;
 }

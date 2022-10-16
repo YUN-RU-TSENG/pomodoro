@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeFileModelConfirm from '../HomeFileModelConfirm.vue'
+import HomeFolderModelConfirm from '../HomeFolderModelConfirm.vue'
 
-describe('HomeFileModelConfirm', () => {
+describe('HomeFolderModelConfirm', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeFileModelConfirm)
+        const wrapper = mount(HomeFolderModelConfirm)
         expect(wrapper.text()).not.toBeNull()
     })
 })

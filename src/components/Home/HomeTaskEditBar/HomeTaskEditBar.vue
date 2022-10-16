@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { formatTimestamp } from '@/utils/dayjsFormat.js'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 import { formaDate } from '@/utils/dayjsFormat'
 
@@ -9,7 +8,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    fileTypes: {
+    folderTypes: {
         type: Array,
         required: true,
     },
@@ -200,9 +199,9 @@ const currentSpendPomorodo = computed(() => {
                             </template>
                             <template #model="slotProps">
                                 <HomeDropdownConfirm
-                                    :contents="fileTypes"
+                                    :contents="folderTypes"
                                     :value="cacheUpdateForm.folder"
-                                    name="detail-task-file-name"
+                                    name="detail-task-folder-name"
                                     @update:value="
                                         $emit('update:cache-update-form', {
                                             ...cacheUpdateForm,
@@ -302,12 +301,7 @@ const currentSpendPomorodo = computed(() => {
             </button>
             <p>
                 創建於
-                {{
-                    formatTimestamp({
-                        timestampSecond: cacheUpdateForm.createAt.seconds,
-                        formatString: 'YYYY年MM月DD日',
-                    })
-                }}
+                {{ cacheUpdateForm.createAt.seconds }}
             </p>
             <button @click="$emit('delete-task')">
                 <img src="@/assets/images/trash--v1.png" width="20" />

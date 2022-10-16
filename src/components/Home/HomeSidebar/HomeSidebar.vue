@@ -3,14 +3,14 @@ import { computed, ref } from 'vue'
 
 const props = defineProps({
     filterType: { type: String, required: true },
-    eachFileTypeTotalTaskTime: { type: Array, required: true },
-    isLoadingFileTypesAdd: { type: Boolean, required: true },
+    eachFolderTypeTotalTaskTime: { type: Array, required: true },
+    isLoadingFolderTypesAdd: { type: Boolean, required: true },
 })
 
-defineEmits(['add-file-type', 'update:filter-type'])
+defineEmits(['add-folder-type', 'update:filter-type'])
 
-// file types
-const { isFileConfirmVisible } = useFileType()
+// folder types
+const { isFolderConfirmVisible } = useFolderType()
 // sidebar item
 const { selectSidebarItem } = useSelectSidebarItem({ props })
 
@@ -21,10 +21,10 @@ function useSelectSidebarItem({ props }) {
     return { selectSidebarItem }
 }
 
-function useFileType() {
-    const isFileConfirmVisible = ref(false)
+function useFolderType() {
+    const isFolderConfirmVisible = ref(false)
 
-    return { isFileConfirmVisible }
+    return { isFolderConfirmVisible }
 }
 </script>
 
@@ -133,8 +133,8 @@ function useFileType() {
         <section class="sidebar-folder">
             <ul class="sidebar-list">
                 <li
-                    v-for="fileType of eachFileTypeTotalTaskTime"
-                    :key="fileType.id"
+                    v-for="folderType of eachFolderTypeTotalTaskTime"
+                    :key="folderType.id"
                     class="sidebar-item-wrapper"
                 >
                     <a class="sidebar-item">
@@ -142,11 +142,11 @@ function useFileType() {
                             src="@/assets/images/folder-invoices--v1.png"
                             width="22"
                         />
-                        <h3>{{ fileType.file }}</h3>
+                        <h3>{{ folderType.name }}</h3>
                         <p class="total-spend-time">
-                            {{ fileType.time + 'h' }}
+                            {{ folderType.time + 'h' }}
                         </p>
-                        <p class="pomorodo-time">{{ fileType.tasks }}</p>
+                        <p class="pomorodo-time">{{ folderType.tasks }}</p>
                         <button class="arrow">
                             <img
                                 src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
@@ -199,24 +199,24 @@ function useFileType() {
             </button>
             <button
                 class="folder"
-                :disabled="isLoadingFileTypesAdd"
-                @click="isFileConfirmVisible = true"
+                :disabled="isLoadingFolderTypesAdd"
+                @click="isFolderConfirmVisible = true"
             >
                 <img
-                    v-show="!isLoadingFileTypesAdd"
+                    v-show="!isLoadingFolderTypesAdd"
                     src="@/assets/images/folder-invoices--v1-2.png"
                     width="22"
                 />
                 <img
-                    v-show="isLoadingFileTypesAdd"
+                    v-show="isLoadingFolderTypesAdd"
                     src="@/assets/images/external-Load-interface-those-icons-lineal-those-icons-1.png"
                     width="22"
                 />
             </button>
         </footer>
-        <HomeFileModelConfirm
-            v-model:visible="isFileConfirmVisible"
-            @on-submit="$emit('add-file-type', $event)"
+        <HomeFolderModelConfirm
+            v-model:visible="isFolderConfirmVisible"
+            @on-submit="$emit('add-folder-type', $event)"
         />
     </section>
 </template>

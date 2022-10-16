@@ -1,8 +1,8 @@
 <script setup>
-import { ref, nextTick } from 'vue'
-import { formatTimestamp } from '@/utils/dayjsFormat.js'
+import { ref, nextTick, watch } from 'vue'
+import { formaDate } from '@/utils/dayjsFormat'
 
-defineProps({
+const props = defineProps({
     pomorodoSelectedTaskId: {
         type: String,
         required: true,
@@ -11,25 +11,73 @@ defineProps({
         type: Object,
         required: true,
     },
+    cacheUpdateTaskId: {
+        type: String,
+        required: true,
+    },
 })
 
-defineEmits([
-    'open-task-detail',
-    'close-task-detail',
+const emits = defineEmits([
     'update:task',
-    'play-pomorodo',
     'update:pomorodoSelectedTaskId',
+    'update:cacheUpdateTaskId',
 ])
 
-const isEdit = ref(false)
-const input = ref(null)
+// ========== component logic ==========
 
-function focusInput() {
-    isEdit.value = true
+// 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
+useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits })
 
-    nextTick(() => {
-        input.value?.focus()
-    })
+// 當顯示 editInputRef element 時，自動將 editInputRef element focus
+const { focusInput, isEdit, editInputRef } = useFocusInput()
+
+// ========== component scoped composables function ==========
+
+// 當顯示 editInputRef 時，自動將 editInputRef focus
+function useFocusInput() {
+    const isEdit = ref(false)
+    const editInputRef = ref(null)
+
+    function focusInput() {
+        isEdit.value = true
+
+        // 確認 input 已經在 isEdit true 後渲染，再 focus
+        nextTick(() => {
+            editInputRef.value?.focus()
+        })
+    }
+    return { focusInput, isEdit, editInputRef }
+}
+
+// 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務(清空選擇任務，同時依賴選擇任務顯示的 HomeTaskEditBar 就會關閉)
+function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
+    const isAddEventListener = ref(false)
+
+    // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
+    const resetCacheUpdateTaskId = (e) => {
+        const isInHomeListItem = !!e.target.closest('.list-item-wrapper')
+        const isInTaskDetailEditor = !!e.target.closest('.home-task-edit-box')
+
+        if (!isInHomeListItem && !isInTaskDetailEditor) {
+            emits('update:cacheUpdateTaskId', '')
+        }
+    }
+
+    watch(
+        () => props.cacheUpdateTaskId,
+        (newValue) => {
+            // 當有選中任務時且無監聽點擊時，註冊點擊事件監聽(點中非目標元素，清空選中任務)
+            if (newValue && !isAddEventListener.value) {
+                isAddEventListener.value = true
+                document.addEventListener('click', resetCacheUpdateTaskId)
+            }
+            // 當無選中任務且已有監聽點擊事件時，取消既有的事件監聽
+            if (!newValue && isAddEventListener.value) {
+                isAddEventListener.value = false
+                document.removeEventListener('click', resetCacheUpdateTaskId)
+            }
+        }
+    )
 }
 </script>
 
@@ -37,8 +85,7 @@ function focusInput() {
     <li
         class="list-item-wrapper"
         tabindex="0"
-        @click="$emit('open-task-detail')"
-        @blur="$emit('close-task-detail')"
+        @click="$emit('update:cacheUpdateTaskId', task.id)"
     >
         <a class="list-item">
             <BaseCheckbox
@@ -60,7 +107,7 @@ function focusInput() {
             <section class="content">
                 <input
                     v-show="isEdit"
-                    ref="input"
+                    ref="editInputRef"
                     type="text"
                     class="text"
                     :value="task.name"
@@ -85,9 +132,11 @@ function focusInput() {
             </section>
             <p class="date">
                 {{
-                    formatTimestamp({
-                        timestampSecond: task.createAt.seconds,
-                    })
+                    task.expectEndDate
+                        ? formaDate({
+                              date: task.expectEndDate,
+                          })
+                        : '未指定完成日'
                 }}
             </p>
         </a>
