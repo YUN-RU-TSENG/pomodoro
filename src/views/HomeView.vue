@@ -15,7 +15,6 @@ const { user, logout } = storeToRefs(userStore)
 const tasksStore = useTasksStore()
 const {
     filterType,
-    cacheAddForm,
     isLoadingTaskGet,
     cacheUpdateTaskId,
     cacheUpdateForm,
@@ -27,6 +26,7 @@ const {
     clearCacheUpdateTaskId,
     changeFilterType,
     addTask,
+    errorOfTaskAdd,
     setUpdateFormValues,
 } = tasksStore
 
@@ -50,8 +50,14 @@ const { getFolderTypes, addFolderType } = folderTypesStore
 
 // ========== component logic ==========
 
+// getTask
 getTasks()
+
+// folder
 getFolderTypes()
+
+// addTask
+const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
 
 // ========== component scoped composables function ==========
 
@@ -59,6 +65,19 @@ getFolderTypes()
 function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
     clearCacheUpdateTaskId()
     deleteTask(deleteId)
+}
+
+// addTask
+function useHandleAddTask({ addTask, errorOfTaskAdd }) {
+    const handleAddTask = async ({ formValue, resetForm }) => {
+        await addTask(formValue)
+        // 判斷當添加成空，重置表單
+        if (!errorOfTaskAdd) resetForm()
+    }
+
+    return {
+        handleAddTask,
+    }
 }
 </script>
 
@@ -91,32 +110,10 @@ function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
                         </button>
                     </div>
                     <HomeAddTask
-                        :pomorodo-time="cacheAddForm.pomorodoTime"
                         :folder-types="folderTypes"
-                        :cache-add-form="cacheAddForm"
-                        @add-tasks="addTask"
-                        @update:total-expect-time="
-                            cacheAddForm.totalExpectTime = $event
-                        "
-                        @update:cache-add-form-folder="
-                            cacheAddForm.folder = $event
-                        "
-                    >
-                        <template #name>
-                            <HomeAddInput
-                                v-model:value="cacheAddForm.name"
-                                placeholder="輸入待辦 task，例如: 閱讀書籍"
-                            />
-                        </template>
-                        <template #clocks>
-                            <HomeAddTaskClocks
-                                v-model:total-expect-time="
-                                    cacheAddForm.totalExpectTime
-                                "
-                                :pomorodo-time="cacheAddForm.pomorodoTime"
-                            />
-                        </template>
-                    </HomeAddTask>
+                        :pomorodo-time="1000 * 60 * 25"
+                        @add-tasks="handleAddTask"
+                    />
                     <HomeList class="home-list" :is-loading="isLoadingTaskGet">
                         <HomeListItem
                             v-for="task of filterTasks"

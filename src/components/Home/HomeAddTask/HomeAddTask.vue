@@ -1,14 +1,13 @@
 <script setup>
-import { ref } from 'vue'
-import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
+import dayjs from 'dayjs'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
 
-const props = defineProps({
+// ========== component props ==========
+
+defineProps({
     pomorodoTime: {
         type: Number,
-        required: true,
-    },
-    cacheAddForm: {
-        type: Object,
         required: true,
     },
     folderTypes: {
@@ -17,90 +16,72 @@ const props = defineProps({
     },
 })
 
-const emits = defineEmits([
-    'add-tasks',
-    'update:total-expect-time',
-    'update:cache-add-form-folder',
-])
-const { covertPomorodoToTime } = useCovertBetweenTimeAndPomorodo()
-const { updateTotalTimeByPopUp, counts } = useUpdateTotalTimeByPopUp({
-    covertPomorodoToTime,
-    pomorodoTime: props.pomorododoTime,
-})
+// ========== component emits ==========
 
-function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
-    const counts = ref(0)
-    const updateTotalTimeByPopUp = () => {
-        emits(
-            'update:total-expect-time',
-            covertPomorodoToTime({
-                pomorodoTime: pomorodoTime,
-                pomorodo: counts.value,
-            })
-        )
-        counts.value = 0
-    }
+const emits = defineEmits(['add-tasks'])
 
-    return { counts, updateTotalTimeByPopUp }
+// ========== component logic ==========
+
+// add task form
+const { submitAddTaskForm } = useAddTaskForm({ emits })
+
+// ========== component scoped composables function ==========
+
+// add task form
+function useAddTaskForm({ emits }) {
+    // add task form vee validate 驗證設置
+    const { handleSubmit } = useForm({
+        validationSchema: yup.object({
+            isFinish: yup.boolean().required(),
+            name: yup.string().trim().required(),
+            description: yup.string(),
+            tags: yup.array(),
+            folder: yup.string(),
+            totalSpendTime: yup.number().integer(),
+            pomorodoTime: yup.number(),
+            totalExpectTime: yup.number().integer(),
+            subtasks: yup.array(),
+            createAt: '',
+            expectEndDate: '',
+            mentionDate: '',
+        }),
+        initialValues: {
+            isFinish: false,
+            name: '',
+            description: '',
+            tags: [],
+            folder: '',
+            totalSpendTime: 0,
+            pomorodoTime: 1000 * 60 * 25,
+            totalExpectTime: 0,
+            subtasks: [],
+            createAt: dayjs().toISOString(),
+            expectEndDate: dayjs().toISOString(),
+            mentionDate: null,
+        },
+    })
+
+    // 驗證成功時，透過 add-tasks 事件發送表單值
+    const submitAddTaskForm = handleSubmit((formValue, { resetForm }) => {
+        emits('add-tasks', { formValue, resetForm })
+    })
+    return { submitAddTaskForm }
 }
 </script>
 
 <template>
-    <form class="home-add-task" @submit.prevent="$emit('add-tasks')">
+    <form class="home-add-task" @submit.prevent="submitAddTaskForm">
         <button class="add-task-button home-add-task-button" type="submit">
             <img src="@/assets/images/add--v1.png" width="22" />
         </button>
-
         <div class="add-task-input">
-            <!-- slot -->
-            <slot name="name"></slot>
+            <HomeAddInput
+                name="name"
+                placeholder="輸入待辦 task，例如: 閱讀書籍"
+            />
         </div>
         <section class="add-task-watch">
-            <!-- slot -->
-            <slot name="clocks"></slot>
-            <div>
-                <BasePopover width="200px">
-                    <template #button>
-                        <button
-                            class="arrow home-add-task-button"
-                            type="button"
-                        >
-                            <img
-                                src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
-                                width="12"
-                            />
-                        </button>
-                    </template>
-                    <template #model="slotProps">
-                        <form>
-                            <BaseInput
-                                id="pomorodo-cache-add-form"
-                                v-model:value.number="counts"
-                                class="number-input"
-                                type="number"
-                                placeholder="輸入數字"
-                                min="0"
-                                max="30"
-                            >
-                            </BaseInput>
-                            <section class="mention-check">
-                                <BaseButton
-                                    color="primary"
-                                    @click.prevent="
-                                        updateTotalTimeByPopUp(),
-                                            slotProps.close()
-                                    "
-                                >
-                                    確定
-                                </BaseButton>
-                                <BaseButton @click.prevent="slotProps.close()">
-                                    取消
-                                </BaseButton>
-                            </section>
-                        </form>
-                    </template>
-                </BasePopover>
-            </div>
+            <HomeAddTaskClocks :pomorodo-time="pomorodoTime" />
         </section>
         <div class="add-task-line"></div>
         <BasePopover width="200px">
@@ -113,14 +94,10 @@ function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
                 </button>
             </template>
             <template #model="slotProps">
-                <HomeDropdownConfirm
+                <BaseDropdown
                     :contents="folderTypes"
-                    :value="cacheAddForm.folder"
-                    name="add-task-folder-name"
-                    @update:value="
-                        $emit('update:cache-add-form-folder', $event),
-                            slotProps.close()
-                    "
+                    name="folder"
+                    @choose-content="slotProps.close()"
                 />
             </template>
         </BasePopover>
@@ -168,16 +145,6 @@ function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
 .home-add-task .add-task-watch {
     display: flex;
     align-items: center;
-
-    .arrow {
-        padding: 7px;
-        position: relative;
-        .pomorodo-counter {
-            position: absolute;
-            top: 100%;
-            left: 0px;
-        }
-    }
 }
 
 .home-add-task .add-task-line {
@@ -193,14 +160,5 @@ function useUpdateTotalTimeByPopUp({ covertPomorodoToTime, pomorodoTime }) {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.number-input {
-    margin-bottom: 12px;
-}
-
-.mention-check {
-    display: flex;
-    justify-content: space-between;
 }
 </style>

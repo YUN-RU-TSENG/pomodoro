@@ -2,25 +2,17 @@
 import { computed, toRef } from 'vue'
 import { useField } from 'vee-validate'
 
-// ========== component props ==========
-
 const props = defineProps({
     name: { type: String, required: true },
     type: { type: String, default: 'text' },
 })
 
-// ========== component logic ==========
-
-// field name
 const name = toRef(props, 'name')
 
-// field value with vee-validate
 const { value, errorMessage, handleChange } = useField(name, undefined, {
     validateOnValueUpdate: false,
 })
 
-// field value update with lazy、aggressive validate
-// note: https://github.com/YUN-RU-TSENG/me/issues/56#
 const validationListeners = computed(() => {
     // Lazy
     if (!errorMessage.value) {
@@ -40,33 +32,53 @@ const validationListeners = computed(() => {
 })
 </script>
 
+<script>
+export default {
+    inheritAttrs: false,
+}
+</script>
+
 <template>
-    <label class="add-task-label">
+    <label :for="id" class="base-input-label" :class="$attrs.class">
         <input
-            class="add-task-input"
+            class="base-input"
             :type="type"
             :name="name"
             :value="value"
             v-bind="$attrs"
+            autocomplete
             v-on="validationListeners"
         />
+        <p v-if="error" class="error">{{ error }}</p>
     </label>
 </template>
 
 <style scoped lang="scss">
-.add-task-label {
+.base-input {
     width: 100%;
-    display: inline-block;
-}
+    padding: 6px;
 
-.add-task-input {
-    width: 100%;
+    border: 1px solid $gray-1;
+    border-radius: 4px;
     font-size: 14px;
     line-height: 21px;
-    color: $gray-3;
+    transition: all 0.3s ease;
+}
 
-    *::placeholder {
-        color: $gray-2;
-    }
+.base-input:focus {
+    border: 1px solid $gray-3;
+}
+.base-input-label {
+    display: inline-block;
+    width: 100%;
+}
+
+.error {
+    padding-left: 6px;
+
+    font-size: 12px;
+    line-height: 18px;
+    color: $red-2;
+    text-align: left;
 }
 </style>

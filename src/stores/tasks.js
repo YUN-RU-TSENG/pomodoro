@@ -18,21 +18,22 @@ import { string, object, number, boolean, array } from 'yup'
 import dayjs from 'dayjs'
 
 export const useTasksStore = defineStore('tasks', () => {
+    // userStore
+    const userStore = useUserStore()
+
     // firebaseTaskRef
-    const { firebaseRefTask, firebaseRefUserTask } = useFirebaseTaskRef()
+    const { firebaseRefTask, firebaseRefUserTask } = useFirebaseTaskRef({
+        userStore,
+    })
 
     // tasks
     const { tasks, getTasks, isLoadingTaskGet } = useGetTasks({
         firebaseRefUserTask,
     })
-    const {
-        addTask,
-        isLoadingTaskAdd,
-        cacheAddForm,
-        cacheAddFormErrorMessage,
-    } = useAddTask({
+    const { addTask, isLoadingTaskAdd, errorOfTaskAdd } = useAddTask({
         firebaseRefTask,
         getTasks,
+        userStore,
     })
     const {
         cacheUpdateTaskId,
@@ -58,8 +59,7 @@ export const useTasksStore = defineStore('tasks', () => {
         isLoadingTaskGet,
         addTask,
         isLoadingTaskAdd,
-        cacheAddForm,
-        cacheAddFormErrorMessage,
+        errorOfTaskAdd,
         cacheUpdateForm,
         cacheUpdateTaskId,
         setUpdateFormValues,
@@ -74,9 +74,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
 })
 
-function useFirebaseTaskRef() {
-    const userStore = useUserStore()
-
+function useFirebaseTaskRef({ userStore }) {
     const firebaseRefTask = collection(db, 'tasks')
 
     const firebaseRefUserTask = query(
@@ -126,119 +124,34 @@ function useGetTasks({ firebaseRefUserTask }) {
     }
 }
 
-function useAddTask({ firebaseRefTask, getTasks }) {
-    const userStore = useUserStore()
+function useAddTask({ firebaseRefTask, getTasks, userStore }) {
     const isLoadingTaskAdd = ref(false)
-
-    const {
-        handleSubmit,
-        resetForm: resetCacheAddForm,
-        errors: cacheAddFormErrorMessage,
-        useFieldModel,
-        meta: cacheAddFormMeta,
-        submitCount: cacheAddFormSubmitCount,
-    } = useForm({
-        validationSchema: object({
-            isFinish: boolean().required(),
-            name: string().trim().required(),
-            description: string(),
-            tags: array(),
-            folder: string(),
-            totalSpendTime: number().integer(),
-            pomorodoTime: number(),
-            totalExpectTime: number().integer(),
-            subtasks: array(),
-            createAt: '',
-            expectEndDate: '',
-            mentionDate: '',
-        }),
-        keepValuesOnUnmount: true,
-        initialValues: {
-            isFinish: false,
-            name: '',
-            description: '',
-            tags: [],
-            folder: '',
-            totalSpendTime: 0,
-            pomorodoTime: 1000 * 60 * 60,
-            totalExpectTime: 0,
-            subtasks: [],
-            createAt: null,
-            expectEndDate: null,
-            mentionDate: null,
-        },
-    })
-
-    const [
-        isFinish,
-        name,
-        description,
-        tags,
-        folder,
-        totalSpendTime,
-        pomorodoTime,
-        totalExpectTime,
-        subtasks,
-        createAt,
-        expectEndDate,
-        mentionDate,
-    ] = useFieldModel([
-        'isFinish',
-        'name',
-        'description',
-        'tags',
-        'folder',
-        'totalSpendTime',
-        'pomorodoTime',
-        'totalExpectTime',
-        'subtasks',
-        'createAt',
-        'expectEndDate',
-        'mentionDate',
-    ])
-
-    const cacheAddForm = ref({
-        isFinish,
-        name,
-        description,
-        tags,
-        folder,
-        totalSpendTime,
-        pomorodoTime,
-        totalExpectTime,
-        subtasks,
-        createAt,
-        expectEndDate,
-        mentionDate,
-    })
+    const errorOfTaskAdd = ref(null)
 
     // 新增 task
-    const addTask = handleSubmit(async () => {
+    const addTask = async (formValue) => {
         try {
             isLoadingTaskAdd.value = true
+            errorOfTaskAdd.value = null
 
             await addDoc(firebaseRefTask, {
                 uid: userStore.user.uid,
-                ...cacheAddForm.value,
-                createAt: dayjs().toISOString(),
+                ...formValue,
             })
 
-            resetCacheAddForm()
             getTasks()
         } catch (error) {
             console.error(error)
+            errorOfTaskAdd.value = error
         } finally {
             isLoadingTaskAdd.value = true
         }
-    })
+    }
 
     return {
         addTask,
-        cacheAddForm,
-        cacheAddFormErrorMessage,
-        cacheAddFormMeta,
-        cacheAddFormSubmitCount,
         isLoadingTaskAdd,
+        errorOfTaskAdd,
     }
 }
 
