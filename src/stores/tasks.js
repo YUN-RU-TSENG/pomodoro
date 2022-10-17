@@ -347,7 +347,7 @@ function useUpdateTask({ tasks, getTasks }) {
     const updateTask = handleSubmit(
         async () => {
             try {
-                // ! 由於每當 cacheUpdateTaskId 更動表單就會更新，這樣在只是切換表單 id 時也會送出更新，這不是我們需要的效果，在這裏只有在二次更新時表單有真正的變動，此時才會送出更新
+                // 由於每當 cacheUpdateTaskId 更動表單就會更新，這樣在只是切換表單 id 時也會送出更新，這不是我們需要的效果，在這裏只有在二次更新時表單有真正的變動，此時才會送出更新
                 if (cacheUpdateFormSubmitCount.value <= 1) return
 
                 isLoadingTaskUpdate.value = true

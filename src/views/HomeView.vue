@@ -110,7 +110,7 @@ function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
                         </template>
                         <template #clocks>
                             <HomeAddTaskClocks
-                                v-model:totalExpectTime="
+                                v-model:total-expect-time="
                                     cacheAddForm.totalExpectTime
                                 "
                                 :pomorodo-time="cacheAddForm.pomorodoTime"
@@ -131,7 +131,7 @@ function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
                 <div v-if="cacheUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
-                        v-model:pomorodoSelectedTaskId="selectedTaskId"
+                        v-model:pomorodo-selected-task-id="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
                         :cache-update-form="cacheUpdateForm"
                         :folder-types="folderTypes"
