@@ -1,43 +1,15 @@
 <script setup>
-import { computed, toRef } from 'vue'
-import { useField } from 'vee-validate'
-
 // ========== component props ==========
 
-const props = defineProps({
+defineProps({
     name: { type: String, required: true },
     type: { type: String, default: 'text' },
+    value: { type: String, required: true },
 })
 
-// ========== component logic ==========
+// ========== component emits ==========
 
-// field name
-const name = toRef(props, 'name')
-
-// field value with vee-validate
-const { value, errorMessage, handleChange } = useField(name, undefined, {
-    validateOnValueUpdate: false,
-})
-
-// field value update with lazy、aggressive validate
-// note: https://github.com/YUN-RU-TSENG/me/issues/56#
-const validationListeners = computed(() => {
-    // Lazy
-    if (!errorMessage.value) {
-        return {
-            blur: handleChange,
-            change: handleChange,
-            // 可以作為事件處理器，handleChange 會處理 event。當傳地的不是 event，handleChange 會直接設置為 field 新值
-            input: (e) => handleChange(e, false),
-        }
-    }
-    // Aggressive
-    return {
-        blur: handleChange,
-        change: handleChange,
-        input: handleChange,
-    }
-})
+defineEmits(['update:value'])
 </script>
 
 <template>
@@ -48,7 +20,7 @@ const validationListeners = computed(() => {
             :name="name"
             :value="value"
             v-bind="$attrs"
-            v-on="validationListeners"
+            @input="$emit('update:value', $event.target.value)"
         />
     </label>
 </template>

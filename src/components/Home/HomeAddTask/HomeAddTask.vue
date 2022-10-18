@@ -23,26 +23,31 @@ const emits = defineEmits(['add-tasks'])
 // ========== component logic ==========
 
 // add task form
-const { submitAddTaskForm } = useAddTaskForm({ emits })
+const { name, totalExpectTime, folder, handleVeeSubmit } = useAddTaskForm()
+
+const { submitAddTaskForm } = useSubmitTaskForm({
+    handleVeeSubmit,
+    emits,
+})
 
 // ========== component scoped composables function ==========
 
 // add task form
-function useAddTaskForm({ emits }) {
+function useAddTaskForm() {
     // add task form vee validate 驗證設置
-    const { handleSubmit } = useForm({
+    const { handleSubmit, useFieldModel } = useForm({
         validationSchema: yup.object({
             isFinish: yup.boolean().required(),
             name: yup.string().trim().required(),
             description: yup.string(),
-            tags: yup.array(),
+            tags: yup.array().required(),
             folder: yup.string(),
-            totalSpendTime: yup.number().integer(),
-            pomorodoTime: yup.number(),
-            totalExpectTime: yup.number().integer(),
-            subtasks: yup.array(),
-            createAt: '',
-            expectEndDate: '',
+            totalSpendTime: yup.number().integer().required(),
+            pomorodoTime: yup.number().required(),
+            totalExpectTime: yup.number().integer().required(),
+            subtasks: yup.array().required(),
+            createAt: yup.date().required(),
+            expectEndDate: yup.date().required(),
             mentionDate: '',
         }),
         initialValues: {
@@ -61,11 +66,32 @@ function useAddTaskForm({ emits }) {
         },
     })
 
-    // 驗證成功時，透過 add-tasks 事件發送表單值
-    const submitAddTaskForm = handleSubmit((formValue, { resetForm }) => {
+    // name
+    const name = useFieldModel('name')
+    // totalExpectTime
+
+    const totalExpectTime = useFieldModel('totalExpectTime')
+
+    // folder
+    const folder = useFieldModel('folder')
+
+    return {
+        handleVeeSubmit: handleSubmit,
+        name,
+        totalExpectTime,
+        folder,
+    }
+}
+
+// submit add task form
+function useSubmitTaskForm({ handleVeeSubmit, emits }) {
+    const submitAddTaskForm = handleVeeSubmit((formValue, { resetForm }) => {
         emits('add-tasks', { formValue, resetForm })
     })
-    return { submitAddTaskForm }
+
+    return {
+        submitAddTaskForm,
+    }
 }
 </script>
 
@@ -76,12 +102,16 @@ function useAddTaskForm({ emits }) {
         </button>
         <div class="add-task-input">
             <HomeAddInput
+                v-model:value="name"
                 name="name"
                 placeholder="輸入待辦 task，例如: 閱讀書籍"
             />
         </div>
         <section class="add-task-watch">
-            <HomeAddTaskClocks :pomorodo-time="pomorodoTime" />
+            <HomeAddTaskClocks
+                v-model:value="totalExpectTime"
+                :pomorodo-time="pomorodoTime"
+            />
         </section>
         <div class="add-task-line"></div>
         <BasePopover width="200px">
@@ -95,9 +125,10 @@ function useAddTaskForm({ emits }) {
             </template>
             <template #model="slotProps">
                 <BaseDropdown
-                    :contents="folderTypes"
+                    v-model:value="folder"
                     name="folder"
-                    @choose-content="slotProps.close()"
+                    :contents="folderTypes"
+                    @close-popover="slotProps.close()"
                 />
             </template>
         </BasePopover>

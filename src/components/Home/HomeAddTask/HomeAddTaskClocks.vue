@@ -1,5 +1,4 @@
 <script setup>
-import { useField } from 'vee-validate'
 import { computed, ref } from 'vue'
 import getImageUrl from '@/utils/getImageUrl'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
@@ -11,7 +10,15 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    value: {
+        type: Number,
+        required: true,
+    },
 })
+
+// ========== component emits ==========
+
+defineEmits(['update:value'])
 
 // ========== component logic ==========
 
@@ -22,14 +29,15 @@ const { covertTimeToPomorodo, covertPomorodoToTime } =
 // 任務總時間快取，由於可以另外選擇使用 modal input，故需要此快取值
 const cacheTotalExpectTime = ref(0)
 
-// 任務總時間，更改總時間需要將 pomorodo 轉換為 time(second)
-const { value: totalExpectTime, handleChange: handleTotalExpectTime } =
-    useField('totalExpectTime')
+// 清除任務總時間快取
+const resetCacheTotalExpectTime = () => {
+    cacheTotalExpectTime.value = 0
+}
 
 // 當前任務總時間對應的 pomorodo 數量
 const currentTimeToPomorodo = computed(() => {
     return covertTimeToPomorodo({
-        time: totalExpectTime.value,
+        time: props.value,
         pomorodoTime: props.pomorodoTime,
     })
 })
@@ -44,14 +52,15 @@ const currentClockStyle = computed(() => (index) => {
 
 <template>
     <div class="home-add-task-clock">
-        <!-- pomorodo 小於 5 時，畫面呈現 5 個時鐘 -->
+        <!-- UI logic - pomorodo 小於 5 時，畫面呈現 5 個時鐘 -->
         <template v-if="currentTimeToPomorodo <= 5">
             <button
                 v-for="index of 5"
                 :key="index"
                 class="watch"
                 @click.prevent="
-                    handleTotalExpectTime(
+                    $emit(
+                        'update:value',
                         covertPomorodoToTime({ pomorodo: index, pomorodoTime })
                     )
                 "
@@ -59,7 +68,7 @@ const currentClockStyle = computed(() => (index) => {
                 <img :src="currentClockStyle(index)" width="22" />
             </button>
         </template>
-        <!-- pomorodo 大於 5 時，呈現 1 個時鐘加上 pomorodo 數量 -->
+        <!-- UI logic - pomorodo 大於 5 時，呈現 1 個時鐘加上 pomorodo 數量 -->
         <template v-else>
             <button v-for="index of 1" :key="index" class="watch">
                 <img :src="currentClockStyle(index)" width="22" />
@@ -89,18 +98,24 @@ const currentClockStyle = computed(() => (index) => {
                         <BaseButton
                             color="primary"
                             @click.prevent="
-                                handleTotalExpectTime(
+                                $emit(
+                                    'update:value',
                                     covertPomorodoToTime({
                                         pomorodo: cacheTotalExpectTime,
                                         pomorodoTime,
                                     })
                                 ),
-                                    slotProps.close()
+                                    slotProps.close(),
+                                    resetCacheTotalExpectTime()
                             "
                         >
                             確定
                         </BaseButton>
-                        <BaseButton @click.prevent="slotProps.close()">
+                        <BaseButton
+                            @click.prevent="
+                                slotProps.close(), resetCacheTotalExpectTime()
+                            "
+                        >
                             取消
                         </BaseButton>
                     </section>

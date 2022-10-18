@@ -1,8 +1,5 @@
 <script setup>
-import { toRef } from 'vue'
-import { useField } from 'vee-validate'
-
-const props = defineProps({
+defineProps({
     contents: {
         type: Array,
         required: true,
@@ -11,13 +8,13 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    value: {
+        type: String,
+        required: true,
+    },
 })
 
-defineEmits(['choose-content'])
-
-const name = toRef(props, 'name')
-
-const { value, handleChange } = useField(name)
+defineEmits(['update:value', 'close-popover'])
 </script>
 
 <template>
@@ -34,7 +31,9 @@ const { value, handleChange } = useField(name)
                 :name="name"
                 :value="content.name"
                 :checked="content.name == value"
-                @input="handleChange(content.name), $emit('choose-content')"
+                @input="
+                    $emit('update:value', content.name), $emit('close-popover')
+                "
             />
             <div class="box">
                 <div class="color" :style="{ background: content.color }"></div>
