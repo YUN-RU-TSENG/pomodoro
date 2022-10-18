@@ -42,6 +42,7 @@ const { value: checkedValue, handleChange } = useField(name)
 <style scoped lang="scss">
 .base-radio {
     display: inline-block;
+
     cursor: pointer;
 
     input {
@@ -55,7 +56,7 @@ const { value: checkedValue, handleChange } = useField(name)
     }
 
     input:checked ~ .box {
-        background: url(https://img.icons8.com/puffy/24/ffffff/experimental-checkmark-puffy.png);
+        background: url('@/assets/images/experimental-checkmark-puffy.png');
     }
 }
 </style>

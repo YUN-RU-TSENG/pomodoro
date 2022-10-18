@@ -112,10 +112,7 @@ function useHandleUpdateTask({ updateTask }) {
                     <div class="list-title">
                         <h2>今天</h2>
                         <button class="sort">
-                            <img
-                                src="https://img.icons8.com/fluency-systems-filled/48/000000/sort.png"
-                                width="20"
-                            />1
+                            <img src="@/assets/images/sort.png" width="20" />1
                         </button>
                     </div>
                     <HomeAddTask

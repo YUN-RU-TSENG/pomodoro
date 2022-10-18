@@ -52,13 +52,10 @@ function useModalToggle() {
     <div v-if="isOpen" class="base-alert-wrapper">
         <div class="base-alert">
             <button class="close" @click="close">
-                <img
-                    src="https://img.icons8.com/ios/50/000000/delete-sign--v1.png"
-                    width="12"
-                />
+                <img src="@/assets/images/delete-sign--v1.png" width="12" />
             </button>
             <img
-                src="https://img.icons8.com/external-anggara-glyph-anggara-putra/32/000000/external-alert-user-interface-anggara-glyph-anggara-putra.png"
+                src="@/assets/images/external-alert-user-interface-anggara-glyph-anggara-putra.png"
                 width="20"
             />
             <p>{{ text }}</p>

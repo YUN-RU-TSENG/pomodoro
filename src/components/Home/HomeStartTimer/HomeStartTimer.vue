@@ -46,12 +46,12 @@ defineEmits(['update:value'])
         width: 20px;
         height: 20px;
         background: no-repeat center/contain
-            url('https://img.icons8.com/material-outlined/48/000000/circled-play.png');
+            url('@/assets/images/circled-play.png');
     }
 
     input:checked ~ .box {
         background: no-repeat center/contain
-            url('https://img.icons8.com/material-outlined/48/7c7c7c/retro-alarm-clock.png');
+            url('@/assets/images/retro-alarm-clock.png');
     }
 }
 </style>

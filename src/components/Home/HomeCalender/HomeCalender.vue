@@ -25,7 +25,7 @@ const {
         <header>
             <button class="calender-arrow" @click="updateCurrentTime(-1)">
                 <img
-                    src="https://img.icons8.com/material-rounded/48/000000/circled-chevron-left.png"
+                    src="@/assets/images/circled-chevron-left.png"
                     width="20"
                 />
             </button>
@@ -34,7 +34,7 @@ const {
             </h4>
             <button class="calender-arrow" @click="updateCurrentTime(1)">
                 <img
-                    src="https://img.icons8.com/material-rounded/48/000000/circled-chevron-right.png"
+                    src="@/assets/images/circled-chevron-right.png"
                     width="20"
                 />
             </button>

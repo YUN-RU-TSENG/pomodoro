@@ -13,7 +13,7 @@ defineEmits(['user-logout'])
         <!-- home-navbar navbar-user -->
         <div class="navbar-user">
             <img
-                src="https://img.icons8.com/external-those-icons-fill-those-icons/48/7c7c7c/external-User-users-those-icons-fill-those-icons-3.png"
+                src="@/assets/images/external-User-users-those-icons-fill-those-icons-3.png"
                 width="24"
             />
             <span>{{ user.email }}</span>
@@ -24,33 +24,27 @@ defineEmits(['user-logout'])
                 <li>
                     <button>
                         <img
-                            src="https://img.icons8.com/ios-glyphs/60/7c7c7c/combo-chart--v1.png"
+                            src="@/assets/images/combo-chart--v1.png"
                             width="24"
                         />
                     </button>
                 </li>
                 <li>
                     <button>
-                        <img
-                            src="https://img.icons8.com/material-rounded/48/7c7c7c/bell--v1.png"
-                            width="24"
-                        />
+                        <img src="@/assets/images/bell--v1.png" width="24" />
                     </button>
                 </li>
                 <li>
                     <button>
                         <img
-                            src="https://img.icons8.com/external-tanah-basah-glyph-tanah-basah/48/7c7c7c/external-setting-essentials-pack-tanah-basah-glyph-tanah-basah.png"
+                            src="@/assets/images/external-setting-essentials-pack-tanah-basah-glyph-tanah-basah.png"
                             width="24"
                         />
                     </button>
                 </li>
                 <li>
                     <button @click="$emit('user-logout')">
-                        <img
-                            src="https://img.icons8.com/metro/48/7c7c7c/exit.png"
-                            width="24"
-                        />
+                        <img src="@/assets/images/exit.png" width="24" />
                     </button>
                 </li>
             </ul>
