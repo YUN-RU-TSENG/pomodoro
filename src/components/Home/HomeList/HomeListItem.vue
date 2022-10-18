@@ -1,6 +1,6 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue'
-import { formaDate } from '@/utils/dayjsFormat'
+import { formatDate } from '@/utils/dayjsFormat'
 
 const props = defineProps({
     pomorodoSelectedTaskId: {
@@ -89,17 +89,19 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
     >
         <a class="list-item">
             <BaseCheckbox
+                id="home-list-item-is-finish"
                 class="checkbox"
+                name="home-list-item-is-finish"
                 :value="task.isFinish"
+                @click.stop
                 @update:value="
                     $emit('update:task', { ...task, isFinish: $event })
                 "
-                @click.stop
             />
             <HomeStartTimer
-                :id="'poromodo-selected-task' + task.id"
+                :id="'pomorodo-selected-task' + task.id"
                 class="start-timer"
-                name="poromodo-selected-task"
+                name="pomorodo-selected-task"
                 :value="task.id"
                 :checked-value="pomorodoSelectedTaskId"
                 @update:value="$emit('update:pomorodoSelectedTaskId', task.id)"
@@ -133,7 +135,7 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
             <p class="date">
                 {{
                     task.expectEndDate
-                        ? formaDate({
+                        ? formatDate({
                               date: task.expectEndDate,
                           })
                         : '未指定完成日'

@@ -1,12 +1,29 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
     id: {
         type: String,
-        default: () => new Date().getTime().toString(),
+        required: true,
     },
     value: {
-        type: Boolean,
+        type: [Boolean, Array],
         required: true,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+})
+
+const emits = defineEmits(['update:value'])
+
+const checkboxValue = computed({
+    set(newValue) {
+        emits('update:value', newValue)
+    },
+    get() {
+        return props.value
     },
 })
 </script>
@@ -18,15 +35,16 @@ export default {
 </script>
 
 <template>
-    <label :for="id" class="base-checkbox"
-        ><input
+    <label :for="id" class="base-checkbox">
+        <input
             :id="id"
             v-bind="{ ...$attrs, class: '' }"
+            v-model="checkboxValue"
             type="checkbox"
-            :checked="value"
-            @change="$emit('update:value', $event.target.checked)" />
-        <div class="box"></div
-    ></label>
+            :name="name"
+        />
+        <div class="box"></div>
+    </label>
 </template>
 
 <style scoped lang="scss">

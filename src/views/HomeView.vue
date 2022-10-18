@@ -4,6 +4,7 @@ import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { storeToRefs } from 'pinia'
+import { useDebounceFn } from '@vueuse/core'
 
 // ========== pinia ==========
 
@@ -16,19 +17,14 @@ const tasksStore = useTasksStore()
 const {
     filterType,
     isLoadingTaskGet,
-    cacheUpdateTaskId,
-    cacheUpdateForm,
+    errorOfTaskAdd,
+    selectedUpdateTaskId,
+    selectedUpdateTask,
+    errorOfTaskUpdate,
     filterTasks,
 } = storeToRefs(tasksStore)
-const {
-    getTasks,
-    deleteTask,
-    clearCacheUpdateTaskId,
-    changeFilterType,
-    addTask,
-    errorOfTaskAdd,
-    setUpdateFormValues,
-} = tasksStore
+const { getTasks, deleteTask, changeFilterType, addTask, updateTask } =
+    tasksStore
 
 // pinia - pomorodoClockStore
 const pomorodoClockStore = usePomorodoClockStore()
@@ -58,25 +54,38 @@ getFolderTypes()
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
+const { debouncedHandleUpdateTask } = useHandleUpdateTask({
+    errorOfTaskUpdate,
+    updateTask,
+})
 
 // ========== component scoped composables function ==========
-
-// 由於刪除的是當前快取編輯的 task，所以刪除時同時需要清除當前快取編輯的 task id
-function deleteTaskAndClearCacheUpdateTaskId(deleteId) {
-    clearCacheUpdateTaskId()
-    deleteTask(deleteId)
-}
 
 // addTask
 function useHandleAddTask({ addTask, errorOfTaskAdd }) {
     const handleAddTask = async ({ formValue, resetForm }) => {
         await addTask(formValue)
-        // 判斷當添加成空，重置表單
+        // 判斷當添加成功，重置表單
         if (!errorOfTaskAdd) resetForm()
     }
 
     return {
         handleAddTask,
+    }
+}
+
+// updateTask
+function useHandleUpdateTask({ updateTask }) {
+    const handleUpdateTask = async ({ formValue }) => {
+        await updateTask(formValue)
+        // 判斷當修改成功
+        // if (!errorOfTaskUpdate) resetForm()
+    }
+
+    const debouncedHandleUpdateTask = useDebounceFn(handleUpdateTask, 1000)
+
+    return {
+        debouncedHandleUpdateTask,
     }
 }
 </script>
@@ -118,27 +127,24 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
                         <HomeListItem
                             v-for="task of filterTasks"
                             :key="task.id"
-                            v-model:cache-update-task-id="cacheUpdateTaskId"
+                            v-model:cache-update-task-id="selectedUpdateTaskId"
                             v-model:pomorodo-selected-task-id="selectedTaskId"
                             :task="task"
                             @update:task="log('@update:task')"
                         />
                     </HomeList>
                 </div>
-                <div v-if="cacheUpdateTaskId" class="task-detail">
+                <div v-if="selectedUpdateTaskId" class="task-detail">
                     <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
+                        v-model:selected-task-id="selectedUpdateTaskId"
                         v-model:pomorodo-selected-task-id="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
-                        :cache-update-form="cacheUpdateForm"
                         :folder-types="folderTypes"
-                        @update:cache-update-form="setUpdateFormValues($event)"
-                        @delete-task="
-                            deleteTaskAndClearCacheUpdateTaskId(
-                                cacheUpdateTaskId
-                            )
-                        "
-                        @close-task-detail="clearCacheUpdateTaskId"
+                        :pomorodo-time="45 * 60 * 1000"
+                        :selected-task="selectedUpdateTask"
+                        @update-task="debouncedHandleUpdateTask"
+                        @delete-task="deleteTask(selectedUpdateTaskId)"
                     />
                 </div>
             </section>

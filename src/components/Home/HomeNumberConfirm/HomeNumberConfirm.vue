@@ -5,6 +5,7 @@ defineProps({
         required: true,
     },
 })
+
 defineEmits(['cancel', 'confirm', 'update:value'])
 </script>
 

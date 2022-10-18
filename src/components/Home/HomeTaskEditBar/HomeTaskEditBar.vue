@@ -1,10 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
-import { formaDate } from '@/utils/dayjsFormat'
+import { formatDate } from '@/utils/dayjsFormat'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
+
+// ========== component props ==========
 
 const props = defineProps({
-    cacheUpdateForm: {
+    selectedTaskId: {
+        type: String,
+        required: true,
+    },
+    selectedTask: {
         type: Object,
         required: true,
     },
@@ -16,79 +24,233 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    pomorodoTime: {
+        type: Number,
+        required: true,
+    },
 })
 
-defineEmits([
-    'play-pomorodo',
-    'update:cache-update-form',
+// ========== component emits ==========
+
+const emits = defineEmits([
+    'update-task',
     'delete-task',
-    'close-task-detail',
-    'update:pomorodoSelectedTaskId',
+    'update:selected-task-id',
+    'update:pomorodo-selected-task-id',
 ])
 
-const cacheTotalTimes = ref(0)
-const cacheExpectEndDate = ref(null)
-const cacheMentionDate = ref(null)
+// ========== component logic ==========
 
-const { covertTimeToPomorodo, covertPomorodoToTime } =
-    useCovertBetweenTimeAndPomorodo()
+// 轉換 pomorodo 與 time(second)
+const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 
-const currentPomorodo = computed(() => {
-    return covertTimeToPomorodo({
-        time: props.cacheUpdateForm.totalExpectTime,
-        pomorodoTime: props.cacheUpdateForm.pomorodoTime,
-    })
+// task form 狀態(包含驗證)
+const { taskForm, handleVeeSubmit, resetForm, formMeta } = useTaskForm()
+
+// 當表單更新時，且通過驗證時，自動發送 update-task 事件
+useAutoSubmitTaskForm({
+    handleVeeSubmit,
+    emits,
+    formMeta,
+    taskForm,
 })
-const currentSpendPomorodo = computed(() => {
-    return covertTimeToPomorodo({
-        time: props.cacheUpdateForm.totalSpendTime,
-        pomorodoTime: props.cacheUpdateForm.pomorodoTime,
+
+// 當更新選擇標單 id 時，重置當前表單內容
+useAutoUpdateTaskFormWhenSelectTaskIdChange({ props })
+
+// cache taskForm - mentionDate, expectEndDate, totalExpectTime 表單值快取，當確認後才會將快取直更新到 taskForm
+const {
+    resetTaskFormCacheItem,
+    taskFormCache,
+    updateTaskFormByCacheAndResetCache,
+} = useTaskFromCache({ taskForm })
+
+// cache taskForm - subtask 子任務編輯快取，當確認後才會將快取直更新到 taskForm
+const { addSubtasks, cacheSubtask } = useTaskFromCacheOfSubtask({ taskForm })
+
+// ========== component scoped composables function ==========
+
+// task form 狀態(包含驗證、重置)
+function useTaskForm() {
+    const {
+        handleSubmit: handleVeeSubmit,
+        useFieldModel,
+        meta: formMeta,
+        resetForm,
+    } = useForm({
+        validationSchema: yup.object({
+            name: yup.string().trim().required(),
+            isFinish: yup.boolean().required(),
+            description: yup.string(),
+            tags: yup.array(),
+            folder: yup.string(),
+            subtasks: yup.array(),
+            pomorodoTime: yup.number(),
+            totalSpendTime: yup.number().integer(),
+            totalExpectTime: yup.number().integer(),
+            expectEndDate: '',
+            mentionDate: '',
+            createAt: '',
+        }),
+        initialValues: props.selectedTask,
     })
-})
+
+    const [
+        name,
+        isFinish,
+        description,
+        tags,
+        folder,
+        subtasks,
+        pomorodoTime,
+        totalSpendTime,
+        totalExpectTime,
+        mentionDate,
+        expectEndDate,
+        createAt,
+    ] = useFieldModel([
+        'name',
+        'isFinish',
+        'description',
+        'tags',
+        'folder',
+        'subtasks',
+        'pomorodoTime',
+        'totalSpendTime',
+        'totalExpectTime',
+        'mentionDate',
+        'expectEndDate',
+        'createAt',
+    ])
+
+    const taskForm = ref({
+        name,
+        isFinish,
+        description,
+        tags,
+        folder,
+        subtasks,
+        pomorodoTime,
+        totalSpendTime,
+        totalExpectTime,
+        mentionDate,
+        expectEndDate,
+        createAt,
+    })
+
+    return { taskForm, handleVeeSubmit, resetForm, formMeta }
+}
+
+// 當表單更新時，且通過驗證時，自動發送 update-task 事件
+function useAutoSubmitTaskForm({ handleVeeSubmit, emits, formMeta, taskForm }) {
+    const submitUpdateTaskForm = handleVeeSubmit((formValue, { resetForm }) => {
+        emits('update-task', { formValue, resetForm })
+    })
+
+    watch(
+        taskForm,
+        () => {
+            if (formMeta.value.dirty) submitUpdateTaskForm()
+        },
+        { deep: true }
+    )
+
+    return {
+        submitUpdateTaskForm,
+    }
+}
+
+// 偵測 prop 傳入的 select id 值變動，一但偵測到變動就重置當前表單內容
+function useAutoUpdateTaskFormWhenSelectTaskIdChange({ props }) {
+    watch(
+        () => props.selectedTaskId,
+        () => {
+            resetForm({ values: props.selectedTask })
+        }
+    )
+}
+
+// cache taskForm (部分表單值有快取，當確認後才會將快取直更新到 taskForm)
+function useTaskFromCache({ taskForm }) {
+    const taskFormCache = ref({
+        mentionDate: null,
+        expectEndDate: null,
+        totalExpectTime: 0,
+    })
+
+    const resetTaskFormCacheItem = (item) => {
+        if (item === 'totalExpectTime') taskFormCache.value[item] = 0
+        else taskFormCache.value[item] = null
+    }
+
+    const updateTaskFormByCacheAndResetCache = (item) => {
+        taskForm.value[item] = taskFormCache.value[item]
+
+        resetTaskFormCacheItem(item)
+    }
+
+    return {
+        resetTaskFormCacheItem,
+        taskFormCache,
+        updateTaskFormByCacheAndResetCache,
+    }
+}
+
+// cache taskForm Subtask 子任務編輯快取
+function useTaskFromCacheOfSubtask({ taskForm }) {
+    const cacheSubtask = ref({
+        name: '',
+        isFinish: false,
+    })
+
+    const addSubtasks = () => {
+        if (!cacheSubtask.value.name) return
+
+        taskForm.value.subtasks = [
+            ...taskForm.value.subtasks,
+            { ...cacheSubtask.value },
+        ]
+
+        cacheSubtask.value = {
+            name: '',
+            isFinish: false,
+        }
+    }
+
+    return {
+        addSubtasks,
+        cacheSubtask,
+    }
+}
 </script>
 
 <template>
-    <!-- home-task-edit-box -->
     <section class="home-task-edit-box">
-        <!-- home-task-edit-box edit-box-header -->
         <header class="edit-box-header">
             <section class="title">
                 <BaseCheckbox
-                    :value="cacheUpdateForm.isFinish"
-                    @update:value="
-                        $emit('update:cache-update-form', {
-                            ...cacheUpdateForm,
-                            isFinish: $event,
-                        })
-                    "
+                    id="home-task-edit-bar-is-finish"
+                    v-model:value="taskForm.isFinish"
+                    name="home-task-edit-bar-is-finish"
                 />
                 <HomeStartTimer
-                    :id="'poromodo-selected-task-editor' + cacheUpdateForm.id"
-                    name="poromodo-selected-task-editor"
-                    :value="cacheUpdateForm.id"
+                    :id="'pomorodo-selected-task-editor' + selectedTaskId"
+                    name="pomorodo-selected-task-editor"
+                    :value="selectedTaskId"
                     :checked-value="pomorodoSelectedTaskId"
                     @update:value="
                         $emit(
-                            'update:pomorodoSelectedTaskId',
-                            cacheUpdateForm.id
+                            'update:pomorodo-selected-task-id',
+                            selectedTaskId
                         )
                     "
                 />
-                <input
-                    type="text"
-                    :value="cacheUpdateForm.name"
-                    @input="
-                        $emit('update:cache-update-form', {
-                            ...cacheUpdateForm,
-                            name: $event.target.value,
-                        })
-                    "
-                />
+                <input v-model="taskForm.name" type="text" />
                 <button>
                     <img src="@/assets/images/empty-flag.png" width="20" />
                 </button>
             </section>
-            <section class="tags">
+            <!-- <section class="tags">
                 <div class="tag">
                     <span>標籤名稱</span>
                 </div>
@@ -96,11 +258,9 @@ const currentSpendPomorodo = computed(() => {
                     <img src="@/assets/images/plus-math--v1.png" width="12" />
                     <span>標籤</span>
                 </button>
-            </section>
+            </section> -->
         </header>
-        <!-- home-task-edit-box edit-box-line -->
         <div class="edit-box-line"></div>
-        <!-- home-task-edit-box edit-box-main -->
         <main class="edit-box-main">
             <section class="list">
                 <ul>
@@ -117,32 +277,42 @@ const currentSpendPomorodo = computed(() => {
                                         src="@/assets/images/retro-alarm-clock.png"
                                         width="14"
                                     />
-                                    <span>{{ currentSpendPomorodo }}</span>
+                                    <span>{{
+                                        taskForm.totalSpendTime
+                                            ? covertTimeToPomorodo({
+                                                  time: taskForm.totalSpendTime,
+                                                  pomorodoTime: pomorodoTime,
+                                              })
+                                            : '0'
+                                    }}</span>
                                     <span class="gray">/</span>
                                     <img
                                         src="@/assets/images/retro-alarm-clock.png"
                                         width="14"
                                     />
-                                    <span>{{ currentPomorodo }}</span>
+                                    <span>{{
+                                        covertTimeToPomorodo({
+                                            time: taskForm.totalExpectTime,
+                                            pomorodoTime: pomorodoTime,
+                                        })
+                                    }}</span>
                                 </button>
                             </template>
                             <template #model="slotProps">
                                 <HomeNumberConfirm
-                                    :value="cacheTotalTimes"
-                                    @cancel="slotProps.close()"
+                                    v-model:value="
+                                        taskFormCache.totalExpectTime
+                                    "
                                     @confirm="
-                                        $emit('update:cache-update-form', {
-                                            ...cacheUpdateForm,
-                                            totalExpectTime:
-                                                covertPomorodoToTime({
-                                                    pomorodoTime:
-                                                        cacheUpdateForm.pomorodoTime,
-                                                    pomorodo: cacheTotalTimes,
-                                                }),
-                                        }),
+                                        updateTaskFormByCacheAndResetCache(
+                                            'pomorodoTime'
+                                        ),
                                             slotProps.close()
                                     "
-                                    @update:value="cacheTotalTimes = $event"
+                                    @cancel="
+                                        slotProps.close(),
+                                            taskFormCache('totalExpectTime')
+                                    "
                                 />
                             </template>
                         </BasePopover>
@@ -157,9 +327,9 @@ const currentSpendPomorodo = computed(() => {
                             <template #button>
                                 <button class="date">
                                     {{
-                                        cacheUpdateForm.expectEndDate
-                                            ? formaDate({
-                                                  date: cacheUpdateForm.expectEndDate,
+                                        taskForm.expectEndDate
+                                            ? formatDate({
+                                                  date: taskForm.expectEndDate,
                                               })
                                             : '無'
                                     }}
@@ -167,16 +337,19 @@ const currentSpendPomorodo = computed(() => {
                             </template>
                             <template #model="slotProps">
                                 <HomeCalender
-                                    :value="cacheExpectEndDate"
+                                    v-model:value="taskFormCache.expectEndDate"
                                     @confirm="
-                                        $emit('update:cache-update-form', {
-                                            ...cacheUpdateForm,
-                                            expectEndDate: cacheExpectEndDate,
-                                        }),
+                                        updateTaskFormByCacheAndResetCache(
+                                            'expectEndDate'
+                                        ),
                                             slotProps.close()
                                     "
-                                    @cancel="slotProps.close()"
-                                    @update:value="cacheExpectEndDate = $event"
+                                    @cancel="
+                                        slotProps.close(),
+                                            resetTaskFormCacheItem(
+                                                'expectEndDate'
+                                            )
+                                    "
                                 />
                             </template>
                         </BasePopover>
@@ -190,25 +363,15 @@ const currentSpendPomorodo = computed(() => {
                         <BasePopover width="200px">
                             <template #button>
                                 <button class="folder">
-                                    {{
-                                        cacheUpdateForm.folder
-                                            ? cacheUpdateForm.folder
-                                            : '無'
-                                    }}
+                                    {{ taskForm.folder || '無' }}
                                 </button>
                             </template>
                             <template #model="slotProps">
                                 <HomeDropdownConfirm
+                                    v-model:value="taskForm.folder"
+                                    name="update-task-form-folder"
                                     :contents="folderTypes"
-                                    :value="cacheUpdateForm.folder"
-                                    name="detail-task-folder-name"
-                                    @update:value="
-                                        $emit('update:cache-update-form', {
-                                            ...cacheUpdateForm,
-                                            folder: $event,
-                                        }),
-                                            slotProps.close()
-                                    "
+                                    @close-dropdown="slotProps.close()"
                                 />
                             </template>
                         </BasePopover>
@@ -220,9 +383,9 @@ const currentSpendPomorodo = computed(() => {
                             <template #button>
                                 <button class="folder">
                                     {{
-                                        cacheUpdateForm.mentionDate
-                                            ? formaDate({
-                                                  date: cacheUpdateForm.mentionDate,
+                                        taskForm.mentionDate
+                                            ? formatDate({
+                                                  date: taskForm.mentionDate,
                                               })
                                             : '無'
                                     }}
@@ -230,16 +393,19 @@ const currentSpendPomorodo = computed(() => {
                             </template>
                             <template #model="slotProps">
                                 <HomeCalender
-                                    :value="cacheMentionDate"
+                                    v-model:value="taskFormCache.mentionDate"
                                     @confirm="
-                                        $emit('update:cache-update-form', {
-                                            ...cacheUpdateForm,
-                                            mentionDate: cacheMentionDate,
-                                        }),
+                                        updateTaskFormByCacheAndResetCache(
+                                            'mentionDate'
+                                        ),
                                             slotProps.close()
                                     "
-                                    @cancel="slotProps.close()"
-                                    @update:value="cacheMentionDate = $event"
+                                    @cancel="
+                                        slotProps.close(),
+                                            resetTaskFormCacheItem(
+                                                'mentionDate'
+                                            )
+                                    "
                                 />
                             </template>
                         </BasePopover>
@@ -247,61 +413,67 @@ const currentSpendPomorodo = computed(() => {
                 </ul>
             </section>
             <section class="subtask">
-                <ul v-if="cacheUpdateForm.subtasks.length">
-                    <li v-for="(subtask, index) in subtasks" :key="index">
+                <ul v-if="taskForm.subtasks?.length">
+                    <li
+                        v-for="(subtask, index) in taskForm.subtasks"
+                        :key="index"
+                    >
                         <BaseCheckbox
+                            :id="'home-subtask-edit-is-finish' + index"
                             :value="subtask.isFinish"
-                            @update:value="$emit('update:cache-update-form')"
+                            :name="'home-subtask-edit-is-finish' + index"
+                            @update:value="
+                                taskForm.subtasks[index].isFinish =
+                                    !taskForm.subtasks[index].isFinish
+                            "
                         />
                         <HomeStartTimer
-                            :id="'poromodo-selected-task' + task.id"
-                            name="poromodo-selected-task"
-                            :value="cacheUpdateForm.id"
+                            :id="'pomorodo-selected-task' + selectedTaskId"
+                            name="pomorodo-selected-task"
+                            :value="selectedTaskId"
                             :checked-value="pomorodoSelectedTaskId"
                             @update:value="
                                 $emit(
-                                    'update:pomorodoSelectedTaskId',
-                                    cacheUpdateForm.id
+                                    'update:pomorodo-selected-task-id',
+                                    selectedTaskId
                                 )
                             "
                         />
-                        <h3>{{ subtask }}</h3>
+                        <h3>{{ subtask.name }}</h3>
                     </li>
                 </ul>
 
-                <form>
+                <form @submit.prevent="addSubtasks">
                     <button>
                         <img
                             src="@/assets/images/plus-math--v1.png"
                             width="20"
                         />
                     </button>
-                    <input placeholder="子任務" type="text" />
+                    <input
+                        v-model.trim="cacheSubtask.name"
+                        placeholder="子任務"
+                        type="text"
+                    />
                 </form>
             </section>
-
             <section class="description">
-                <HomeTaskEditBarTextArea
-                    :value="cacheUpdateForm.description"
-                    @input="
-                        $emit('update:cache-update-form', {
-                            ...cacheUpdateForm,
-                            description: $event.target.value,
-                        })
-                    "
-                />
+                <HomeTaskEditBarTextArea v-model:value="taskForm.description" />
             </section>
         </main>
-        <!-- home-task-edit-box edit-box-line -->
         <div class="edit-box-line"></div>
-        <!-- home-task-edit-box edit-box-footer -->
         <footer class="edit-box-footer">
-            <button @click="$emit('close-task-detail')">
+            <button @click="$emit('update:selected-task-id', '')">
                 <img src="@/assets/images/full-page-view.png" width="20" />
             </button>
             <p>
                 創建於
-                {{ cacheUpdateForm.createAt.seconds }}
+                {{
+                    formatDate({
+                        date: taskForm.createAt,
+                        formatString: 'YYYY年MM月DD日',
+                    })
+                }}
             </p>
             <button @click="$emit('delete-task')">
                 <img src="@/assets/images/trash--v1.png" width="20" />

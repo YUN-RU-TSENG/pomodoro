@@ -14,7 +14,7 @@ defineProps({
     },
 })
 
-defineEmits(['update:value', 'close-popover'])
+defineEmits(['update:value', 'close-dropdown'])
 </script>
 
 <template>
@@ -32,7 +32,7 @@ defineEmits(['update:value', 'close-popover'])
                 :value="content.name"
                 :checked="content.name == value"
                 @input="
-                    $emit('update:value', content.name), $emit('close-popover')
+                    $emit('update:value', content.name), $emit('close-dropdown')
                 "
             />
             <div class="box">

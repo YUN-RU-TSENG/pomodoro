@@ -1,13 +1,20 @@
-<script setup></script>
+<script setup>
+defineProps({
+    value: { type: String, required: true },
+})
+
+defineEmits(['update:value'])
+</script>
 
 <template>
     <textarea
-        id=""
         placeholder="任務描述..."
         name=""
         cols="30"
         rows="10"
         class="textarea"
+        :value="value"
+        @input="$emit('update:value', $event.target.value)"
     />
 </template>
 

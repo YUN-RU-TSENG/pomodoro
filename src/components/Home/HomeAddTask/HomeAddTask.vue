@@ -68,8 +68,8 @@ function useAddTaskForm() {
 
     // name
     const name = useFieldModel('name')
-    // totalExpectTime
 
+    // totalExpectTime
     const totalExpectTime = useFieldModel('totalExpectTime')
 
     // folder
@@ -128,7 +128,7 @@ function useSubmitTaskForm({ handleVeeSubmit, emits }) {
                     v-model:value="folder"
                     name="folder"
                     :contents="folderTypes"
-                    @close-popover="slotProps.close()"
+                    @close-dropdown="slotProps.close()"
                 />
             </template>
         </BasePopover>

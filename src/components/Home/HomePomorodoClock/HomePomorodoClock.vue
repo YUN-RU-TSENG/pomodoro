@@ -107,7 +107,12 @@ const currentSmallDeg = computed(() => {
                 <img src="@/assets/images/full-page-view-1.png" width="24" />
             </button>
             <section class="item">
-                <BaseCheckbox class="checkbox" :value="false" />
+                <BaseCheckbox
+                    id="home-pomorodo-is-finish"
+                    class="checkbox"
+                    :value="false"
+                    name="home-pomorodo-is-finish"
+                />
 
                 <section class="content">
                     <p class="text">{{ selectedTask.name }}</p>
