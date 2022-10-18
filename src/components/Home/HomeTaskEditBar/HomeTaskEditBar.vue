@@ -250,15 +250,6 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                     <img src="@/assets/images/empty-flag.png" width="20" />
                 </button>
             </section>
-            <!-- <section class="tags">
-                <div class="tag">
-                    <span>標籤名稱</span>
-                </div>
-                <button class="add-tag tag">
-                    <img src="@/assets/images/plus-math--v1.png" width="12" />
-                    <span>標籤</span>
-                </button>
-            </section> -->
         </header>
         <div class="edit-box-line"></div>
         <main class="edit-box-main">
@@ -520,33 +511,6 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
             font-size: 14px;
             line-height: 21px;
             color: $gray-4;
-        }
-    }
-
-    .tags {
-        font-size: 0px;
-        .tag {
-            display: inline-block;
-            padding: 0 6px;
-            border-radius: 12px;
-            font-size: 12px;
-            line-height: 18px;
-            background-color: $red-1;
-            border: 1px solid $red-2;
-            &:not(:last-child) {
-                margin-right: 6px;
-            }
-
-            img,
-            span {
-                margin-right: 2px;
-                vertical-align: middle;
-            }
-        }
-
-        .add-tag {
-            background-color: transparent;
-            border: 1px dashed $gray-3;
         }
     }
 }

@@ -4,7 +4,6 @@ import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { storeToRefs } from 'pinia'
-import { useDebounceFn } from '@vueuse/core'
 
 // ========== pinia ==========
 
@@ -20,11 +19,15 @@ const {
     errorOfTaskAdd,
     selectedUpdateTaskId,
     selectedUpdateTask,
-    errorOfTaskUpdate,
     filterTasks,
 } = storeToRefs(tasksStore)
-const { getTasks, deleteTask, changeFilterType, addTask, updateTask } =
-    tasksStore
+const {
+    getTasks,
+    deleteTask,
+    changeFilterType,
+    addTask,
+    debouncedUpdateTaskAndAutoRetryOnError,
+} = tasksStore
 
 // pinia - pomorodoClockStore
 const pomorodoClockStore = usePomorodoClockStore()
@@ -54,10 +57,6 @@ getFolderTypes()
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
-const { debouncedHandleUpdateTask } = useHandleUpdateTask({
-    errorOfTaskUpdate,
-    updateTask,
-})
 
 // ========== component scoped composables function ==========
 
@@ -71,21 +70,6 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
 
     return {
         handleAddTask,
-    }
-}
-
-// updateTask
-function useHandleUpdateTask({ updateTask }) {
-    const handleUpdateTask = async ({ formValue }) => {
-        await updateTask(formValue)
-        // 判斷當修改成功
-        // if (!errorOfTaskUpdate) resetForm()
-    }
-
-    const debouncedHandleUpdateTask = useDebounceFn(handleUpdateTask, 1000)
-
-    return {
-        debouncedHandleUpdateTask,
     }
 }
 </script>
@@ -140,7 +124,11 @@ function useHandleUpdateTask({ updateTask }) {
                         :folder-types="folderTypes"
                         :pomorodo-time="45 * 60 * 1000"
                         :selected-task="selectedUpdateTask"
-                        @update-task="debouncedHandleUpdateTask"
+                        @update-task="
+                            debouncedUpdateTaskAndAutoRetryOnError(
+                                $event.formValue
+                            )
+                        "
                         @delete-task="deleteTask(selectedUpdateTaskId)"
                     />
                 </div>

@@ -58,7 +58,7 @@ export default {
 
     font-size: 12px;
     line-height: 18px;
-    color: $red-2;
+    color: $green-1;
     text-align: left;
 }
 </style>

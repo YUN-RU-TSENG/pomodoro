@@ -238,7 +238,7 @@ const currentSmallDeg = computed(() => {
 <style scoped lang="scss">
 .home-pomorodo {
     transition: all 0.3s ease;
-    background-color: $red-2;
+    background-color: $green-1;
     box-shadow: 0 0 4px $gray-2;
 
     &.full {

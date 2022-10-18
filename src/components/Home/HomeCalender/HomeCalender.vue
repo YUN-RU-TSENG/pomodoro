@@ -146,7 +146,7 @@ const {
             border-radius: 50%;
             &.hover:hover,
             &.active {
-                background-color: $red-2;
+                background-color: $green-1;
                 color: $white-1;
             }
         }

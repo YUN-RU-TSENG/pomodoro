@@ -35,7 +35,7 @@ defineProps({ isLoading: { type: Boolean, required: true } })
     width: 24px;
     height: 24px;
     border: 4px solid $gray-0;
-    border-top: 4px solid $red-2;
+    border-top: 4px solid $green-1;
     border-radius: 50%;
     animation: circle 1.2s linear infinite;
 }

@@ -58,11 +58,11 @@ defineEmits(['submit-form', 'change-page'])
         font-size: 24px;
         line-height: 36px;
         font-weight: 100;
-        color: $red-2;
+        color: $green-1;
     }
 
     a {
-        color: $red-2;
+        color: $green-1;
         cursor: pointer;
     }
 

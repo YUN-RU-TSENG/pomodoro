@@ -72,7 +72,7 @@ defineEmits(['update:value'])
         width: 6px;
         height: 6px;
         border-radius: 6px;
-        background-color: $red-2;
+        background-color: $green-1;
     }
 
     .content {

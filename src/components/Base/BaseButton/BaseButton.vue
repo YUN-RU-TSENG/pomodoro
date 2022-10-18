@@ -32,12 +32,12 @@ button.base-button {
 }
 
 .base-button.primary {
-    border: 1px solid $red-2;
-    background-color: $red-2;
+    border: 1px solid $green-1;
+    background-color: $green-1;
     color: $white-1;
 
     &:hover {
-        background-color: $red-3;
+        background-color: $green-2;
     }
 }
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import {
     collection,
     getDocs,
@@ -13,6 +13,7 @@ import {
 } from '@/utils/firebaseStore'
 import { useUserStore } from './user'
 import dayjs from 'dayjs'
+import { useDebounceFn } from '@vueuse/core'
 
 export const useTasksStore = defineStore('tasks', () => {
     // userStore
@@ -42,6 +43,12 @@ export const useTasksStore = defineStore('tasks', () => {
         tasks,
         getTasks,
     })
+    const { debouncedUpdateTaskAndAutoRetryOnError } =
+        useDebouncedUpdateTaskAndAutoResendUpdateOnError({
+            updateTask,
+            errorOfTaskUpdate,
+            selectedUpdateTaskId,
+        })
     const { deleteTask, isLoadingTaskDelete } = useDeleteTask({
         getTasks,
         selectedUpdateTaskId,
@@ -60,6 +67,7 @@ export const useTasksStore = defineStore('tasks', () => {
         selectedUpdateTaskId,
         selectedUpdateTask,
         updateTask,
+        debouncedUpdateTaskAndAutoRetryOnError,
         errorOfTaskUpdate,
         isLoadingTaskUpdate,
         deleteTask,
@@ -125,7 +133,7 @@ function useAddTask({ firebaseRefTask, getTasks, userStore }) {
     const errorOfTaskAdd = ref(null)
 
     // 新增 task
-    const addTask = async (formValue) => {
+    const addTask = async ({ formValue, resetForm = () => {} }) => {
         try {
             isLoadingTaskAdd.value = true
             errorOfTaskAdd.value = null
@@ -134,6 +142,8 @@ function useAddTask({ firebaseRefTask, getTasks, userStore }) {
                 uid: userStore.user.uid,
                 ...formValue,
             })
+
+            resetForm()
 
             getTasks()
         } catch (error) {
@@ -192,6 +202,42 @@ function useUpdateTask({ tasks, getTasks }) {
         updateTask,
         isLoadingTaskUpdate,
         errorOfTaskUpdate,
+    }
+}
+
+function useDebouncedUpdateTaskAndAutoResendUpdateOnError({
+    updateTask,
+    errorOfTaskUpdate,
+    selectedUpdateTaskId,
+}) {
+    // 自動每三秒發送一次的 interval Id
+    const timeIntervalId = ref(null)
+
+    // 當 update task id 更新，刪除 interval Id
+    watch(selectedUpdateTaskId, () => {
+        if (timeIntervalId.value) clearTimeout(timeIntervalId.value)
+        timeIntervalId.value = null
+    })
+
+    const updateTaskAndAutoResendUpdateFormOnError = async (formValue) => {
+        await updateTask(formValue)
+
+        // 判斷當修改失敗，自動每三秒發送一次，一但成功，就取消當前的 每三秒發送一次的 interval Id
+        if (errorOfTaskUpdate.value) {
+            timeIntervalId.value = setTimeout(
+                () => updateTask(formValue),
+                3 * 1000
+            )
+        }
+    }
+
+    const debouncedUpdateTaskAndAutoRetryOnError = useDebounceFn(
+        updateTaskAndAutoResendUpdateFormOnError,
+        1000
+    )
+
+    return {
+        debouncedUpdateTaskAndAutoRetryOnError,
     }
 }
 

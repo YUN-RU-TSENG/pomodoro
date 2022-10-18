@@ -314,7 +314,7 @@ function useFolderType() {
         span {
             font-size: 14px;
             line-height: 21px;
-            color: $red-1;
+            color: $green-0;
         }
     }
 

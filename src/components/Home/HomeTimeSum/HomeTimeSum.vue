@@ -38,7 +38,7 @@
     h3 {
         font-size: 20px;
         line-height: 28px;
-        color: $red-1;
+        color: $green-0;
     }
 
     p {

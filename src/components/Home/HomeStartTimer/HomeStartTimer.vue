@@ -46,7 +46,7 @@ defineEmits(['update:value'])
         width: 20px;
         height: 20px;
         background: no-repeat center/contain
-            url('@/assets/images/circled-play.png');
+            url('@/assets/images/play-button-circled.png');
     }
 
     input:checked ~ .box {

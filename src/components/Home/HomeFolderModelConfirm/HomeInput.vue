@@ -54,7 +54,7 @@ const validationListeners = computed(() => {
 
 <style scoped lang="scss">
 .error {
-    color: $red-2;
+    color: $green-1;
     font-size: 12px;
     line-height: 18px;
 }
