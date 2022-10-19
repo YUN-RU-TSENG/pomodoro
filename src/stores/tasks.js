@@ -156,7 +156,7 @@ function useAddTask({ firebaseRefTask, getTasks, userStore }) {
     const errorOfTaskAdd = ref(null)
 
     // 新增 task
-    const addTask = async ({ formValue, resetForm = () => {} }) => {
+    const addTask = async (formValue) => {
         try {
             isLoadingTaskAdd.value = true
             errorOfTaskAdd.value = null
@@ -165,8 +165,6 @@ function useAddTask({ firebaseRefTask, getTasks, userStore }) {
                 uid: userStore.user.uid,
                 ...formValue,
             })
-
-            resetForm()
 
             getTasks()
         } catch (error) {
@@ -193,7 +191,7 @@ function useUpdateTask({ tasks, getTasks }) {
         const [result] = tasks.value.filter(
             (task) => task.id === selectedUpdateTaskId.value
         )
-        return JSON.parse(JSON.stringify(result))
+        return result ? JSON.parse(JSON.stringify(result)) : null
     })
 
     // 更新 task
@@ -256,7 +254,7 @@ function useDebouncedUpdateTaskAndAutoResendUpdateOnError({
 
     const debouncedUpdateTaskAndAutoRetryOnError = useDebounceFn(
         updateTaskAndAutoResendUpdateFormOnError,
-        1000
+        1 * 1000
     )
 
     return {

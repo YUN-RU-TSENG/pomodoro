@@ -57,7 +57,7 @@ function useAddTaskForm() {
             tags: [],
             folder: '',
             totalSpendTime: 0,
-            pomorodoTime: 1000 * 60 * 25,
+            pomorodoTime: 60 * 25,
             totalExpectTime: 0,
             subtasks: [],
             createAt: dayjs().toISOString(),

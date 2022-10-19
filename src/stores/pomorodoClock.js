@@ -14,7 +14,7 @@ export const usePomorodoClockStore = defineStore('pomorodoClock', () => {
 
     // pomorodo timer
     const timer = ref({
-        pomorodo: 25 * 60, // pomorodo 時長(秒)
+        pomorodo: 45 * 60, // pomorodo 時長(秒)
         breakTime: 5 * 60, // breakTime 時長(秒)
         longBreakTime: 15 * 60, // longBreakTime 時長(秒)
         longBreakInterval: 4 * 60, // longBreakTime 間隔回數

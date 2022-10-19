@@ -69,7 +69,7 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
     const handleAddTask = async ({ formValue, resetForm }) => {
         await addTask(formValue)
         // 判斷當添加成功，重置表單
-        if (!errorOfTaskAdd) resetForm()
+        if (!errorOfTaskAdd.value) resetForm()
     }
 
     return {
@@ -118,7 +118,7 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
                     />
                     <HomeAddTask
                         :folder-types="folderTypes"
-                        :pomorodo-time="1000 * 60 * 25"
+                        :pomorodo-time="60 * 25"
                         @add-tasks="handleAddTask"
                     />
                     <HomeList class="home-list" :is-loading="isLoadingTaskGet">

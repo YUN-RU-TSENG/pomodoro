@@ -42,7 +42,8 @@ const emits = defineEmits([
 /* ========== component logic ========== */
 
 // 轉換 pomorodo 與 time(second)
-const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
+const { covertTimeToPomorodo, covertPomorodoToTime } =
+    useCovertBetweenTimeAndPomorodo()
 
 // task form 狀態(包含驗證)
 const { taskForm, handleVeeSubmit, resetForm, formMeta } = useTaskForm()
@@ -63,7 +64,7 @@ const {
     resetTaskFormCacheItem,
     taskFormCache,
     updateTaskFormByCacheAndResetCache,
-} = useTaskFromCache({ taskForm })
+} = useTaskFromCache({ taskForm, props })
 
 // cache taskForm - subtask 子任務編輯快取，當確認後才會將快取直更新到 taskForm
 const { addSubtasks, cacheSubtask } = useTaskFromCacheOfSubtask({ taskForm })
@@ -171,7 +172,7 @@ function useAutoUpdateTaskFormWhenSelectTaskIdChange({ props }) {
 }
 
 // cache taskForm (部分表單值有快取，當確認後才會將快取直更新到 taskForm)
-function useTaskFromCache({ taskForm }) {
+function useTaskFromCache({ taskForm, props }) {
     const taskFormCache = ref({
         mentionDate: null,
         expectEndDate: null,
@@ -184,7 +185,12 @@ function useTaskFromCache({ taskForm }) {
     }
 
     const updateTaskFormByCacheAndResetCache = (item) => {
-        taskForm.value[item] = taskFormCache.value[item]
+        if (item === 'totalExpectTime')
+            taskForm.value[item] = covertPomorodoToTime({
+                pomorodo: taskFormCache.value[item],
+                pomorodoTime: props.pomorodoTime,
+            })
+        else taskForm.value[item] = taskFormCache.value[item]
 
         resetTaskFormCacheItem(item)
     }
@@ -296,13 +302,15 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                                     "
                                     @confirm="
                                         updateTaskFormByCacheAndResetCache(
-                                            'pomorodoTime'
+                                            'totalExpectTime'
                                         ),
                                             slotProps.close()
                                     "
                                     @cancel="
                                         slotProps.close(),
-                                            taskFormCache('totalExpectTime')
+                                            resetTaskFormCacheItem(
+                                                'totalExpectTime'
+                                            )
                                     "
                                 />
                             </template>
