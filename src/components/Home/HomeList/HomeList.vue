@@ -1,11 +1,17 @@
 <script setup>
-defineProps({ isLoading: { type: Boolean, required: true } })
+defineProps({
+    isLoading: { type: Boolean, required: true },
+    title: {
+        type: String,
+        default: '標題',
+    },
+})
 </script>
 
 <template>
     <section class="home-list">
         <div v-show="isLoading" class="loading"><div class="box"></div></div>
-        <h3 class="list-title">標題</h3>
+        <h3 class="list-title">{{ title }}</h3>
         <ul class="list-wrapper">
             <slot></slot>
         </ul>
@@ -46,11 +52,6 @@ defineProps({ isLoading: { type: Boolean, required: true } })
     font-size: 14px;
     line-height: 21px;
     color: $gray-4;
-}
-
-.home-list .list-wrapper {
-    max-height: 75vh;
-    overflow: scroll;
 }
 
 @keyframes circle {

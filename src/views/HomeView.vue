@@ -9,7 +9,8 @@ import { storeToRefs } from 'pinia'
 
 // pinia - userStore
 const userStore = useUserStore()
-const { user, logout } = storeToRefs(userStore)
+const { user } = storeToRefs(userStore)
+const { logout } = userStore
 
 // pinia - tasksStore
 const tasksStore = useTasksStore()
@@ -28,7 +29,6 @@ const {
 const {
     getTasks,
     deleteTask,
-    changeFilterType,
     addTask,
     debouncedUpdateTaskAndAutoRetryOnError,
 } = tasksStore
@@ -86,13 +86,12 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
         <main class="home-workspace">
             <!-- workspace-sidebar -->
             <HomeSidebar
+                v-model:filter-type="filterType"
                 class="workspace-sidebar"
                 style="height: calc(100vh - 45px)"
-                :filter-type="filterType"
                 :each-folder-type-total-task-time="eachFolderTypeTotalTaskTime"
                 :is-loading-folder-types-add="isLoadingFolderTypesAdd"
                 @add-folder-type="addFolderType($event)"
-                @update:filter-type="changeFilterType($event)"
             />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
@@ -226,6 +225,8 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
 
         .home-list {
             margin-bottom: 24px;
+            height: 500px;
+            overflow: scroll;
         }
     }
 

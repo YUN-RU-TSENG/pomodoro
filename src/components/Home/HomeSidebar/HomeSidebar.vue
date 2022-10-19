@@ -1,30 +1,90 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useToggleComponent } from '@/composables/useToggleComponent'
+
+/* ========== component props ========== */
 
 const props = defineProps({
-    filterType: { type: String, required: true },
+    filterType: { type: Object, required: true },
     eachFolderTypeTotalTaskTime: { type: Array, required: true },
     isLoadingFolderTypesAdd: { type: Boolean, required: true },
 })
 
-defineEmits(['add-folder-type', 'update:filter-type'])
+/* ========== component emits ========== */
 
-// folder types
-const { isFolderConfirmVisible } = useFolderType()
-// sidebar item
-const { selectSidebarItem } = useSelectSidebarItem({ props })
+const emits = defineEmits(['add-folder-type', 'update:filter-type'])
 
+/* ========== component logic ========== */
+
+// sidebar 項目
+const {
+    sidebarItems,
+    updateSelectSidebarItem,
+    isSidebarItemSelect,
+    isSidebarFolderItemSelect,
+} = useSelectSidebarItem({ props })
+
+// folder confirm 框是否可見
+const { visible: isFolderConfirmVisible } = useToggleComponent()
+
+/*========== component scoped composables function ========== */
+
+// sidebar 項目
 function useSelectSidebarItem({ props }) {
-    const selectSidebarItem = computed(() => (sidebarItem) => {
-        return sidebarItem === props.filterType
+    // sidebar 項目
+    const sidebarItems = [
+        { name: '今天', type: 'taskOfToday', iconUrl: getImageUrl('sun.png') },
+        {
+            name: '稍後',
+            type: 'taskOfFuture',
+            iconUrl: getImageUrl('external-sunset-3.png'),
+        },
+        {
+            name: '尚未安排',
+            type: 'taskOfNoExpectTime',
+            iconUrl: getImageUrl('calendar--v1-1.png'),
+        },
+        {
+            name: '全部',
+            type: 'all',
+            iconUrl: getImageUrl('calendar--v1-2.png'),
+        },
+        {
+            name: '已完成',
+            type: 'taskOfFinish',
+            iconUrl: getImageUrl('checked.png'),
+        },
+    ]
+
+    // 當前 sidebar 項目是否選中
+    const isSidebarItemSelect = computed(() => (sidebarItemType) => {
+        return sidebarItemType === props.filterType.type
     })
-    return { selectSidebarItem }
+
+    // 當前 folder sidebar 項目是否選中
+    const isSidebarFolderItemSelect = computed(
+        () => (sidebarFolderItemType) => {
+            if (props.filterType.type !== 'taskOfTheFolder') return
+            return sidebarFolderItemType === props.filterType.param
+        }
+    )
+
+    // 更換當前選中的 sidebar 項目 (emit)
+    const updateSelectSidebarItem = (filterTypeType, param) => {
+        emits('update:filter-type', { type: filterTypeType, param })
+    }
+
+    return {
+        sidebarItems,
+        updateSelectSidebarItem,
+        isSidebarItemSelect,
+        isSidebarFolderItemSelect,
+    }
 }
 
-function useFolderType() {
-    const isFolderConfirmVisible = ref(false)
-
-    return { isFolderConfirmVisible }
+// 取得 img url
+function getImageUrl(name) {
+    return new URL(`../../../assets/images/${name}`, import.meta.url).href
 }
 </script>
 
@@ -36,108 +96,48 @@ function useFolderType() {
             <ul class="sidebar-list">
                 <!-- home-sidebar sidebar-item -->
                 <li
+                    v-for="item of sidebarItems"
+                    :key="item.type"
                     class="sidebar-item-wrapper"
-                    @click="$emit('update:filter-type', 0)"
+                    @click="updateSelectSidebarItem(item.type)"
                 >
                     <a
                         :class="[
                             'sidebar-item',
-                            selectSidebarItem('taskOfToday') ? 'active' : '',
+                            isSidebarItemSelect(item.type) ? 'active' : '',
                         ]"
                     >
-                        <img src="@/assets/images/sun.png" width="22" />
-                        <h3>今天</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="pomorodo-time">6</p>
-                    </a>
-                </li>
-                <li
-                    class="sidebar-item-wrapper"
-                    @click="$emit('update:filter-type', 1)"
-                >
-                    <!-- 點擊為當前項目時，當前項目會呈現選中狀態，添加 active -->
-                    <a
-                        :class="[
-                            'sidebar-item',
-                            selectSidebarItem('taskOfFuture') ? 'active' : '',
-                        ]"
-                    >
-                        <img
-                            src="@/assets/images/external-sunset-weather-royyan-wijaya-basic-outline-royyan-wijaya-3.png"
-                            width="22"
-                        />
-                        <h3>稍後</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="pomorodo-time">6</p>
-                    </a>
-                </li>
-                <li
-                    class="sidebar-item-wrapper"
-                    @click="$emit('update:filter-type', 5)"
-                >
-                    <a
-                        :class="[
-                            'sidebar-item',
-                            selectSidebarItem('taskOfNoTime') ? 'active' : '',
-                        ]"
-                    >
-                        <img
-                            src="@/assets/images/calendar--v1-1.png"
-                            width="22"
-                        />
-                        <h3>尚未安排</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="pomorodo-time">6</p>
-                    </a>
-                </li>
-                <li
-                    class="sidebar-item-wrapper"
-                    @click="$emit('update:filter-type', 7)"
-                >
-                    <a
-                        :class="[
-                            'sidebar-item',
-                            selectSidebarItem('all') ? 'active' : '',
-                        ]"
-                    >
-                        <img
-                            src="@/assets/images/calendar--v1-2.png"
-                            width="22"
-                        />
-                        <h3>全部</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="pomorodo-time">6</p>
-                    </a>
-                </li>
-                <li
-                    class="sidebar-item-wrapper"
-                    @click="$emit('update:filter-type', 6)"
-                >
-                    <a
-                        :class="[
-                            'sidebar-item',
-                            selectSidebarItem('taskOfFinish') ? 'active' : '',
-                        ]"
-                    >
-                        <img src="@/assets/images/checked.png" width="22" />
-                        <h3>已完成</h3>
+                        <img :src="item.iconUrl" width="22" />
+                        <h3>{{ item.name }}</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="pomorodo-time">6</p>
                     </a>
                 </li>
             </ul>
         </section>
-        <!-- home-sidebar sidebar-line -->
         <div class="sidebar-line"></div>
         <!-- home-sidebar sidebar-folder -->
-        <section class="sidebar-folder">
+        <section class="sidebar-base folder">
             <ul class="sidebar-list">
                 <li
                     v-for="folderType of eachFolderTypeTotalTaskTime"
                     :key="folderType.id"
                     class="sidebar-item-wrapper"
+                    @click="
+                        $emit('update:filter-type', {
+                            type: 'taskOfTheFolder',
+                            param: folderType.name,
+                        })
+                    "
                 >
-                    <a class="sidebar-item">
+                    <a
+                        :class="[
+                            'sidebar-item',
+                            isSidebarFolderItemSelect(folderType.name)
+                                ? 'active'
+                                : '',
+                        ]"
+                    >
                         <img
                             src="@/assets/images/folder-invoices--v1.png"
                             width="22"
@@ -146,47 +146,12 @@ function useFolderType() {
                         <p class="total-spend-time">
                             {{ folderType.time + 'h' }}
                         </p>
-                        <p class="pomorodo-time">{{ folderType.tasks }}</p>
-                        <button class="arrow">
-                            <img
-                                src="@/assets/images/external-arrow-arrows-dreamstale-lineal-dreamstale-5.png"
-                                width="12"
-                            />
-                        </button>
+                        <p class="pomorodo-time">{{ '1' }}</p>
                     </a>
-                    <!-- 隱藏 folder 子項目時，添加 un-show -->
-                    <!-- <div class="subitem un-show">
-                        <div class="line"></div>
-                        <ul class="list">
-                            <li class="sidebar-item-wrapper">
-                                <a class="sidebar-item">
-                                    <img
-                                        src="@/assets/images/circled-dot.png"
-
-                                        width="22"
-                                    />
-                                    <h3>名稱</h3>
-                                    <p class="total-spend-time">6h</p>
-                                    <p class="pomorodo-time">6</p>
-                                </a>
-                            </li>
-                            <li class="sidebar-item-wrapper">
-                                <a class="sidebar-item">
-                                    <img
-                                        src="@/assets/images/circled-dot.png"
-
-                                        width="22"
-                                    />
-                                    <h3>名稱</h3>
-                                    <p class="total-spend-time">6h</p>
-                                    <p class="pomorodo-time">6</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </div> -->
                 </li>
             </ul>
         </section>
+
         <!-- home-sidebar sidebar-footer -->
         <footer class="sidebar-footer">
             <button class="add" @click="visible = true">
@@ -246,32 +211,8 @@ function useFolderType() {
 .home-sidebar .sidebar-base {
     flex: 0 1 auto;
     padding: 10px;
-}
 
-.home-sidebar .sidebar-folder {
-    flex: 1 1 auto;
-    overflow: hidden;
-    padding: 10px;
-
-    .subitem {
-        display: flex;
-        margin-top: 12px;
-
-        /* 隱藏 folder 子項目時，添加 un-show  */
-        &.un-show {
-            display: none;
-        }
-    }
-
-    .line {
-        flex: 0 1 1px;
-        margin-left: 18px;
-        margin-right: 8px;
-
-        background-color: $gray-1;
-    }
-
-    .list {
+    &.folder {
         flex: 1 1 auto;
     }
 }

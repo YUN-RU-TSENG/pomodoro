@@ -62,11 +62,12 @@ export const useTasksStore = defineStore('tasks', () => {
             selectedUpdateTaskId,
         })
 
-    const { filterTasks, changeFilterType, filterType } = useFilterTask({
+    // type of task filter
+    const { filterTasks, filterType } = useFilterTask({
         tasks,
     })
 
-    // tasks - 任務細項的總和相關資訊
+    // tasks - sum of tasks item
     const {
         theSumOfExpectTimeOfTask,
         theSumOfSpendTimeOfTask,
@@ -76,23 +77,29 @@ export const useTasksStore = defineStore('tasks', () => {
     } = useSumOfTasksItem({ tasks })
 
     return {
+        // tasks - get
         tasks,
         getTasks,
         isLoadingTaskGet,
+        // tasks - add
         addTask,
         isLoadingTaskAdd,
         errorOfTaskAdd,
+        // tasks - update
         selectedUpdateTaskId,
         selectedUpdateTask,
         updateTask,
         isLoadingTaskUpdate,
         errorOfTaskUpdate,
+        // tasks - debounce update
         debouncedUpdateTaskAndAutoRetryOnError,
+        // tasks - delete
         deleteTask,
         isLoadingTaskDelete,
+        // type of task filter
         filterType,
         filterTasks,
-        changeFilterType,
+        // tasks - sum of tasks item
         theSumOfExpectTimeOfTask,
         theSumOfSpendTimeOfTask,
         theSumOfNumberOfTasks,
@@ -286,23 +293,9 @@ function useDeleteTask({ getTasks, selectedUpdateTaskId }) {
     return { deleteTask, isLoadingTaskDelete }
 }
 
+// ! 需要註解 filter 類型，以及 folder 分類的使用細節
 function useFilterTask({ tasks }) {
-    const filterTypes = [
-        'taskOfToday', // 0
-        'taskOfFuture', // 1
-        'taskOfPrimary', // 2
-        'taskOfSecondary', // 3
-        'taskOfTertiary', // 4
-        'taskOfNoTime', // 5
-        'taskOfFinish', // 6
-        'all', // 7
-    ]
-    const filterType = ref('all')
-
-    // 更新 filterType 為 filterTypes 中的任意一種
-    const changeFilterType = (type) => {
-        filterType.value = filterTypes[type]
-    }
+    const filterType = ref({ type: 'all', param: '' })
 
     const taskOfToday = computed(() => {
         return tasks.value.filter((task) => {
@@ -318,27 +311,9 @@ function useFilterTask({ tasks }) {
         })
     })
 
-    const taskOfNoTime = computed(() => {
+    const taskOfNoExpectTime = computed(() => {
         return tasks.value.filter((task) => {
             return !task.expectEndDate
-        })
-    })
-
-    const taskOfPrimary = computed(() => {
-        return tasks.value.filter((task) => {
-            return task.level === 'primary'
-        })
-    })
-
-    const taskOfSecondary = computed(() => {
-        return tasks.value.filter((task) => {
-            return task.level === 'secondary'
-        })
-    })
-
-    const taskOfTertiary = computed(() => {
-        return tasks.value.filter((task) => {
-            return task.level === 'tertiary'
         })
     })
 
@@ -348,18 +323,24 @@ function useFilterTask({ tasks }) {
         })
     })
 
+    const taskOfTheFolder = computed(() => {
+        return tasks.value.filter((task) => {
+            return task.folder === filterType.value.param
+        })
+    })
+
     const filterTasks = computed(() => {
-        if (filterType.value === 'taskOfToday') return taskOfToday.value
-        if (filterType.value === 'taskOfFuture') return taskOfFuture.value
-        if (filterType.value === 'taskOfPrimary') return taskOfPrimary.value
-        if (filterType.value === 'taskOfSecondary') return taskOfSecondary.value
-        if (filterType.value === 'taskOfTertiary') return taskOfTertiary.value
-        if (filterType.value === 'taskOfNoTime') return taskOfNoTime.value
-        if (filterType.value === 'taskOfFinish') return taskOfFinish.value
+        if (filterType.value.type === 'taskOfToday') return taskOfToday.value
+        if (filterType.value.type === 'taskOfFuture') return taskOfFuture.value
+        if (filterType.value.type === 'taskOfNoExpectTime')
+            return taskOfNoExpectTime.value
+        if (filterType.value.type === 'taskOfFinish') return taskOfFinish.value
+        if (filterType.value.type === 'taskOfTheFolder')
+            return taskOfTheFolder.value
         return tasks.value // all
     })
 
-    return { filterTasks, changeFilterType, filterType }
+    return { filterTasks, filterType }
 }
 
 function useSumOfTasksItem({ tasks }) {
