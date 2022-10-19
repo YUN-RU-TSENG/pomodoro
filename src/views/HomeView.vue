@@ -5,7 +5,7 @@ import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { storeToRefs } from 'pinia'
 
-// ========== pinia ==========
+/* ========== pinia ========== */
 
 // pinia - userStore
 const userStore = useUserStore()
@@ -20,6 +20,10 @@ const {
     selectedUpdateTaskId,
     selectedUpdateTask,
     filterTasks,
+    theSumOfExpectTimeOfTask,
+    theSumOfSpendTimeOfTask,
+    theSumOfNumberOfUnFinishTasks,
+    theSumOfNumberOfFinishTasks,
 } = storeToRefs(tasksStore)
 const {
     getTasks,
@@ -47,7 +51,7 @@ const { eachFolderTypeTotalTaskTime, isLoadingFolderTypesAdd, folderTypes } =
     storeToRefs(folderTypesStore)
 const { getFolderTypes, addFolderType } = folderTypesStore
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 // getTask
 getTasks()
@@ -58,7 +62,7 @@ getFolderTypes()
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
 
-// ========== component scoped composables function ==========
+/*========== component scoped composables function ========== */
 
 // addTask
 function useHandleAddTask({ addTask, errorOfTaskAdd }) {
@@ -96,9 +100,22 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
                     <div class="list-title">
                         <h2>今天</h2>
                         <button class="sort">
-                            <img src="@/assets/images/sort.png" width="20" />1
+                            <img src="@/assets/images/sort.png" width="20" />
                         </button>
                     </div>
+                    <HomeTimeSum
+                        class="home-time-sum"
+                        :the-sum-of-expect-time-of-task="
+                            theSumOfExpectTimeOfTask
+                        "
+                        :the-sum-of-spend-time-of-task="theSumOfSpendTimeOfTask"
+                        :the-sum-of-number-of-un-finish-tasks="
+                            theSumOfNumberOfUnFinishTasks
+                        "
+                        :the-sum-of-number-of-finish-tasks="
+                            theSumOfNumberOfFinishTasks
+                        "
+                    />
                     <HomeAddTask
                         :folder-types="folderTypes"
                         :pomorodo-time="1000 * 60 * 25"
@@ -122,7 +139,7 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
                         v-model:pomorodo-selected-task-id="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
                         :folder-types="folderTypes"
-                        :pomorodo-time="45 * 60 * 1000"
+                        :pomorodo-time="45 * 60"
                         :selected-task="selectedUpdateTask"
                         @update-task="
                             debouncedUpdateTaskAndAutoRetryOnError(
@@ -168,6 +185,9 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
     z-index: 1;
 }
 
+.home-time-sum {
+    margin-bottom: 24px;
+}
 .workspace-current-task {
     flex: 1 1 auto;
     display: flex;

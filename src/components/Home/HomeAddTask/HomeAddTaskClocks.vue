@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import getImageUrl from '@/utils/getImageUrl'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
-// ========== component props ==========
+/* ========== component props ========== */
 
 const props = defineProps({
     pomorodoTime: {
@@ -16,11 +16,11 @@ const props = defineProps({
     },
 })
 
-// ========== component emits ==========
+/* ========== component emits ========== */
 
 defineEmits(['update:value'])
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 // 轉換 pomorodo 與 time(second)
 const { covertTimeToPomorodo, covertPomorodoToTime } =

@@ -24,15 +24,19 @@ export const useTasksStore = defineStore('tasks', () => {
         userStore,
     })
 
-    // tasks
+    // tasks - get
     const { tasks, getTasks, isLoadingTaskGet } = useGetTasks({
         firebaseRefUserTask,
     })
+
+    // tasks - add
     const { addTask, isLoadingTaskAdd, errorOfTaskAdd } = useAddTask({
         firebaseRefTask,
         getTasks,
         userStore,
     })
+
+    // tasks - update
     const {
         selectedUpdateTaskId,
         selectedUpdateTask,
@@ -43,19 +47,33 @@ export const useTasksStore = defineStore('tasks', () => {
         tasks,
         getTasks,
     })
+
+    // tasks - delete
+    const { deleteTask, isLoadingTaskDelete } = useDeleteTask({
+        getTasks,
+        selectedUpdateTaskId,
+    })
+
+    // tasks - debounce update
     const { debouncedUpdateTaskAndAutoRetryOnError } =
         useDebouncedUpdateTaskAndAutoResendUpdateOnError({
             updateTask,
             errorOfTaskUpdate,
             selectedUpdateTaskId,
         })
-    const { deleteTask, isLoadingTaskDelete } = useDeleteTask({
-        getTasks,
-        selectedUpdateTaskId,
-    })
+
     const { filterTasks, changeFilterType, filterType } = useFilterTask({
         tasks,
     })
+
+    // tasks - 任務細項的總和相關資訊
+    const {
+        theSumOfExpectTimeOfTask,
+        theSumOfSpendTimeOfTask,
+        theSumOfNumberOfTasks,
+        theSumOfNumberOfUnFinishTasks,
+        theSumOfNumberOfFinishTasks,
+    } = useSumOfTasksItem({ tasks })
 
     return {
         tasks,
@@ -67,14 +85,19 @@ export const useTasksStore = defineStore('tasks', () => {
         selectedUpdateTaskId,
         selectedUpdateTask,
         updateTask,
-        debouncedUpdateTaskAndAutoRetryOnError,
-        errorOfTaskUpdate,
         isLoadingTaskUpdate,
+        errorOfTaskUpdate,
+        debouncedUpdateTaskAndAutoRetryOnError,
         deleteTask,
         isLoadingTaskDelete,
+        filterType,
         filterTasks,
         changeFilterType,
-        filterType,
+        theSumOfExpectTimeOfTask,
+        theSumOfSpendTimeOfTask,
+        theSumOfNumberOfTasks,
+        theSumOfNumberOfUnFinishTasks,
+        theSumOfNumberOfFinishTasks,
     }
 })
 
@@ -339,4 +362,47 @@ function useFilterTask({ tasks }) {
     })
 
     return { filterTasks, changeFilterType, filterType }
+}
+
+function useSumOfTasksItem({ tasks }) {
+    // 任務總預估時間
+    const theSumOfExpectTimeOfTask = computed(() => {
+        return tasks.value
+            .filter((item) => !item.isFinish && !!item.totalExpectTime)
+            .reduce((acc, cur) => {
+                return acc + cur.totalExpectTime
+            }, 0)
+    })
+
+    // 任務總專注時間
+    const theSumOfSpendTimeOfTask = computed(() => {
+        return tasks.value
+            .filter((item) => !item.isFinish && !!item.totalSpendTime)
+            .reduce((acc, cur) => {
+                return acc + cur.totalSpendTime
+            }, 0)
+    })
+
+    // 任務數量總和
+    const theSumOfNumberOfTasks = computed(() => {
+        return tasks.value.length
+    })
+
+    // 未完成任務數量總和
+    const theSumOfNumberOfUnFinishTasks = computed(() => {
+        return tasks.value.filter((item) => !item.isFinish).length
+    })
+
+    // 完成任務數量總和
+    const theSumOfNumberOfFinishTasks = computed(() => {
+        return tasks.value.filter((item) => !!item.isFinish).length
+    })
+
+    return {
+        theSumOfExpectTimeOfTask,
+        theSumOfSpendTimeOfTask,
+        theSumOfNumberOfTasks,
+        theSumOfNumberOfUnFinishTasks,
+        theSumOfNumberOfFinishTasks,
+    }
 }

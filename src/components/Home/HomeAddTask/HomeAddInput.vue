@@ -1,5 +1,5 @@
 <script setup>
-// ========== component props ==========
+/* ========== component props ========== */
 
 defineProps({
     name: { type: String, required: true },
@@ -7,7 +7,7 @@ defineProps({
     value: { type: String, required: true },
 })
 
-// ========== component emits ==========
+/* ========== component emits ========== */
 
 defineEmits(['update:value'])
 </script>

@@ -5,7 +5,7 @@ import { formatDate } from '@/utils/dayjsFormat'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
-// ========== component props ==========
+/* ========== component props ========== */
 
 const props = defineProps({
     selectedTaskId: {
@@ -30,7 +30,7 @@ const props = defineProps({
     },
 })
 
-// ========== component emits ==========
+/* ========== component emits ========== */
 
 const emits = defineEmits([
     'update-task',
@@ -39,7 +39,7 @@ const emits = defineEmits([
     'update:pomorodo-selected-task-id',
 ])
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 // 轉換 pomorodo 與 time(second)
 const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
@@ -68,7 +68,7 @@ const {
 // cache taskForm - subtask 子任務編輯快取，當確認後才會將快取直更新到 taskForm
 const { addSubtasks, cacheSubtask } = useTaskFromCacheOfSubtask({ taskForm })
 
-// ========== component scoped composables function ==========
+/*========== component scoped composables function ========== */
 
 // task form 狀態(包含驗證、重置)
 function useTaskForm() {

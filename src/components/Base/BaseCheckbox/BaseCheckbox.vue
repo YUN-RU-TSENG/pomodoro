@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 
-// ========== component props ==========
+/* ========== component props ========== */
 
 const props = defineProps({
     id: {
@@ -18,11 +18,11 @@ const props = defineProps({
     },
 })
 
-// ========== component emits ==========
+/* ========== component emits ========== */
 
 const emits = defineEmits(['update:value'])
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 const checkboxValue = computed({
     set(newValue) {

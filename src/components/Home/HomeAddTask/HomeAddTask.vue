@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
-// ========== component props ==========
+/* ========== component props ========== */
 
 defineProps({
     pomorodoTime: {
@@ -16,11 +16,11 @@ defineProps({
     },
 })
 
-// ========== component emits ==========
+/* ========== component emits ========== */
 
 const emits = defineEmits(['add-tasks'])
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 // add task form
 const { name, totalExpectTime, folder, handleVeeSubmit } = useAddTaskForm()
@@ -30,7 +30,7 @@ const { submitAddTaskForm } = useSubmitTaskForm({
     emits,
 })
 
-// ========== component scoped composables function ==========
+/*========== component scoped composables function ========== */
 
 // add task form
 function useAddTaskForm() {

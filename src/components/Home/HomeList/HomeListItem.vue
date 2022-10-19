@@ -23,7 +23,7 @@ const emits = defineEmits([
     'update:cacheUpdateTaskId',
 ])
 
-// ========== component logic ==========
+/* ========== component logic ========== */
 
 // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
 useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits })
@@ -31,7 +31,7 @@ useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits })
 // 當顯示 editInputRef element 時，自動將 editInputRef element focus
 const { focusInput, isEdit, editInputRef } = useFocusInput()
 
-// ========== component scoped composables function ==========
+/*========== component scoped composables function ========== */
 
 // 當顯示 editInputRef 時，自動將 editInputRef focus
 function useFocusInput() {

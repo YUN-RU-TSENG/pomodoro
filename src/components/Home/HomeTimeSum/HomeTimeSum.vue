@@ -1,21 +1,28 @@
-<script setup></script>
+<script setup>
+defineProps({
+    theSumOfExpectTimeOfTask: { type: Number, required: true },
+    theSumOfSpendTimeOfTask: { type: Number, required: true },
+    theSumOfNumberOfUnFinishTasks: { type: Number, required: true },
+    theSumOfNumberOfFinishTasks: { type: Number, required: true },
+})
+</script>
 
 <template>
     <section class="home-time-sum">
         <div class="time-sum-item">
-            <h3>9</h3>
-            <p>預估時間</p>
+            <h3>{{ Math.floor(theSumOfExpectTimeOfTask / 60 / 60) }}</h3>
+            <p>預估時間 h</p>
         </div>
         <div class="time-sum-item">
-            <h3>9</h3>
+            <h3>{{ theSumOfNumberOfUnFinishTasks }}</h3>
             <p>待完成任務</p>
         </div>
         <div class="time-sum-item">
-            <h3>9</h3>
-            <p>已專注時間</p>
+            <h3>{{ Math.floor(theSumOfSpendTimeOfTask / 60 / 60) }}</h3>
+            <p>已專注時間 h</p>
         </div>
         <div class="time-sum-item">
-            <h3>9</h3>
+            <h3>{{ theSumOfNumberOfFinishTasks }}</h3>
             <p>已完成任務</p>
         </div>
     </section>
@@ -38,7 +45,7 @@
     h3 {
         font-size: 20px;
         line-height: 28px;
-        color: $green-0;
+        color: $green-1;
     }
 
     p {
