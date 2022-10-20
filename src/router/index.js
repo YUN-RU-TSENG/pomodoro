@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-
+import { useBaseLoading } from '@/components/Base/BaseLoading/index'
 import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
@@ -38,8 +38,15 @@ const router = createRouter({
     ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
     const userStore = useUserStore()
+
+    // 假如尚未加載完 firebase user 狀態，等其確認加載完成再繼續路由導向
+    if (!userStore.isUserLoadFinish) {
+        const { close } = useBaseLoading()
+        await userStore.getCurrentUser()
+        close()
+    }
 
     if (to.meta.requireAuth && !userStore.user.uid) {
         return { name: 'login' }
@@ -48,6 +55,8 @@ router.beforeEach((to) => {
     if (to.meta.requireGuest && userStore.user.uid) {
         return { name: 'home' }
     }
+
+    return true
 })
 
 export default router

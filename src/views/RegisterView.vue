@@ -4,12 +4,16 @@ import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+/* ========== router ========== */
+const router = useRouter()
 
 /* ========== pinia ========== */
 
 // pinia - userStore
 const userStore = useUserStore()
-const { isLoadingRegister } = storeToRefs(userStore)
+const { isLoadingRegister, errorOfRegister } = storeToRefs(userStore)
 const { register } = userStore
 
 /* ========== component logic ========== */
@@ -23,7 +27,10 @@ const {
 } = useUserForm()
 
 // submitRegister
-const { submitRegister } = useSubmitUserForm({ handleVeeUserFormSubmit })
+const { submitRegister } = useSubmitUserForm({
+    handleVeeUserFormSubmit,
+    errorOfRegister,
+})
 
 /*========== component scoped composables function ========== */
 
@@ -62,9 +69,10 @@ function useUserForm() {
 }
 
 // submit user form
-function useSubmitUserForm({ handleVeeUserFormSubmit }) {
-    const submitRegister = handleVeeUserFormSubmit((formValue) => {
-        register(formValue)
+function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfRegister }) {
+    const submitRegister = handleVeeUserFormSubmit(async (formValue) => {
+        await register(formValue)
+        if (!errorOfRegister.value) router.push({ name: 'home' })
     })
 
     return {

@@ -7,57 +7,28 @@ import {
     auth,
 } from '@/utils/firebaseAuth'
 import { useBaseAlert } from '@/components/Base/BaseAlert/index'
-import { useRouter } from 'vue-router'
 
 export const useUserStore = defineStore('user', () => {
-    const router = useRouter()
-
-    // state ----
-
-    const isLoadingForFirstWatchingUserState = ref(false) // 對應初次監聽用戶登入狀態的加載
-
     // 用戶資料
-    const user = ref({
-        email: null,
-        uid: null,
-    })
+    const { user, getCurrentUser, isUserLoadFinish } = useUser()
 
     // 註冊
     const { isLoadingRegister, register, errorOfRegister } = useRegister({
         user,
-        router,
     })
 
     // 登入
-    const { isLoadingLogin, login, errorOfLogin } = useLogin({ user, router })
+    const { isLoadingLogin, login, errorOfLogin } = useLogin({ user })
 
     // 登出
     const { isLoadingLogout, logout, errorOfLogout } = useLogout({
         user,
-        router,
     })
-
-    /**
-     * 觀察用戶登入狀態，當有登入時就跳到 home 頁面，沒有登入時就跳到 login 頁面
-     * 需要注意此處的加載狀態為 isLoadingForFirstWatchingUserState，這是為了與對應 loading、register、logout 的 isLoading 區隔
-     */
-    // const watchUserState = () => {
-    //     isLoadingForFirstWatchingUserState.value = true
-    //     auth.onAuthStateChanged(async function (userData) {
-    //         if (userData) {
-    //             user.value = { email: userData.email, uid: userData.uid }
-    //             await router.push({ name: 'home' }).catch(() => {})
-    //         } else {
-    //             await router.push({ name: 'login' }).catch(() => {})
-    //         }
-
-    //         if (isLoadingForFirstWatchingUserState.value)
-    //             isLoadingForFirstWatchingUserState.value = false
-    //     })
-    // }
 
     return {
         user,
+        getCurrentUser,
+        isUserLoadFinish,
         // register
         register,
         isLoadingRegister,
@@ -70,12 +41,48 @@ export const useUserStore = defineStore('user', () => {
         logout,
         isLoadingLogout,
         errorOfLogout,
-        isLoadingForFirstWatchingUserState,
     }
 })
 
+// 用戶資料
+function useUser() {
+    const isUserLoadFinish = ref(false)
+
+    // 用戶資料
+    const user = ref({
+        email: null,
+        uid: null,
+    })
+
+    // 偵測用戶狀態改變（登入、登出）
+    auth.onAuthStateChanged(async (userData) => {
+        if (!isUserLoadFinish.value) isUserLoadFinish.value = true
+
+        if (userData) {
+            user.value = { email: userData.email, uid: userData.uid }
+        } else {
+            user.value = { email: null, uid: null }
+        }
+    })
+
+    function getCurrentUser() {
+        return new Promise((resolve, reject) => {
+            const unsubscribe = auth.onAuthStateChanged((user) => {
+                unsubscribe()
+                isUserLoadFinish.value = true
+                resolve(user)
+            }, reject)
+        })
+    }
+    return {
+        user,
+        getCurrentUser,
+        isUserLoadFinish,
+    }
+}
+
 // 註冊
-function useRegister({ user, router }) {
+function useRegister({ user }) {
     const isLoadingRegister = ref(false)
     const errorOfRegister = ref(null)
 
@@ -93,8 +100,6 @@ function useRegister({ user, router }) {
                 email: userCredential.user.email,
                 uid: userCredential.user.uid,
             }
-
-            router.push({ name: 'home' })
         } catch (error) {
             console.error(error)
             errorOfRegister.value = error
@@ -110,7 +115,7 @@ function useRegister({ user, router }) {
 }
 
 // 登入
-function useLogin({ user, router }) {
+function useLogin({ user }) {
     const isLoadingLogin = ref(false)
     const errorOfLogin = ref(null)
 
@@ -128,8 +133,6 @@ function useLogin({ user, router }) {
                 email: userCredential.user.email,
                 uid: userCredential.user.uid,
             }
-
-            router.push({ name: 'home' })
         } catch (error) {
             errorOfLogin.value = error
             console.error(error)
@@ -145,7 +148,7 @@ function useLogin({ user, router }) {
 }
 
 // 登出
-function useLogout({ user, router }) {
+function useLogout({ user }) {
     const isLoadingLogout = ref(false)
     const errorOfLogout = ref(null)
 
@@ -159,8 +162,6 @@ function useLogout({ user, router }) {
                 email: null,
                 uid: null,
             }
-
-            router.push({ name: 'login' })
         } catch (error) {
             errorOfLogout.value = error
             console.error(error)

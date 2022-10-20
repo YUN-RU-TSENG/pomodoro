@@ -4,12 +4,16 @@ import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+
+/* ========== router ========== */
+const router = useRouter()
 
 /* ========== pinia ========== */
 
 // pinia - userStore
 const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
+const { user, errorOfLogout } = storeToRefs(userStore)
 const { logout } = userStore
 
 // pinia - tasksStore
@@ -61,7 +65,7 @@ getFolderTypes()
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
-
+const { handleLogout } = useHandleLogout({ logout, errorOfLogout })
 /*========== component scoped composables function ========== */
 
 // addTask
@@ -76,12 +80,25 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
         handleAddTask,
     }
 }
+
+// logout
+function useHandleLogout({ logout, errorOfLogout }) {
+    const handleLogout = async () => {
+        await logout()
+        if (!errorOfLogout.value) router.push({ name: 'login' })
+    }
+    return { handleLogout }
+}
 </script>
 
 <template>
     <section class="home">
         <!-- home home-navbar -->
-        <HomeNavbar class="home-navbar" :user="user" @user-logout="logout" />
+        <HomeNavbar
+            class="home-navbar"
+            :user="user"
+            @user-logout="handleLogout"
+        />
         <!-- home home-workspace -->
         <main class="home-workspace">
             <!-- workspace-sidebar -->

@@ -26,15 +26,10 @@ export function useBaseLoading(props) {
 
     document.body.appendChild(container)
 
-    const timeoutId = setTimeout(() => {
-        close()
-    }, 3000)
-
     function close() {
         modals.splice(index, 1)
         render(null, container)
         container.remove()
-        clearTimeout(timeoutId)
     }
 
     // 返回關閉方法，可以使用此關閉方法直接關閉當前 modal

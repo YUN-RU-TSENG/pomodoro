@@ -4,12 +4,16 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
+import { useRouter } from 'vue-router'
+
+/* ========== router ========== */
+const router = useRouter()
 
 /* ========== pinia ========== */
 
 // pinia - userStore
 const userStore = useUserStore()
-const { isLoadingLogin } = storeToRefs(userStore)
+const { isLoadingLogin, errorOfLogin } = storeToRefs(userStore)
 const { login } = userStore
 
 /* ========== component logic ========== */
@@ -23,7 +27,10 @@ const {
 } = useUserForm()
 
 // submitUserLogin
-const { submitLogin } = useSubmitUserForm({ handleVeeUserFormSubmit })
+const { submitLogin } = useSubmitUserForm({
+    handleVeeUserFormSubmit,
+    errorOfLogin,
+})
 
 /*========== component scoped composables function ========== */
 
@@ -57,9 +64,10 @@ function useUserForm() {
 }
 
 // submit user form
-function useSubmitUserForm({ handleVeeUserFormSubmit }) {
-    const submitLogin = handleVeeUserFormSubmit((formValue) => {
-        login(formValue)
+function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfLogin }) {
+    const submitLogin = handleVeeUserFormSubmit(async (formValue) => {
+        await login(formValue)
+        if (!errorOfLogin.value) router.push({ name: 'home' })
     })
 
     return {
