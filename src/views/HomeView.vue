@@ -72,7 +72,11 @@ const { getPomorodoSettingAndAutoCreateDefaultValue } = pomorodoSettingStore
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
 const { handleLogout } = useHandleLogout({ logout, errorOfLogout })
-const isShowPomorodoSettingErrorModal = ref(false)
+const { handleGetPomorodoSetting, isShowPomorodoSettingErrorModal } =
+    useHandleGetPomorodoSetting({
+        getPomorodoSettingAndAutoCreateDefaultValue,
+        errorOfPomorodoSettingGet,
+    })
 
 onMounted(async () => {
     // getTask
@@ -82,10 +86,7 @@ onMounted(async () => {
     getFolderTypes()
 
     // pomorodoSetting
-    await getPomorodoSettingAndAutoCreateDefaultValue()
-    if (errorOfPomorodoSettingGet.value) {
-        isShowPomorodoSettingErrorModal.value = true
-    }
+    handleGetPomorodoSetting()
 })
 
 /*========== component scoped composables function ========== */
@@ -110,6 +111,23 @@ function useHandleLogout({ logout, errorOfLogout }) {
         if (!errorOfLogout.value) router.push({ name: 'login' })
     }
     return { handleLogout }
+}
+
+// handleGetPomorodoSetting
+function useHandleGetPomorodoSetting({
+    getPomorodoSettingAndAutoCreateDefaultValue,
+    errorOfPomorodoSettingGet,
+}) {
+    const isShowPomorodoSettingErrorModal = ref(false)
+
+    const handleGetPomorodoSetting = async () => {
+        await getPomorodoSettingAndAutoCreateDefaultValue()
+        if (errorOfPomorodoSettingGet.value) {
+            isShowPomorodoSettingErrorModal.value = true
+        }
+    }
+
+    return { handleGetPomorodoSetting, isShowPomorodoSettingErrorModal }
 }
 </script>
 
@@ -213,7 +231,9 @@ function useHandleLogout({ logout, errorOfLogout }) {
         </template>
         <template #footer>
             <div class="error-model-footer">
-                <BaseButton color="primary">重新載入</BaseButton>
+                <BaseButton color="primary" @click="handleGetPomorodoSetting"
+                    >重新載入</BaseButton
+                >
             </div>
         </template>
     </BaseModal>
