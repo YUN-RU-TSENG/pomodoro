@@ -1,40 +1,14 @@
 # pomorodo-todo
 
-pomorodo todo reop
+## Quick Start
 
-## Project Setup
-
-```sh
-npm install
 ```
-
-### Compile and Hot-Reload for Development
-
-```sh
+npm i
 npm run dev
 ```
 
-### Compile and Minify for Production
+## feature
 
-```sh
-npm run build
-```
+## Source
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-npm run build
-npm run test:e2e # or `npm run test:e2e:ci` for headless testing
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+-   [Pomorodo APP API Scheme - HackMD](https://hackmd.io/EHZZfDqiQp-gWNedbYFZqA)
