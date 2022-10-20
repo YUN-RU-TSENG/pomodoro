@@ -6,8 +6,6 @@ import {
     signOut,
     auth,
 } from '@/utils/firebaseAuth'
-import { useForm } from 'vee-validate'
-import { string, object } from 'yup'
 import { useBaseAlert } from '@/components/Base/BaseAlert/index'
 import { useRouter } from 'vue-router'
 
@@ -26,48 +24,20 @@ export const useUserStore = defineStore('user', () => {
         uid: null,
     })
 
-    // 用戶登入註冊表單 - vee validate 表單值、錯誤、處理驗證
-    const {
-        handleSubmit: handleUserFormSubmit,
-        resetForm: resetUserForm,
-        errors: userFormErrorMessage,
-        useFieldModel: useUserFormFieldModel,
-        meta: userFormMeta,
-        submitCount: userFormSubmitCount,
-    } = useForm({
-        validationSchema: object({
-            email: string().email().required(),
-            password: string().min(6).required(),
-        }),
-        keepValuesOnUnmount: true,
-    })
-
-    const [userFormEmail, userFormPassword] = useUserFormFieldModel([
-        'email',
-        'password',
-    ])
-
-    // 用戶登入註冊表單 - 表單
-    const userForm = ref({
-        email: userFormEmail,
-        password: userFormPassword,
-    })
-
     // action ----
 
     /**
      * 註冊
      */
-    const register = handleUserFormSubmit(async () => {
+    const register = async (formValue) => {
         try {
             isLoading.value = true
 
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
-                userForm.value.email,
-                userForm.value.password
+                formValue.email,
+                formValue.password
             )
-            resetUserForm()
 
             user.value = {
                 email: userCredential.user.email,
@@ -82,22 +52,20 @@ export const useUserStore = defineStore('user', () => {
         } finally {
             isLoading.value = false
         }
-    })
+    }
 
     /**
      * 登入
      */
-    const login = handleUserFormSubmit(async () => {
+    const login = async (formValue) => {
         try {
             isLoading.value = true
 
             const userCredential = await signInWithEmailAndPassword(
                 auth,
-                userForm.value.email,
-                userForm.value.password
+                formValue.email,
+                formValue.password
             )
-
-            resetUserForm()
 
             user.value = {
                 email: userCredential.user.email,
@@ -106,13 +74,14 @@ export const useUserStore = defineStore('user', () => {
 
             router.push({ name: 'home' })
         } catch (error) {
+            console.error(error)
             useBaseAlert({
                 text: '登入失敗 - ' + error.message,
             })
         } finally {
             isLoading.value = false
         }
-    })
+    }
 
     /**
      * 重置 user 狀態
@@ -149,32 +118,32 @@ export const useUserStore = defineStore('user', () => {
      * 觀察用戶登入狀態，當有登入時就跳到 home 頁面，沒有登入時就跳到 login 頁面
      * 需要注意此處的加載狀態為 isLoadingForFirstWatchingUserState，這是為了與對應 loading、register、logout 的 isLoading 區隔
      */
-    const watchUserState = () => {
-        isLoadingForFirstWatchingUserState.value = true
-        auth.onAuthStateChanged(async function (userData) {
-            if (userData) {
-                user.value = { email: userData.email, uid: userData.uid }
-                await router.push({ name: 'home' }).catch(() => {})
-            } else {
-                await router.push({ name: 'login' }).catch(() => {})
-            }
+    // const watchUserState = () => {
+    //     isLoadingForFirstWatchingUserState.value = true
+    //     auth.onAuthStateChanged(async function (userData) {
+    //         if (userData) {
+    //             user.value = { email: userData.email, uid: userData.uid }
+    //             await router.push({ name: 'home' }).catch(() => {})
+    //         } else {
+    //             await router.push({ name: 'login' }).catch(() => {})
+    //         }
 
-            if (isLoadingForFirstWatchingUserState.value)
-                isLoadingForFirstWatchingUserState.value = false
-        })
-    }
+    //         if (isLoadingForFirstWatchingUserState.value)
+    //             isLoadingForFirstWatchingUserState.value = false
+    //     })
+    // }
 
     return {
         user,
-        userForm,
-        userFormErrorMessage,
-        userFormSubmitCount,
-        userFormMeta,
+        // userForm,
+        // userFormErrorMessage,
+        // userFormSubmitCount,
+        // userFormMeta,
         login,
         register,
         logout,
-        watchUserState,
-        resetUserForm,
+        // watchUserState,
+        // resetUserForm,
         isLoading,
         isLoadingForFirstWatchingUserState,
     }

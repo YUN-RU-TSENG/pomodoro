@@ -151,7 +151,6 @@ function getImageUrl(name) {
                 </li>
             </ul>
         </section>
-
         <!-- home-sidebar sidebar-footer -->
         <footer class="sidebar-footer">
             <button class="add" @click="visible = true">

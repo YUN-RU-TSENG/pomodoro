@@ -8,10 +8,10 @@ import { storeToRefs } from 'pinia'
 // pinia - userStore
 const userStore = useUserStore()
 const { isLoadingForFirstWatchingUserState } = storeToRefs(userStore)
-const { watchUserState } = userStore
+// const { watchUserState } = userStore
 
 /* ========== component logic ========== */
-watchUserState() // 監聽用戶狀態，如果已登入 Firebase 且尚未登出，會自動登入
+// watchUserState() // 監聽用戶狀態，如果已登入 Firebase 且尚未登出，會自動登入
 </script>
 
 <template>

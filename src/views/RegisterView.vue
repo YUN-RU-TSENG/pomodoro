@@ -1,13 +1,75 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
+import { ref } from 'vue'
 
-const router = useRouter()
+/* ========== pinia ========== */
+
+// pinia - userStore
 const userStore = useUserStore()
+const { isLoading: isLoadingRegister } = storeToRefs(userStore)
+const { register } = userStore
 
-const goRegisterPage = () => {
-    router.push({ name: 'login' })
-    userStore.resetUserForm()
+/* ========== component logic ========== */
+
+// user form
+const {
+    handleVeeUserFormSubmit,
+    submitCountOfUserForm,
+    errorsOfUserForm,
+    userForm,
+} = useUserForm()
+
+// submitRegister
+const { submitRegister } = useSubmitUserForm({ handleVeeUserFormSubmit })
+
+/*========== component scoped composables function ========== */
+
+// user form
+function useUserForm() {
+    // vee validate 驗證設置
+    const {
+        handleSubmit: handleVeeUserFormSubmit,
+        submitCount,
+        useFieldModel,
+        errors,
+    } = useForm({
+        validationSchema: yup.object({
+            email: yup.string().email().required(),
+            password: yup.string().min(6).required(),
+        }),
+        initialValues: {
+            email: '',
+            password: '',
+        },
+    })
+
+    const [email, password] = useFieldModel(['email', 'password'])
+
+    const userForm = ref({
+        email,
+        password,
+    })
+
+    return {
+        handleVeeUserFormSubmit,
+        submitCountOfUserForm: submitCount,
+        errorsOfUserForm: errors,
+        userForm,
+    }
+}
+
+// submit user form
+function useSubmitUserForm({ handleVeeUserFormSubmit }) {
+    const submitRegister = handleVeeUserFormSubmit((formValue) => {
+        register(formValue)
+    })
+
+    return {
+        submitRegister,
+    }
 }
 </script>
 
@@ -18,33 +80,31 @@ const goRegisterPage = () => {
             text="Pomorodo todo 優雅的使用待辦清單以及番茄鐘"
             tip-text="已有帳號？"
             tip-button-text="登入"
-            @submit-form="userStore.register"
-            @change-page="goRegisterPage"
+            @submit-form="submitRegister"
+            @change-page="$router.push({ name: 'login' })"
         >
             <BaseInput
-                id="auth-email"
-                v-model:value="userStore.userForm.email"
+                id="auth-register-email"
+                v-model:value="userForm.email"
                 placeholder="請輸入信箱"
                 :error="
-                    userStore.userFormSubmitCount
-                        ? userStore.userFormErrorMessage.email
-                        : ''
+                    submitCountOfUserForm ? errorsOfUserForm.value?.email : ''
                 "
-            ></BaseInput>
+            />
             <BaseInput
-                id="auth-password"
-                v-model:value="userStore.userForm.password"
+                id="auth-register-password"
+                v-model:value="userForm.password"
                 type="password"
                 placeholder="請輸入密碼"
                 :error="
-                    userStore.userFormSubmitCount
-                        ? userStore.userFormErrorMessage.password
+                    submitCountOfUserForm
+                        ? errorsOfUserForm.value?.password
                         : ''
                 "
-            ></BaseInput>
+            />
             <BaseButton color="primary">註冊</BaseButton>
         </AuthenticationForm>
-        <BaseLoading v-if="userStore.isLoading" />
+        <BaseLoading v-if="isLoadingRegister" />
     </AuthenticationLayout>
 </template>
 

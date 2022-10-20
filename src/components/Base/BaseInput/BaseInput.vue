@@ -77,7 +77,7 @@ export default {
 
     font-size: 12px;
     line-height: 18px;
-    color: $green-1;
+    color: $red-1;
     text-align: left;
 }
 </style>
