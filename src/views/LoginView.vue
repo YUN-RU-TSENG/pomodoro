@@ -9,7 +9,7 @@ import * as yup from 'yup'
 
 // pinia - userStore
 const userStore = useUserStore()
-const { isLoading: isLoadingLogin } = storeToRefs(userStore)
+const { isLoadingLogin } = storeToRefs(userStore)
 const { login } = userStore
 
 /* ========== component logic ========== */
@@ -58,14 +58,9 @@ function useUserForm() {
 
 // submit user form
 function useSubmitUserForm({ handleVeeUserFormSubmit }) {
-    const submitLogin = handleVeeUserFormSubmit(
-        (formValue) => {
-            login(formValue)
-        },
-        () => {
-            console.log(submitCountOfUserForm.value)
-        }
-    )
+    const submitLogin = handleVeeUserFormSubmit((formValue) => {
+        login(formValue)
+    })
 
     return {
         submitLogin,

@@ -14,8 +14,6 @@ export const useUserStore = defineStore('user', () => {
 
     // state ----
 
-    // 加載中
-    const isLoading = ref(false) // 對應登入、登出、註冊時加載
     const isLoadingForFirstWatchingUserState = ref(false) // 對應初次監聽用戶登入狀態的加載
 
     // 用戶資料
@@ -24,95 +22,20 @@ export const useUserStore = defineStore('user', () => {
         uid: null,
     })
 
-    // action ----
+    // 註冊
+    const { isLoadingRegister, register, errorOfRegister } = useRegister({
+        user,
+        router,
+    })
 
-    /**
-     * 註冊
-     */
-    const register = async (formValue) => {
-        try {
-            isLoading.value = true
+    // 登入
+    const { isLoadingLogin, login, errorOfLogin } = useLogin({ user, router })
 
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                formValue.email,
-                formValue.password
-            )
-
-            user.value = {
-                email: userCredential.user.email,
-                uid: userCredential.user.uid,
-            }
-
-            router.push({ name: 'home' })
-        } catch (error) {
-            useBaseAlert({
-                text: '註冊失敗' + error,
-            })
-        } finally {
-            isLoading.value = false
-        }
-    }
-
-    /**
-     * 登入
-     */
-    const login = async (formValue) => {
-        try {
-            isLoading.value = true
-
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                formValue.email,
-                formValue.password
-            )
-
-            user.value = {
-                email: userCredential.user.email,
-                uid: userCredential.user.uid,
-            }
-
-            router.push({ name: 'home' })
-        } catch (error) {
-            console.error(error)
-            useBaseAlert({
-                text: '登入失敗 - ' + error.message,
-            })
-        } finally {
-            isLoading.value = false
-        }
-    }
-
-    /**
-     * 重置 user 狀態
-     */
-    const resetUserState = () => {
-        user.value = {
-            email: null,
-            uid: null,
-        }
-    }
-
-    /**
-     * 登出
-     */
-    const logout = async () => {
-        try {
-            isLoading.value = true
-
-            await signOut(auth)
-
-            resetUserState()
-
-            router.push({ name: 'login' })
-        } catch (error) {
-            useBaseAlert({
-                text: '登出失敗' + error,
-            })
-        } finally {
-            isLoading.value = false
-        }
-    }
+    // 登出
+    const { isLoadingLogout, logout, errorOfLogout } = useLogout({
+        user,
+        router,
+    })
 
     /**
      * 觀察用戶登入狀態，當有登入時就跳到 home 頁面，沒有登入時就跳到 login 頁面
@@ -135,16 +58,119 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         user,
-        // userForm,
-        // userFormErrorMessage,
-        // userFormSubmitCount,
-        // userFormMeta,
-        login,
+        // register
         register,
+        isLoadingRegister,
+        errorOfRegister,
+        // login
+        login,
+        isLoadingLogin,
+        errorOfLogin,
+        // logout
         logout,
-        // watchUserState,
-        // resetUserForm,
-        isLoading,
+        isLoadingLogout,
+        errorOfLogout,
         isLoadingForFirstWatchingUserState,
     }
 })
+
+// 註冊
+function useRegister({ user, router }) {
+    const isLoadingRegister = ref(false)
+    const errorOfRegister = ref(null)
+
+    const register = async (formValue) => {
+        try {
+            isLoadingRegister.value = true
+
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                formValue.email,
+                formValue.password
+            )
+
+            user.value = {
+                email: userCredential.user.email,
+                uid: userCredential.user.uid,
+            }
+
+            router.push({ name: 'home' })
+        } catch (error) {
+            console.error(error)
+            errorOfRegister.value = error
+            useBaseAlert({
+                text: '註冊失敗' + error,
+            })
+        } finally {
+            isLoadingRegister.value = false
+        }
+    }
+
+    return { isLoadingRegister, register, errorOfRegister }
+}
+
+// 登入
+function useLogin({ user, router }) {
+    const isLoadingLogin = ref(false)
+    const errorOfLogin = ref(null)
+
+    const login = async (formValue) => {
+        try {
+            isLoadingLogin.value = true
+
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                formValue.email,
+                formValue.password
+            )
+
+            user.value = {
+                email: userCredential.user.email,
+                uid: userCredential.user.uid,
+            }
+
+            router.push({ name: 'home' })
+        } catch (error) {
+            errorOfLogin.value = error
+            console.error(error)
+            useBaseAlert({
+                text: '登入失敗 - ' + error.message,
+            })
+        } finally {
+            isLoadingLogin.value = false
+        }
+    }
+
+    return { isLoadingLogin, login, errorOfLogin }
+}
+
+// 登出
+function useLogout({ user, router }) {
+    const isLoadingLogout = ref(false)
+    const errorOfLogout = ref(null)
+
+    const logout = async () => {
+        try {
+            isLoadingLogout.value = true
+
+            await signOut(auth)
+
+            user.value = {
+                email: null,
+                uid: null,
+            }
+
+            router.push({ name: 'login' })
+        } catch (error) {
+            errorOfLogout.value = error
+            console.error(error)
+            useBaseAlert({
+                text: '登出失敗' + error,
+            })
+        } finally {
+            isLoadingLogout.value = false
+        }
+    }
+
+    return { isLoadingLogout, logout, errorOfLogout }
+}

@@ -9,7 +9,7 @@ import { ref } from 'vue'
 
 // pinia - userStore
 const userStore = useUserStore()
-const { isLoading: isLoadingRegister } = storeToRefs(userStore)
+const { isLoadingRegister } = storeToRefs(userStore)
 const { register } = userStore
 
 /* ========== component logic ========== */
@@ -87,20 +87,14 @@ function useSubmitUserForm({ handleVeeUserFormSubmit }) {
                 id="auth-register-email"
                 v-model:value="userForm.email"
                 placeholder="請輸入信箱"
-                :error="
-                    submitCountOfUserForm ? errorsOfUserForm.value?.email : ''
-                "
+                :error="submitCountOfUserForm ? errorsOfUserForm.email : ''"
             />
             <BaseInput
                 id="auth-register-password"
                 v-model:value="userForm.password"
                 type="password"
                 placeholder="請輸入密碼"
-                :error="
-                    submitCountOfUserForm
-                        ? errorsOfUserForm.value?.password
-                        : ''
-                "
+                :error="submitCountOfUserForm ? errorsOfUserForm.password : ''"
             />
             <BaseButton color="primary">註冊</BaseButton>
         </AuthenticationForm>
