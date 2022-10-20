@@ -3,10 +3,13 @@ import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
+import { usePomorodoSetting } from '@/stores/pomorodoSetting'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
 
 /* ========== router ========== */
+
 const router = useRouter()
 
 /* ========== pinia ========== */
@@ -55,17 +58,36 @@ const { eachFolderTypeTotalTaskTime, isLoadingFolderTypesAdd, folderTypes } =
     storeToRefs(folderTypesStore)
 const { getFolderTypes, addFolderType } = folderTypesStore
 
+// pinia - pomorodoSettingStore
+const pomorodoSettingStore = usePomorodoSetting()
+const {
+    pomorodoSettings,
+    isLoadingPomorodoSettingGet,
+    errorOfPomorodoSettingGet,
+} = storeToRefs(pomorodoSettingStore)
+const { getPomorodoSettingAndAutoCreateDefaultValue } = pomorodoSettingStore
+
 /* ========== component logic ========== */
-
-// getTask
-getTasks()
-
-// folder
-getFolderTypes()
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
 const { handleLogout } = useHandleLogout({ logout, errorOfLogout })
+const isShowPomorodoSettingErrorModal = ref(false)
+
+onMounted(async () => {
+    // getTask
+    getTasks()
+
+    // folder
+    getFolderTypes()
+
+    // pomorodoSetting
+    await getPomorodoSettingAndAutoCreateDefaultValue()
+    if (errorOfPomorodoSettingGet.value) {
+        isShowPomorodoSettingErrorModal.value = true
+    }
+})
+
 /*========== component scoped composables function ========== */
 
 // addTask
@@ -134,7 +156,7 @@ function useHandleLogout({ logout, errorOfLogout }) {
                     />
                     <HomeAddTask
                         :folder-types="folderTypes"
-                        :pomorodo-time="60 * 25"
+                        :pomorodo-settings="pomorodoSettings"
                         @add-tasks="handleAddTask"
                     />
                     <HomeList class="home-list" :is-loading="isLoadingTaskGet">
@@ -155,7 +177,7 @@ function useHandleLogout({ logout, errorOfLogout }) {
                         v-model:pomorodo-selected-task-id="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
                         :folder-types="folderTypes"
-                        :pomorodo-time="45 * 60"
+                        :pomorodo-settings="pomorodoSettings"
                         :selected-task="selectedUpdateTask"
                         @update-task="
                             debouncedUpdateTaskAndAutoRetryOnError(
@@ -181,6 +203,21 @@ function useHandleLogout({ logout, errorOfLogout }) {
             :close-pomorodo-modal="closePomorodoModal"
         />
     </section>
+    <BaseModal
+        v-if="isShowPomorodoSettingErrorModal"
+        class="home-folder-modal-confirm"
+    >
+        <template #header> 初始錯誤 </template>
+        <template #body>
+            <p class="error-model-text">加載用戶設置錯誤，請重新載入</p>
+        </template>
+        <template #footer>
+            <div class="error-model-footer">
+                <BaseButton color="primary">重新載入</BaseButton>
+            </div>
+        </template>
+    </BaseModal>
+    <BaseLoading v-if="isLoadingPomorodoSettingGet" />
 </template>
 
 <style lang="scss" scoped>
@@ -262,5 +299,14 @@ function useHandleLogout({ logout, errorOfLogout }) {
     right: 0;
     margin: 0 auto;
     z-index: 999;
+}
+
+.error-model-text {
+    text-align: center;
+    font-size: 14px;
+}
+
+.error-model-footer {
+    text-align: center;
 }
 </style>

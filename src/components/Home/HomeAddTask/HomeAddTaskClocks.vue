@@ -6,8 +6,8 @@ import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenT
 /* ========== component props ========== */
 
 const props = defineProps({
-    pomorodoTime: {
-        type: Number,
+    pomorodoSettings: {
+        type: Object,
         required: true,
     },
     value: {
@@ -38,7 +38,7 @@ const resetCacheTotalExpectTime = () => {
 const currentTimeToPomorodo = computed(() => {
     return covertTimeToPomorodo({
         time: props.value,
-        pomorodoTime: props.pomorodoTime,
+        pomorodoTime: props.pomorodoSettings.pomorodo,
     })
 })
 
@@ -61,7 +61,10 @@ const currentClockStyle = computed(() => (index) => {
                 @click.prevent="
                     $emit(
                         'update:value',
-                        covertPomorodoToTime({ pomorodo: index, pomorodoTime })
+                        covertPomorodoToTime({
+                            pomorodo: index,
+                            pomorodoTime: pomorodoSettings.pomorodo,
+                        })
                     )
                 "
             >
@@ -73,7 +76,9 @@ const currentClockStyle = computed(() => (index) => {
             <button v-for="index of 1" :key="index" class="watch">
                 <img :src="currentClockStyle(index)" width="22" />
             </button>
-            <p class="count">{{ currentTimeToPomorodo }}</p>
+            <p class="count">
+                {{ currentTimeToPomorodo }}
+            </p>
         </template>
         <BasePopover width="200px">
             <template #button>
@@ -102,7 +107,7 @@ const currentClockStyle = computed(() => (index) => {
                                     'update:value',
                                     covertPomorodoToTime({
                                         pomorodo: cacheTotalExpectTime,
-                                        pomorodoTime,
+                                        pomorodoTime: pomorodoSettings.pomorodo,
                                     })
                                 ),
                                     slotProps.close(),

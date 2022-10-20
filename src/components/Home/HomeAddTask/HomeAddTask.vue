@@ -6,12 +6,12 @@ import * as yup from 'yup'
 /* ========== component props ========== */
 
 defineProps({
-    pomorodoTime: {
-        type: Number,
-        required: true,
-    },
     folderTypes: {
         type: Array,
+        required: true,
+    },
+    pomorodoSettings: {
+        type: Object,
         required: true,
     },
 })
@@ -43,7 +43,6 @@ function useAddTaskForm() {
             tags: yup.array().required(),
             folder: yup.string(),
             totalSpendTime: yup.number().integer().required(),
-            pomorodoTime: yup.number().required(),
             totalExpectTime: yup.number().integer().required(),
             subtasks: yup.array().required(),
             createAt: yup.date().required(),
@@ -57,7 +56,6 @@ function useAddTaskForm() {
             tags: [],
             folder: '',
             totalSpendTime: 0,
-            pomorodoTime: 60 * 25,
             totalExpectTime: 0,
             subtasks: [],
             createAt: dayjs().toISOString(),
@@ -110,7 +108,7 @@ function useSubmitTaskForm({ handleVeeSubmit, emits }) {
         <section class="add-task-watch">
             <HomeAddTaskClocks
                 v-model:value="totalExpectTime"
-                :pomorodo-time="pomorodoTime"
+                :pomorodo-settings="pomorodoSettings"
             />
         </section>
         <div class="add-task-line"></div>

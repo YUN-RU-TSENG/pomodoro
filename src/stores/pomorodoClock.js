@@ -55,9 +55,6 @@ export const usePomorodoClockStore = defineStore('pomorodoClock', () => {
         timer,
     })
 
-    // 預加載番茄鐘用戶設置
-    usePreLoadingPomorodoSetting({ pomorodoSettingStore, timer })
-
     // 當選擇任一 task，自動開始 Pomorodo
     useWatchTaskToAutoStartPomorodo({
         startPomorodo,
@@ -132,22 +129,6 @@ function useWatchTaskToAutoStartPomorodo({
         }
         // <-- 當前有選擇任務
     })
-}
-
-/**
- * 預加載番茄鐘用戶設置
- */
-async function usePreLoadingPomorodoSetting({ pomorodoSettingStore, timer }) {
-    await pomorodoSettingStore.getPomorodoSettingAndAutoCreateDefaultValue()
-    const userSetting = pomorodoSettingStore.pomorodoSettings
-
-    timer.value = {
-        ...timer.value,
-        pomorodo: userSetting.pomorodo, // pomorodo 時長(秒)
-        breakTime: userSetting.breakTime, // breakTime 時長(秒)
-        longBreakTime: userSetting.longBreakTime, // longBreakTime 時長(秒)
-        longBreakInterval: userSetting.longBreakInterval, // longBreakTime 間隔回數
-    }
 }
 
 /**

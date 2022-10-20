@@ -24,8 +24,8 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    pomorodoTime: {
-        type: Number,
+    pomorodoSettings: {
+        type: Object,
         required: true,
     },
 })
@@ -86,7 +86,6 @@ function useTaskForm() {
             tags: yup.array(),
             folder: yup.string(),
             subtasks: yup.array(),
-            pomorodoTime: yup.number(),
             totalSpendTime: yup.number().integer(),
             totalExpectTime: yup.number().integer(),
             expectEndDate: '',
@@ -103,7 +102,6 @@ function useTaskForm() {
         tags,
         folder,
         subtasks,
-        pomorodoTime,
         totalSpendTime,
         totalExpectTime,
         mentionDate,
@@ -116,7 +114,6 @@ function useTaskForm() {
         'tags',
         'folder',
         'subtasks',
-        'pomorodoTime',
         'totalSpendTime',
         'totalExpectTime',
         'mentionDate',
@@ -131,7 +128,6 @@ function useTaskForm() {
         tags,
         folder,
         subtasks,
-        pomorodoTime,
         totalSpendTime,
         totalExpectTime,
         mentionDate,
@@ -188,7 +184,7 @@ function useTaskFromCache({ taskForm, props }) {
         if (item === 'totalExpectTime')
             taskForm.value[item] = covertPomorodoToTime({
                 pomorodo: taskFormCache.value[item],
-                pomorodoTime: props.pomorodoTime,
+                pomorodoTime: props.pomorodoSettings.pomorodo,
             })
         else taskForm.value[item] = taskFormCache.value[item]
 
@@ -278,7 +274,8 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                                         taskForm.totalSpendTime
                                             ? covertTimeToPomorodo({
                                                   time: taskForm.totalSpendTime,
-                                                  pomorodoTime: pomorodoTime,
+                                                  pomorodoTime:
+                                                      pomorodoSettings.pomorodo,
                                               })
                                             : '0'
                                     }}</span>
@@ -290,7 +287,8 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                                     <span>{{
                                         covertTimeToPomorodo({
                                             time: taskForm.totalExpectTime,
-                                            pomorodoTime: pomorodoTime,
+                                            pomorodoTime:
+                                                pomorodoSettings.pomorodo,
                                         })
                                     }}</span>
                                 </button>

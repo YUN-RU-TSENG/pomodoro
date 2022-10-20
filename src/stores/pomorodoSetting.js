@@ -49,16 +49,16 @@ function useGetPomorodoSettings({ userStore }) {
 
             if (docSnap.exists()) {
                 pomorodoSettings.value = docSnap.data()
-                return
+            } else {
+                await setDoc(
+                    doc(db, 'pomorodoSettings', userStore.user.uid),
+                    initPomorodoSetting
+                )
+
+                pomorodoSettings.value = { ...initPomorodoSetting }
             }
-
-            await setDoc(
-                doc(db, 'pomorodoSettings', userStore.user.uid),
-                initPomorodoSetting
-            )
-
-            pomorodoSettings.value = initPomorodoSetting
         } catch (error) {
+            console.error(error)
             errorOfPomorodoSettingGet.value = error
         } finally {
             isLoadingPomorodoSettingGet.value = false
