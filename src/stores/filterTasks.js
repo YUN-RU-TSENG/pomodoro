@@ -11,8 +11,44 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
     const filterTasksStore = useFolderTypesStore()
     const { folderTypes } = storeToRefs(filterTasksStore)
 
-    // ---
     // 過濾選項
+    const { filterTaskOptions } = useFilterTaskOptions()
+
+    // 過濾選項，整理格式為 sidebar 呈現的內容 (含任務時數、任務總數)
+    const { filterTaskOptionsFormatForSidebar } =
+        useFilterTaskOptionsFormatForSidebar({
+            tasks,
+            filterTaskOptions,
+        })
+
+    // 資料夾過濾選項
+    const { filterTaskFolderOptions } = useFilterTaskFolderOptions({
+        folderTypes,
+    })
+
+    // 資料夾過濾選項，整理格式為 sidebar 呈現的內容 (含任務時數、任務總數)
+    const { filterTaskFolderOptionsFormatForSidebar } =
+        useFilterTaskFolderOptionsFormatForSidebar({
+            filterTaskFolderOptions,
+            tasks,
+        })
+
+    // selected 過濾選項，預設為 'all'(全部)
+    const selectedFilterOption = useSelectFilterOption({ filterTaskOptions })
+
+    // 當前過濾選項過濾的 tasks
+    const { filterTasks } = useFilterTasks({ selectedFilterOption, tasks })
+
+    return {
+        filterTaskFolderOptionsFormatForSidebar,
+        filterTaskOptionsFormatForSidebar,
+        filterTasks,
+        selectedFilterOption,
+    }
+})
+
+// 過濾選項
+function useFilterTaskOptions() {
     const filterTaskOptions = [
         {
             key: 'taskOfToday',
@@ -60,7 +96,13 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
         },
     ]
 
-    // 過濾選項 (含任務時數、任務總數)
+    return {
+        filterTaskOptions,
+    }
+}
+
+// 過濾選項，整理格式為 sidebar 呈現的內容 (含任務時數、任務總數)
+function useFilterTaskOptionsFormatForSidebar({ tasks, filterTaskOptions }) {
     const filterTaskOptionsFormatForSidebar = computed(() => {
         return filterTaskOptions.map((option) => {
             const filterTasks = option.filterFun(tasks.value)
@@ -79,8 +121,13 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
             }
         })
     })
+    return {
+        filterTaskOptionsFormatForSidebar,
+    }
+}
 
-    // 資料夾過濾選項
+// 資料夾過濾選項
+function useFilterTaskFolderOptions({ folderTypes }) {
     const filterTaskFolderOptions = computed(() => {
         return folderTypes.value.map((folder) => {
             return {
@@ -93,8 +140,15 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
             }
         })
     })
+    return {
+        filterTaskFolderOptions,
+    }
+}
 
-    // 資料夾過濾選項 (含任務時數、任務總數)
+function useFilterTaskFolderOptionsFormatForSidebar({
+    filterTaskFolderOptions,
+    tasks,
+}) {
     const filterTaskFolderOptionsFormatForSidebar = computed(() => {
         return filterTaskFolderOptions.value.map((folderOption) => {
             const folderTasks = tasks.value.filter(
@@ -117,10 +171,20 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
             }
         })
     })
+    return { filterTaskFolderOptionsFormatForSidebar }
+}
 
-    // type of task filter
+// selected 過濾選項，預設為 'all'(全部)
+function useSelectFilterOption({ filterTaskOptions }) {
     const selectedFilterOption = ref(filterTaskOptions[3])
 
+    return {
+        selectedFilterOption,
+    }
+}
+
+// 當前過濾選項過濾的 tasks
+function useFilterTasks({ selectedFilterOption, tasks }) {
     const filterTasks = computed(() => {
         return selectedFilterOption.value.filterFun(
             tasks.value,
@@ -129,13 +193,7 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
         )
     })
 
-    // 過濾的當前任務，根據丟入的過濾選項來過濾當前任務
-    // ---
-
     return {
-        filterTaskFolderOptionsFormatForSidebar,
-        filterTaskOptionsFormatForSidebar,
         filterTasks,
-        selectedFilterOption,
     }
-})
+}
