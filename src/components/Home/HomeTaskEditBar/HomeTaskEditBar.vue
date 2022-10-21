@@ -4,7 +4,7 @@ import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenT
 import { formatDate } from '@/utils/dayjsFormat'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
-
+import dayjs from 'dayjs'
 /* ========== component props ========== */
 
 const props = defineProps({
@@ -335,6 +335,11 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                             <template #model="slotProps">
                                 <HomeCalender
                                     v-model:value="taskFormCache.expectEndDate"
+                                    :min="
+                                        dayjs(taskForm.createAt).format(
+                                            'YYYY/MM/DD'
+                                        )
+                                    "
                                     @confirm="
                                         updateTaskFormByCacheAndResetCache(
                                             'expectEndDate'
@@ -391,6 +396,13 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                             <template #model="slotProps">
                                 <HomeCalender
                                     v-model:value="taskFormCache.mentionDate"
+                                    :max="
+                                        taskForm.expectEndDate
+                                            ? dayjs(
+                                                  taskForm.expectEndDate
+                                              ).format('YYYY/MM/DD')
+                                            : null
+                                    "
                                     @confirm="
                                         updateTaskFormByCacheAndResetCache(
                                             'mentionDate'

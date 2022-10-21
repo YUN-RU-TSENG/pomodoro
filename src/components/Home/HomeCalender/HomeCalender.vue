@@ -1,9 +1,18 @@
 <script setup>
 import { useCalender } from '@/composables/useCalender'
 import dayjs from 'dayjs'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
     value: {
+        type: null,
+        default: null,
+    },
+    min: {
+        type: null,
+        default: null,
+    },
+    max: {
         type: null,
         default: null,
     },
@@ -18,6 +27,24 @@ const {
     currentMonthFirstDayOfWeek,
     updateCurrentTime,
 } = useCalender()
+
+// 計算當前時間是否是限制內時間
+const isOverTheLimitedPeriod = computed(() => (time) => {
+    const now = dayjs(time)
+    let isOverEarliestDeadline, isOverLatestDeadline
+
+    // 當有最早時間，計算是否在限制時間內
+    if (props.min && now.isBefore(dayjs(props.min), 'day')) {
+        isOverEarliestDeadline = true
+    }
+
+    // 當有最晚時間，計算是否在限制時間內
+    if (props.max && now.isAfter(dayjs(props.max), 'day')) {
+        isOverLatestDeadline = true
+    }
+
+    return isOverEarliestDeadline || isOverLatestDeadline
+})
 </script>
 
 <template>
@@ -63,6 +90,11 @@ const {
                             'date-day',
                             'hover',
                             date == dayjs(value).format('DD') ? 'active' : '',
+                            isOverTheLimitedPeriod(
+                                `${currentYear}/${currentMonth}/${date}`
+                            )
+                                ? 'disable'
+                                : '',
                         ]"
                         @click="
                             $emit(
@@ -84,9 +116,6 @@ const {
             </div>
         </main>
     </section>
-    <!-- <section class="mention-time">
-        <BaseInput></BaseInput>
-    </section> -->
     <section class="mention-check">
         <BaseButton color="primary" @click.prevent="$emit('confirm')">
             確定
@@ -148,6 +177,12 @@ const {
             &.active {
                 background-color: $green-1;
                 color: $white-1;
+            }
+            &.disable,
+            &.disable:hover {
+                background-color: $gray-1;
+                color: $gray-3;
+                cursor: not-allowed;
             }
         }
     }
