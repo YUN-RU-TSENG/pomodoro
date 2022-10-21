@@ -202,7 +202,7 @@ function getImageUrl(name) {
         span {
             font-size: 14px;
             line-height: 21px;
-            color: $green-0;
+            color: $gray-4;
         }
     }
 
