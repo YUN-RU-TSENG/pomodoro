@@ -7,6 +7,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    pomorodoSettings: {
+        type: Object,
+        required: true,
+    },
     selectedTaskId: {
         type: String,
         required: true,
@@ -19,46 +23,36 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
-    startPomorodo: {
-        type: Function,
-        required: true,
-    },
-    stopPomorodo: {
-        type: Function,
-        required: true,
-    },
-    breakPomorodo: {
-        type: Function,
-        required: true,
-    },
-    closePomorodoModal: {
-        type: Function,
-        required: true,
-    },
-    openPomorodoModal: {
-        type: Function,
-        required: true,
-    },
 })
+
+const emits = defineEmits([
+    'open-pomorodo-modal',
+    'close-pomorodo-modal',
+    'stop-pomorodo',
+    'start-pomorodo',
+    'break-pomorodo',
+    'update-task',
+    'delete-task',
+])
 
 const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 
 const currentPomorodo = computed(() => {
     return covertTimeToPomorodo({
         time: props.selectedTask.totalSpendTime,
-        pomorodoTime: props.selectedTask.pomorodoTime,
+        pomorodoTime: props.pomorodoSettings.pomorodo,
     })
 })
 
 const currentExpectPomorodo = computed(() => {
     return covertTimeToPomorodo({
         time: props.selectedTask.totalExpectTime,
-        pomorodoTime: props.selectedTask.pomorodoTime,
+        pomorodoTime: props.pomorodoSettings.pomorodo,
     })
 })
 
 const handlePomorodoShow = computed(() => {
-    if (props.selectedTaskId) return props.openPomorodoModal
+    if (props.selectedTaskId) return emits('open-pomorodo-modal')
     return null
 })
 
@@ -85,12 +79,14 @@ const currentDeg = computed(() => {
 
 const currentSmallDeg = computed(() => {
     if (!props.timer?.countDownTime) return
+
     const red = Math.floor(
         Math.floor(
             (props.timer.countDownTime / props.timer[props.timer.mode]) * 100
         ) * 3.6
     )
     const white = 360 - red
+
     return `calc(${white} * 3.14 * 16 * 2 / 360) calc(${red} * 3.14 * 16 * 2 / 360)`
 })
 </script>
@@ -103,7 +99,7 @@ const currentSmallDeg = computed(() => {
     >
         <!-- home-pomorodo pomorodo-full -->
         <div :class="['pomorodo-full', isShowPomorodoModal ? '' : 'un-show']">
-            <button class="toggle" @click.stop="closePomorodoModal">
+            <button class="toggle" @click.stop="$emit('close-pomorodo-modal')">
                 <img src="@/assets/images/full-page-view-1.png" width="24" />
             </button>
             <section class="item">
@@ -112,6 +108,12 @@ const currentSmallDeg = computed(() => {
                     class="checkbox"
                     :value="false"
                     name="home-pomorodo-is-finish"
+                    @update:value="
+                        $emit('update-task', {
+                            ...selectedTask,
+                            isFinish: $event,
+                        })
+                    "
                 />
 
                 <section class="content">
@@ -130,7 +132,10 @@ const currentSmallDeg = computed(() => {
                         <span>{{ currentExpectPomorodo }}</span>
                     </div>
                 </section>
-                <button class="close">
+                <button
+                    class="close"
+                    @click="$emit('delete-task'), $emit('break-pomorodo')"
+                >
                     <img src="@/assets/images/delete-sign.png" width="12" />
                 </button>
             </section>
@@ -148,7 +153,7 @@ const currentSmallDeg = computed(() => {
                         r="190"
                         cx="200"
                         cy="200"
-                        stroke="#D56140"
+                        stroke="#4ed3a9"
                         fill="none"
                         :stroke-dasharray="currentDeg"
                         stroke-width="10"
@@ -167,13 +172,16 @@ const currentSmallDeg = computed(() => {
                 </svg>
             </div>
             <div class="buttons">
-                <button v-if="!timer.isStart" @click.stop="startPomorodo">
+                <button
+                    v-if="!timer.isStart"
+                    @click.stop="$emits('start-pomorodo')"
+                >
                     <img src="@/assets/images/circled-play.png" width="48" />
                 </button>
-                <button v-else @click.stop="stopPomorodo">
+                <button v-else @click.stop="$emit('stop-pomorodo')">
                     <img src="@/assets/images/circled-pause.png" width="48" />
                 </button>
-                <button @click.stop="breakPomorodo">
+                <button @click.stop="$emit('break-pomorodo')">
                     <img src="@/assets/images/stop-squared.png" width="48" />
                 </button>
             </div>
@@ -195,7 +203,7 @@ const currentSmallDeg = computed(() => {
                             r="16"
                             cx="18"
                             cy="18"
-                            stroke="#D56140"
+                            stroke="#4ed3a9"
                             fill="none"
                             :stroke-dasharray="currentSmallDeg"
                             stroke-width="2"
@@ -217,14 +225,18 @@ const currentSmallDeg = computed(() => {
                 <button
                     v-if="timer.isStart"
                     class="stop"
-                    @click.stop="stopPomorodo"
+                    @click.stop="$emit('stop-pomorodo')"
                 >
                     <img src="@/assets/images/circled-pause.png" width="32" />
                 </button>
-                <button v-else class="play" @click.stop="startPomorodo">
+                <button
+                    v-else
+                    class="play"
+                    @click.stop="$emit('start-pomorodo')"
+                >
                     <img src="@/assets/images/circled-play.png" width="32" />
                 </button>
-                <button class="break" @click.stop="breakPomorodo">
+                <button class="break" @click.stop="$emit('break-pomorodo')">
                     <img src="@/assets/images/stop-squared.png" width="24" />
                 </button>
             </template>

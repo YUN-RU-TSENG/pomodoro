@@ -53,6 +53,8 @@ export const usePomorodoClockStore = defineStore('pomorodoClock', () => {
     const { breakPomorodo } = useBreakPomorodo({
         intervalId,
         timer,
+        selectedTaskId,
+        isShowPomorodoModal,
     })
 
     // 當選擇任一 task，自動開始 Pomorodo
@@ -217,7 +219,12 @@ function useStopPomorodo({ intervalId, timer }) {
 /**
  * 終止當前 pomorodo
  */
-function useBreakPomorodo({ intervalId, timer }) {
+function useBreakPomorodo({
+    intervalId,
+    timer,
+    selectedTaskId,
+    isShowPomorodoModal,
+}) {
     const breakPomorodo = () => {
         clearInterval(intervalId.value)
 
@@ -227,6 +234,10 @@ function useBreakPomorodo({ intervalId, timer }) {
             countDownTime: timer.value.pomorodo,
             isStart: false,
         }
+
+        selectedTaskId.value = ''
+
+        isShowPomorodoModal.value = false
     }
 
     return {

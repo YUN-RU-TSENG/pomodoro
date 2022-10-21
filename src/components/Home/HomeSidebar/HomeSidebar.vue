@@ -1,88 +1,27 @@
 <script setup>
-import { computed } from 'vue'
 import { useToggleComponent } from '@/composables/useToggleComponent'
 
 /* ========== component props ========== */
 
-const props = defineProps({
-    filterType: { type: Object, required: true },
-    eachFolderTypeTotalTaskTime: { type: Array, required: true },
+defineProps({
+    selectedFilterOption: { type: Object, required: true },
+    filterTaskFolderOptionsFormatForSidebar: { type: Array, required: true },
+    filterTaskOptionsFormatForSidebar: { type: Array, required: true },
     isLoadingFolderTypesAdd: { type: Boolean, required: true },
 })
 
 /* ========== component emits ========== */
 
-const emits = defineEmits(['add-folder-type', 'update:filter-type'])
+defineEmits(['add-folder-type', 'update:selected-filter-option'])
 
 /* ========== component logic ========== */
-
-// sidebar 項目
-const {
-    sidebarItems,
-    updateSelectSidebarItem,
-    isSidebarItemSelect,
-    isSidebarFolderItemSelect,
-} = useSelectSidebarItem({ props })
 
 // folder confirm 框是否可見
 const { visible: isFolderConfirmVisible } = useToggleComponent()
 
-/*========== component scoped composables function ========== */
+// /*========== component scoped composables function ========== */
 
-// sidebar 項目
-function useSelectSidebarItem({ props }) {
-    // sidebar 項目
-    const sidebarItems = [
-        { name: '今天', type: 'taskOfToday', iconUrl: getImageUrl('sun.png') },
-        {
-            name: '稍後',
-            type: 'taskOfFuture',
-            iconUrl: getImageUrl('external-sunset-3.png'),
-        },
-        {
-            name: '尚未安排',
-            type: 'taskOfNoExpectTime',
-            iconUrl: getImageUrl('calendar--v1-1.png'),
-        },
-        {
-            name: '全部',
-            type: 'all',
-            iconUrl: getImageUrl('calendar--v1-2.png'),
-        },
-        {
-            name: '已完成',
-            type: 'taskOfFinish',
-            iconUrl: getImageUrl('checked.png'),
-        },
-    ]
-
-    // 當前 sidebar 項目是否選中
-    const isSidebarItemSelect = computed(() => (sidebarItemType) => {
-        return sidebarItemType === props.filterType.type
-    })
-
-    // 當前 folder sidebar 項目是否選中
-    const isSidebarFolderItemSelect = computed(
-        () => (sidebarFolderItemType) => {
-            if (props.filterType.type !== 'taskOfTheFolder') return
-            return sidebarFolderItemType === props.filterType.param
-        }
-    )
-
-    // 更換當前選中的 sidebar 項目 (emit)
-    const updateSelectSidebarItem = (filterTypeType, param) => {
-        emits('update:filter-type', { type: filterTypeType, param })
-    }
-
-    return {
-        sidebarItems,
-        updateSelectSidebarItem,
-        isSidebarItemSelect,
-        isSidebarFolderItemSelect,
-    }
-}
-
-// 取得 img url
+// // 取得 img url
 function getImageUrl(name) {
     return new URL(`../../../assets/images/${name}`, import.meta.url).href
 }
@@ -96,19 +35,27 @@ function getImageUrl(name) {
             <ul class="sidebar-list">
                 <!-- home-sidebar sidebar-item -->
                 <li
-                    v-for="item of sidebarItems"
-                    :key="item.type"
+                    v-for="option of filterTaskOptionsFormatForSidebar"
+                    :key="option.type"
                     class="sidebar-item-wrapper"
-                    @click="updateSelectSidebarItem(item.type)"
+                    @click="
+                        $emit('update:selected-filter-option', {
+                            key: option.key,
+                            name: option.name,
+                            filterFun: option.filterFun,
+                        })
+                    "
                 >
                     <a
                         :class="[
                             'sidebar-item',
-                            isSidebarItemSelect(item.type) ? 'active' : '',
+                            selectedFilterOption.key === option.key
+                                ? 'active'
+                                : '',
                         ]"
                     >
-                        <img :src="item.iconUrl" width="22" />
-                        <h3>{{ item.name }}</h3>
+                        <img :src="getImageUrl(option.imgName)" width="22" />
+                        <h3>{{ option.name }}</h3>
                         <p class="total-spend-time">6h</p>
                         <p class="pomorodo-time">6</p>
                     </a>
@@ -120,20 +67,21 @@ function getImageUrl(name) {
         <section class="sidebar-base folder">
             <ul class="sidebar-list">
                 <li
-                    v-for="folderType of eachFolderTypeTotalTaskTime"
-                    :key="folderType.id"
+                    v-for="option of filterTaskFolderOptionsFormatForSidebar"
+                    :key="option.name"
                     class="sidebar-item-wrapper"
                     @click="
-                        $emit('update:filter-type', {
-                            type: 'taskOfTheFolder',
-                            param: folderType.name,
+                        $emit('update:selected-filter-option', {
+                            key: option.key,
+                            name: option.name,
+                            filterFun: option.filterFun,
                         })
                     "
                 >
                     <a
                         :class="[
                             'sidebar-item',
-                            isSidebarFolderItemSelect(folderType.name)
+                            selectedFilterOption.name === option.name
                                 ? 'active'
                                 : '',
                         ]"
@@ -142,11 +90,11 @@ function getImageUrl(name) {
                             src="@/assets/images/folder-invoices--v1.png"
                             width="22"
                         />
-                        <h3>{{ folderType.name }}</h3>
+                        <h3>{{ option.name }}</h3>
                         <p class="total-spend-time">
-                            {{ folderType.time + 'h' }}
+                            {{ option.tasksTotalExpectTime + 'h' }}
                         </p>
-                        <p class="pomorodo-time">{{ '1' }}</p>
+                        <p class="pomorodo-time">{{ option.tasksNumber }}</p>
                     </a>
                 </li>
             </ul>

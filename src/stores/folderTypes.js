@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import {
     collection,
     getDocs,
@@ -9,13 +9,11 @@ import {
     db,
 } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
-import { useTasksStore } from '@/stores/tasks'
 import dayjs from 'dayjs'
 
 export const useFolderTypesStore = defineStore('folderTypes', () => {
     // userStore
     const userStore = useUserStore()
-    const tasksStore = useTasksStore()
 
     // firebaseFolderTypesRef
     const { firebaseRefFolderType, firebaseRefUserFolderType } =
@@ -33,12 +31,6 @@ export const useFolderTypesStore = defineStore('folderTypes', () => {
         getFolderTypes,
     })
 
-    // folderTypes and Tasks
-    const { eachFolderTypeTotalTaskTime } = useFolderTypeTotalTimes({
-        tasksStore,
-        folderTypes,
-    })
-
     const updateFolderType = () => {}
 
     const deleteFolderType = () => {}
@@ -51,7 +43,6 @@ export const useFolderTypesStore = defineStore('folderTypes', () => {
         addFolderType,
         updateFolderType,
         deleteFolderType,
-        eachFolderTypeTotalTaskTime,
     }
 })
 
@@ -125,31 +116,5 @@ function useAddFolderType({
     return {
         addFolderType,
         isLoadingFolderTypesAdd,
-    }
-}
-
-function useFolderTypeTotalTimes({ tasksStore, folderTypes }) {
-    // 將 folderType 以及 tasks 合併成 [{name:'name',totalTasks:12,time: millisecond}]
-    const eachFolderTypeTotalTaskTime = computed(() => {
-        return folderTypes.value.reduce((acc, cur) => {
-            const result = { name: '', totalTasks: 0, time: 0 }
-
-            const currentTask = tasksStore.tasks.filter(
-                (item) => item.folder === cur.name
-            )
-
-            result.id = cur.id
-            result.name = cur.name
-            result.totalTasks = currentTask.length
-            result.time = currentTask.reduce((acc, cur) => {
-                return acc + cur.totalExpectTime
-            }, 0)
-
-            return [...acc, result]
-        }, [])
-    })
-
-    return {
-        eachFolderTypeTotalTaskTime,
     }
 }

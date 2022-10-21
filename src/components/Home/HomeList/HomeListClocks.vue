@@ -7,8 +7,8 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    pomorodoTime: {
-        type: Number,
+    pomorodoSettings: {
+        type: Object,
         required: true,
     },
 })
@@ -18,7 +18,7 @@ const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 const currentPomorodo = computed(() => {
     return covertTimeToPomorodo({
         time: props.totalExpectTime,
-        pomorodoTime: props.pomorodoTime,
+        pomorodoTime: props.pomorodoSettings.pomorodo,
     })
 })
 </script>

@@ -7,6 +7,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    pomorodoSettings: {
+        type: Object,
+        required: true,
+    },
     task: {
         type: Object,
         required: true,
@@ -18,7 +22,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits([
-    'update:task',
+    'update-task',
     'update:pomorodoSelectedTaskId',
     'update:cacheUpdateTaskId',
 ])
@@ -89,13 +93,13 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
     >
         <a class="list-item">
             <BaseCheckbox
-                id="home-list-item-is-finish"
+                :id="'home-list-item-is-finish' + task.id"
                 class="checkbox"
                 name="home-list-item-is-finish"
                 :value="task.isFinish"
                 @click.stop
                 @update:value="
-                    $emit('update:task', { ...task, isFinish: $event })
+                    $emit('update-task', { ...task, isFinish: $event })
                 "
             />
             <HomeStartTimer
@@ -114,7 +118,7 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
                     class="text"
                     :value="task.name"
                     @input="
-                        $emit('update:task', {
+                        $emit('update-task', {
                             ...task,
                             name: $event.target.value,
                         })
@@ -128,7 +132,7 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
                 }}</span>
                 <HomeListClocks
                     :total-expect-time="task.totalExpectTime"
-                    :pomorodo-time="task.pomorodoTime"
+                    :pomorodo-settings="pomorodoSettings"
                     @click.stop
                 />
             </section>

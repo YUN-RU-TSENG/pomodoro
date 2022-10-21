@@ -207,11 +207,7 @@ function useUpdateTask({ tasks, getTasks }) {
             errorOfTaskUpdate.value = null
             isLoadingTaskUpdate.value = true
 
-            const currentEditTaskReference = doc(
-                db,
-                'tasks',
-                selectedUpdateTaskId.value
-            )
+            const currentEditTaskReference = doc(db, 'tasks', formValue.id)
 
             await updateDoc(currentEditTaskReference, formValue)
 
@@ -280,7 +276,7 @@ function useDeleteTask({ getTasks, selectedUpdateTaskId }) {
             const currentDocumentReference = doc(db, 'tasks', cacheDeleteTaskId)
 
             await deleteDoc(currentDocumentReference)
-            selectedUpdateTaskId.value = null
+            selectedUpdateTaskId.value = ''
 
             getTasks()
         } catch (error) {

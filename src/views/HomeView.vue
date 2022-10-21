@@ -4,6 +4,7 @@ import { useTasksStore } from '@/stores/tasks'
 import { usePomorodoClockStore } from '@/stores/pomorodoClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { usePomorodoSetting } from '@/stores/pomorodoSetting'
+import { useFilterTasksStore } from '@/stores/filterTasks'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
@@ -19,15 +20,22 @@ const userStore = useUserStore()
 const { user, errorOfLogout } = storeToRefs(userStore)
 const { logout } = userStore
 
+// pinia - filterTasksStore
+const filterTasksStore = useFilterTasksStore()
+const {
+    filterTasks,
+    filterTaskFolderOptionsFormatForSidebar,
+    filterTaskOptionsFormatForSidebar,
+    selectedFilterOption,
+} = storeToRefs(filterTasksStore)
+
 // pinia - tasksStore
 const tasksStore = useTasksStore()
 const {
-    filterType,
     isLoadingTaskGet,
     errorOfTaskAdd,
     selectedUpdateTaskId,
     selectedUpdateTask,
-    filterTasks,
     theSumOfExpectTimeOfTask,
     theSumOfSpendTimeOfTask,
     theSumOfNumberOfUnFinishTasks,
@@ -54,8 +62,7 @@ const {
 
 // pinia - folderTypesStore
 const folderTypesStore = useFolderTypesStore()
-const { eachFolderTypeTotalTaskTime, isLoadingFolderTypesAdd, folderTypes } =
-    storeToRefs(folderTypesStore)
+const { isLoadingFolderTypesAdd, folderTypes } = storeToRefs(folderTypesStore)
 const { getFolderTypes, addFolderType } = folderTypesStore
 
 // pinia - pomorodoSettingStore
@@ -143,10 +150,14 @@ function useHandleGetPomorodoSetting({
         <main class="home-workspace">
             <!-- workspace-sidebar -->
             <HomeSidebar
-                v-model:filter-type="filterType"
+                v-model:selected-filter-option="selectedFilterOption"
+                :filter-task-folder-options-format-for-sidebar="
+                    filterTaskFolderOptionsFormatForSidebar
+                "
+                :filter-task-options-format-for-sidebar="
+                    filterTaskOptionsFormatForSidebar
+                "
                 class="workspace-sidebar"
-                style="height: calc(100vh - 45px)"
-                :each-folder-type-total-task-time="eachFolderTypeTotalTaskTime"
                 :is-loading-folder-types-add="isLoadingFolderTypesAdd"
                 @add-folder-type="addFolderType($event)"
             />
@@ -184,7 +195,10 @@ function useHandleGetPomorodoSetting({
                             v-model:cache-update-task-id="selectedUpdateTaskId"
                             v-model:pomorodo-selected-task-id="selectedTaskId"
                             :task="task"
-                            @update:task="log('@update:task')"
+                            :pomorodo-settings="pomorodoSettings"
+                            @update-task="
+                                debouncedUpdateTaskAndAutoRetryOnError
+                            "
                         />
                     </HomeList>
                 </div>
@@ -214,11 +228,14 @@ function useHandleGetPomorodoSetting({
             :selected-task-id="selectedTaskId"
             :selected-task="selectedTask"
             :is-show-pomorodo-modal="isShowPomorodoModal"
-            :start-pomorodo="startPomorodo"
-            :stop-pomorodo="stopPomorodo"
-            :break-pomorodo="breakPomorodo"
-            :open-pomorodo-modal="openPomorodoModal"
-            :close-pomorodo-modal="closePomorodoModal"
+            :pomorodo-settings="pomorodoSettings"
+            @delete-task="deleteTask(selectedTaskId)"
+            @update-task="debouncedUpdateTaskAndAutoRetryOnError"
+            @start-pomorodo="startPomorodo"
+            @stop-pomorodo="stopPomorodo"
+            @break-pomorodo="breakPomorodo"
+            @open-pomorodo-modal="openPomorodoModal"
+            @close-pomorodo-modal="closePomorodoModal"
         />
     </section>
     <BaseModal
@@ -256,6 +273,10 @@ function useHandleGetPomorodoSetting({
     display: flex;
     position: relative;
     z-index: 1;
+}
+
+.workspace-sidebar {
+    height: calc(100vh - 45px);
 }
 
 .home-time-sum {
