@@ -121,6 +121,7 @@ function useFilterTaskOptionsFormatForSidebar({ tasks, filterTaskOptions }) {
             }
         })
     })
+
     return {
         filterTaskOptionsFormatForSidebar,
     }
@@ -140,11 +141,13 @@ function useFilterTaskFolderOptions({ folderTypes }) {
             }
         })
     })
+
     return {
         filterTaskFolderOptions,
     }
 }
 
+// 資料夾過濾選項，整理格式為 sidebar 呈現的內容 (含任務時數、任務總數)
 function useFilterTaskFolderOptionsFormatForSidebar({
     filterTaskFolderOptions,
     tasks,
@@ -171,6 +174,7 @@ function useFilterTaskFolderOptionsFormatForSidebar({
             }
         })
     })
+
     return { filterTaskFolderOptionsFormatForSidebar }
 }
 
