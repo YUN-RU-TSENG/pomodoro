@@ -34,7 +34,9 @@ export const useFilterTasksStore = defineStore('filterTasks', () => {
         })
 
     // selected 過濾選項，預設為 'all'(全部)
-    const selectedFilterOption = useSelectFilterOption({ filterTaskOptions })
+    const { selectedFilterOption } = useSelectFilterOption({
+        filterTaskOptions,
+    })
 
     // 當前過濾選項過濾的 tasks
     const { filterTasks } = useFilterTasks({ selectedFilterOption, tasks })

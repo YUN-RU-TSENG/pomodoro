@@ -12,7 +12,6 @@ import {
     db,
 } from '@/utils/firebaseStore'
 import { useUserStore } from './user'
-import dayjs from 'dayjs'
 import { useDebounceFn } from '@vueuse/core'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -62,11 +61,6 @@ export const useTasksStore = defineStore('tasks', () => {
             selectedUpdateTaskId,
         })
 
-    // type of task filter
-    const { filterTasks, filterType } = useFilterTask({
-        tasks,
-    })
-
     // tasks - sum of tasks item
     const {
         theSumOfExpectTimeOfTask,
@@ -96,9 +90,6 @@ export const useTasksStore = defineStore('tasks', () => {
         // tasks - delete
         deleteTask,
         isLoadingTaskDelete,
-        // type of task filter
-        filterType,
-        filterTasks,
         // tasks - sum of tasks item
         theSumOfExpectTimeOfTask,
         theSumOfSpendTimeOfTask,
@@ -287,56 +278,6 @@ function useDeleteTask({ getTasks, selectedUpdateTaskId }) {
     }
 
     return { deleteTask, isLoadingTaskDelete }
-}
-
-// ! 需要註解 filter 類型，以及 folder 分類的使用細節
-function useFilterTask({ tasks }) {
-    const filterType = ref({ type: 'all', param: '' })
-
-    const taskOfToday = computed(() => {
-        return tasks.value.filter((task) => {
-            if (!task.expectEndDate) return
-            return dayjs(task.expectEndDate).isSame(dayjs(), 'day')
-        })
-    })
-
-    const taskOfFuture = computed(() => {
-        return tasks.value.filter((task) => {
-            if (!task.expectEndDate) return
-            return dayjs(task.expectEndDate).isAfter(dayjs(), 'day')
-        })
-    })
-
-    const taskOfNoExpectTime = computed(() => {
-        return tasks.value.filter((task) => {
-            return !task.expectEndDate
-        })
-    })
-
-    const taskOfFinish = computed(() => {
-        return tasks.value.filter((task) => {
-            return task.isFinish
-        })
-    })
-
-    const taskOfTheFolder = computed(() => {
-        return tasks.value.filter((task) => {
-            return task.folder === filterType.value.param
-        })
-    })
-
-    const filterTasks = computed(() => {
-        if (filterType.value.type === 'taskOfToday') return taskOfToday.value
-        if (filterType.value.type === 'taskOfFuture') return taskOfFuture.value
-        if (filterType.value.type === 'taskOfNoExpectTime')
-            return taskOfNoExpectTime.value
-        if (filterType.value.type === 'taskOfFinish') return taskOfFinish.value
-        if (filterType.value.type === 'taskOfTheFolder')
-            return taskOfTheFolder.value
-        return tasks.value // all
-    })
-
-    return { filterTasks, filterType }
 }
 
 function useSumOfTasksItem({ tasks }) {
