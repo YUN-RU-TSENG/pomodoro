@@ -37,6 +37,7 @@ const emits = defineEmits([
     'delete-task',
     'update:selected-task-id',
     'update:pomorodo-selected-task-id',
+    'break-pomorodo',
 ])
 
 /* ========== component logic ========== */
@@ -484,7 +485,7 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                     })
                 }}
             </p>
-            <button @click="$emit('delete-task')">
+            <button @click="$emit('delete-task'), $emit('break-pomorodo')">
                 <img src="@/assets/images/trash--v1.png" width="20" />
             </button>
         </footer>

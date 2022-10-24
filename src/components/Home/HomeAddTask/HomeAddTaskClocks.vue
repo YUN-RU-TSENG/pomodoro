@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import getImageUrl from '@/utils/getImageUrl'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
 /* ========== component props ========== */
@@ -48,6 +47,10 @@ const currentClockStyle = computed(() => (index) => {
         return getImageUrl('retro-alarm-clock-red.png')
     return getImageUrl('retro-alarm-clock.png')
 })
+
+function getImageUrl(name) {
+    return new URL(`../../../assets/images/${name}`, import.meta.url).href
+}
 </script>
 
 <template>

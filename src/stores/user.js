@@ -4,8 +4,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-    auth,
-} from '@/utils/firebaseAuth'
+} from 'firebase/auth'
+import { auth } from '@/utils/firebaseAuth'
 import { useBaseAlert } from '@/components/Base/BaseAlert/index'
 
 export const useUserStore = defineStore('user', () => {

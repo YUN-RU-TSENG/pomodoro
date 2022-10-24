@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
+import { db } from '@/utils/firebaseStore'
 import {
+    orderBy,
     collection,
     getDocs,
     addDoc,
@@ -9,8 +11,7 @@ import {
     query,
     doc,
     where,
-    db,
-} from '@/utils/firebaseStore'
+} from 'firebase/firestore'
 import { useUserStore } from './user'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -104,7 +105,8 @@ function useFirebaseTaskRef({ userStore }) {
 
     const firebaseRefUserTask = query(
         collection(db, 'tasks'),
-        where('uid', '==', userStore.user.uid)
+        where('uid', '==', userStore.user.uid),
+        orderBy('createAt')
     )
 
     return {
@@ -206,6 +208,7 @@ function useUpdateTask({ tasks, getTasks }) {
         } catch (error) {
             errorOfTaskUpdate.value = error
             console.error(error)
+            // ! 顯示錯誤，但要是可選的，因為 debounce 使用該 function，但不要顯示錯誤
         } finally {
             isLoadingTaskUpdate.value = false
         }
@@ -225,7 +228,7 @@ function useDebouncedUpdateTaskAndAutoResendUpdateOnError({
     errorOfTaskUpdate,
     selectedUpdateTaskId,
 }) {
-    // 自動每三秒發送一次的 interval Id
+    // 自動三秒後發送一次的 interval Id
     const timeIntervalId = ref(null)
 
     // 當 update task id 更新，刪除 interval Id

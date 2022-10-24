@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { db, doc, getDoc, setDoc } from '@/utils/firebaseStore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { db } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
 
 export const usePomorodoSetting = defineStore('pomorodoSetting', () => {
@@ -23,7 +24,7 @@ export const usePomorodoSetting = defineStore('pomorodoSetting', () => {
     }
 })
 
-// pomorodoSettings
+// pomorodoSettings 用戶番茄鐘相關設置（有預設值如下 initPomorodoSetting）
 function useGetPomorodoSettings({ userStore }) {
     const pomorodoSettings = ref({})
     const isLoadingPomorodoSettingGet = ref(false)

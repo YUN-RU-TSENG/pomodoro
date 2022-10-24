@@ -44,6 +44,8 @@ export const usePomorodoClockStore = defineStore('pomorodoClock', () => {
     const { startPomorodo } = useStartPomorodo({
         intervalId,
         timer,
+        selectedTask,
+        tasksStore,
     })
 
     // 暫停 Pomorodo
@@ -136,7 +138,7 @@ function useWatchTaskToAutoStartPomorodo({
 /**
  * 開始 pomorodo
  */
-function useStartPomorodo({ intervalId, timer }) {
+function useStartPomorodo({ intervalId, timer, selectedTask, tasksStore }) {
     const startPomorodo = () => {
         timer.value.isStart = true
         const countDownDate = dayjs().add(timer.value.countDownTime, 'second')
@@ -156,9 +158,8 @@ function useStartPomorodo({ intervalId, timer }) {
             if (timer.value.mode === 'pomorodo')
                 timer.value.currentInterval += 1
 
-            // 執行其他完成倒數的任務，如鈴聲、打 API
-            console.log('music')
-            console.log('API')
+            // 執行其他完成倒數的任務，如鈴聲、打 API selectedTask
+            tasksStore.updateTask({ ...selectedTask.value })
 
             // 是否切換長休息
             const isLongBreakInterval =

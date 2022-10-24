@@ -1,13 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import {
-    collection,
-    getDocs,
-    addDoc,
-    query,
-    where,
-    db,
-} from '@/utils/firebaseStore'
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore'
+import { db } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
 import dayjs from 'dayjs'
 

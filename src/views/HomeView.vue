@@ -45,6 +45,7 @@ const {
     getTasks,
     deleteTask,
     addTask,
+    updateTask,
     debouncedUpdateTaskAndAutoRetryOnError,
 } = tasksStore
 
@@ -165,7 +166,7 @@ function useHandleGetPomorodoSetting({
             <section class="workspace-current-task">
                 <div class="task-list">
                     <div class="list-title">
-                        <h2>今天</h2>
+                        <h2>{{ selectedFilterOption.name }}</h2>
                         <button class="sort">
                             <img src="@/assets/images/sort.png" width="20" />
                         </button>
@@ -188,7 +189,11 @@ function useHandleGetPomorodoSetting({
                         :pomorodo-settings="pomorodoSettings"
                         @add-tasks="handleAddTask"
                     />
-                    <HomeList class="home-list" :is-loading="isLoadingTaskGet">
+                    <HomeList
+                        class="home-list"
+                        :is-loading="isLoadingTaskGet"
+                        title="Tasks"
+                    >
                         <HomeListItem
                             v-for="task of filterTasks"
                             :key="task.id"
@@ -196,9 +201,7 @@ function useHandleGetPomorodoSetting({
                             v-model:pomorodo-selected-task-id="selectedTaskId"
                             :task="task"
                             :pomorodo-settings="pomorodoSettings"
-                            @update-task="
-                                debouncedUpdateTaskAndAutoRetryOnError
-                            "
+                            @update-task="updateTask"
                         />
                     </HomeList>
                 </div>
@@ -217,6 +220,7 @@ function useHandleGetPomorodoSetting({
                             )
                         "
                         @delete-task="deleteTask(selectedUpdateTaskId)"
+                        @break-pomorodo="breakPomorodo"
                     />
                 </div>
             </section>
@@ -254,7 +258,7 @@ function useHandleGetPomorodoSetting({
             </div>
         </template>
     </BaseModal>
-    <BaseLoading v-if="isLoadingPomorodoSettingGet" />
+    <BaseLoading v-if="isLoadingPomorodoSettingGet" text="加載用戶配置" />
 </template>
 
 <style lang="scss" scoped>
@@ -320,7 +324,7 @@ function useHandleGetPomorodoSetting({
 
         .home-list {
             margin-bottom: 24px;
-            height: 470px;
+            height: calc(100vh - 300px);
             overflow: scroll;
 
             -ms-overflow-style: none; /* Internet Explorer 10+ */

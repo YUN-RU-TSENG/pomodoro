@@ -56,8 +56,14 @@ function getImageUrl(name) {
                     >
                         <img :src="getImageUrl(option.imgName)" width="22" />
                         <h3>{{ option.name }}</h3>
-                        <p class="total-spend-time">6h</p>
-                        <p class="pomorodo-time">6</p>
+                        <p class="total-spend-time">
+                            {{
+                                Math.floor(
+                                    option.tasksTotalExpectTime / 60 / 60
+                                ) + 'h'
+                            }}
+                        </p>
+                        <p class="pomorodo-time">{{ option.tasksNumber }}</p>
                     </a>
                 </li>
             </ul>
@@ -92,7 +98,11 @@ function getImageUrl(name) {
                         />
                         <h3>{{ option.name }}</h3>
                         <p class="total-spend-time">
-                            {{ option.tasksTotalExpectTime + 'h' }}
+                            {{
+                                Math.floor(
+                                    option.tasksTotalExpectTime / 60 / 60
+                                ) + 'h'
+                            }}
                         </p>
                         <p class="pomorodo-time">{{ option.tasksNumber }}</p>
                     </a>
@@ -247,6 +257,11 @@ function getImageUrl(name) {
         font-size: 12px;
         line-height: 18px;
         color: $gray-3;
+    }
+
+    .pomorodo-time {
+        flex: 0 1 24px;
+        text-align: right;
     }
 
     p.total-spend-time {
