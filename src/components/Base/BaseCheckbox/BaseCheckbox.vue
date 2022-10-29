@@ -34,12 +34,6 @@ const checkboxValue = computed({
 })
 </script>
 
-<script>
-export default {
-    inheritAttrs: false,
-}
-</script>
-
 <template>
     <label :for="id" :class="['base-checkbox', $attrs.class]">
         <input

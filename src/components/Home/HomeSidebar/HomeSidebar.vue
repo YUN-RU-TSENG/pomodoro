@@ -5,8 +5,8 @@ import { useToggleComponent } from '@/composables/useToggleComponent'
 
 defineProps({
     selectedFilterOption: { type: Object, required: true },
-    filterTaskFolderOptionsFormatForSidebar: { type: Array, required: true },
     filterTaskOptionsFormatForSidebar: { type: Array, required: true },
+    filterTaskFolderOptionsFormatForSidebar: { type: Array, required: true },
     isLoadingFolderTypesAdd: { type: Boolean, required: true },
 })
 
@@ -137,6 +137,7 @@ function getImageUrl(name) {
         </footer>
         <HomeFolderModelConfirm
             v-model:visible="isFolderConfirmVisible"
+            :current-folders="filterTaskFolderOptionsFormatForSidebar"
             @on-submit="$emit('add-folder-type', $event)"
         />
     </section>

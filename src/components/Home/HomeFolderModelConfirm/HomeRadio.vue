@@ -1,6 +1,5 @@
 <script setup>
-import { toRef } from 'vue'
-import { useField } from 'vee-validate'
+import { computed } from 'vue'
 
 /*========== component props ========== */
 
@@ -12,13 +11,22 @@ const props = defineProps({
         required: true,
     },
     color: { type: String, required: true },
+    checkValue: { type: String, required: true },
 })
 
-/*========== component logic ========== */
+/* ========== component emit ========== */
 
-const name = toRef(props, 'name')
+const emit = defineEmits(['update:check-value'])
 
-const { value: checkedValue, handleChange } = useField(name)
+const inputValue = computed({
+    get() {
+        return props.checkValue
+    },
+    set(value) {
+        console.log(value)
+        emit('update:check-value', value)
+    },
+})
 </script>
 
 <template>
@@ -26,12 +34,11 @@ const { value: checkedValue, handleChange } = useField(name)
         <label class="base-radio" :for="id">
             <input
                 :id="id"
+                v-bind="$attrs"
+                v-model="inputValue"
                 type="radio"
                 :name="name"
-                :value="value"
-                :checked="checkedValue == value"
-                v-bind="$attrs"
-                @change="handleChange"
+                :value="color"
             />
             <div
                 class="box"

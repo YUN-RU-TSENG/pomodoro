@@ -1,5 +1,4 @@
 <script setup>
-import { watch, toRef } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { colors } from './color'
@@ -11,6 +10,7 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
+    currentFolders: { type: Array, required: true },
 })
 
 /* ========== component emit ========== */
@@ -19,28 +19,37 @@ const emit = defineEmits(['update:visible', 'on-submit'])
 
 /* ========== component logic ========== */
 
-const { onSubmit } = useFolderForm({ props })
+const { submitForm, name, selectColor, submitCountOfForm, errorsOfForm } =
+    useFolderForm({ props })
 
 // folder form
 function useFolderForm({ props }) {
-    const visible = toRef(props, 'visible')
-
-    const { handleSubmit, resetForm } = useForm({
+    const { handleSubmit, useFieldModel, submitCount, errors } = useForm({
         validationSchema: yup.object({
-            name: yup.string().required(),
+            name: yup
+                .string()
+                .test(
+                    'not-duplicate',
+                    '已有相同的 folder 名稱 - ${value}',
+                    (value) =>
+                        props.currentFolders.every((folder) => {
+                            return value !== folder.name
+                        })
+                )
+                .required(),
             color: yup.string().required(),
         }),
         initialValues: {
             name: '',
-            color: '',
+            color: colors[0],
         },
     })
 
-    // 由於使用 v-if，form 會在綁定時驗證，使用 resetForm 取消初次驗證時的錯誤
-    // doc: https://github.com/logaretm/vee-validate/issues/3415
-    watch(visible, () => {
-        resetForm()
-    })
+    // name
+    const name = useFieldModel('name')
+
+    // color
+    const color = useFieldModel('color')
 
     const onSubmit = handleSubmit(
         (value) => {
@@ -52,7 +61,13 @@ function useFolderForm({ props }) {
         }
     )
 
-    return { onSubmit }
+    return {
+        submitForm: onSubmit,
+        name,
+        selectColor: color,
+        submitCountOfForm: submitCount,
+        errorsOfForm: errors,
+    }
 }
 </script>
 
@@ -64,11 +79,17 @@ function useFolderForm({ props }) {
     >
         <template #header> 創建標籤 </template>
         <template #body>
-            <HomeInput id="folder-type-name" name="name"></HomeInput>
+            <BaseInput
+                id="folder-type-name"
+                v-model:value="name"
+                name="folder-type-name"
+                :error="submitCountOfForm ? errorsOfForm.name : ''"
+            />
             <div class="colors">
                 <div v-for="color in colors" :key="color" class="color">
                     <HomeRadio
                         :id="color"
+                        v-model:check-value="selectColor"
                         name="color"
                         :value="color"
                         :color="color"
@@ -81,7 +102,9 @@ function useFolderForm({ props }) {
                 <BaseButton @click="$emit('update:visible', false)">
                     取消
                 </BaseButton>
-                <BaseButton color="primary" @click="onSubmit">確定</BaseButton>
+                <BaseButton color="primary" @click="submitForm">
+                    確定
+                </BaseButton>
             </div>
         </template>
     </BaseModal>
