@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import { useUserStore } from './user'
 import { useDebounceFn } from '@vueuse/core'
+import { useBaseAlert } from '@/components/Base/BaseAlert/index'
 
 export const useTasksStore = defineStore('tasks', () => {
     // userStore
@@ -139,6 +140,9 @@ function useGetTasks({ firebaseRefUserTask }) {
             tasks.value = tasksSnapshotData
         } catch (error) {
             console.error(error)
+            useBaseAlert({
+                text: '登入失敗 - ' + error.message,
+            })
         } finally {
             isLoadingTaskGet.value = false
         }

@@ -14,6 +14,12 @@ defineProps({
     },
 })
 
+/* ========== component logic ========== */
+
+const { visible: isOpen, close, open } = useToggleComponent()
+
+isOpen.value = true
+
 /* ========== component expose ========== */
 
 defineExpose({
@@ -21,10 +27,6 @@ defineExpose({
     open,
     isOpen,
 })
-
-/* ========== component logic ========== */
-
-const { visible: isOpen, close, open } = useToggleComponent()
 </script>
 
 <template>

@@ -135,9 +135,13 @@ function useLogin({ user }) {
             }
         } catch (error) {
             errorOfLogin.value = error
-            console.error(error)
+            let errorMessage = error.message
+
+            if (error.code == 'auth/user-not-found')
+                errorMessage = '用戶尚未註冊，請註冊後再登入'
+
             useBaseAlert({
-                text: '登入失敗 - ' + error.message,
+                text: '登入失敗 - ' + errorMessage,
             })
         } finally {
             isLoadingLogin.value = false
@@ -165,6 +169,7 @@ function useLogout({ user }) {
         } catch (error) {
             errorOfLogout.value = error
             console.error(error)
+
             useBaseAlert({
                 text: '登出失敗' + error,
             })
