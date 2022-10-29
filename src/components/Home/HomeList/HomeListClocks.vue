@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
+import { useCovertBetweenTimeAndPomodoro } from '@/composables/useCovertBetweenTimeAndPomodoro'
 
 /*========== component props ========== */
 
@@ -9,7 +9,7 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -17,21 +17,21 @@ const props = defineProps({
 
 /*========== component logic ========== */
 
-const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
+const { covertTimeToPomodoro } = useCovertBetweenTimeAndPomodoro()
 
-const currentPomorodo = computed(() => {
-    return covertTimeToPomorodo({
+const currentPomodoro = computed(() => {
+    return covertTimeToPomodoro({
         time: props.totalExpectTime,
-        pomorodoTime: props.pomorodoSettings.pomorodo,
+        pomodoroTime: props.pomodoroSettings.pomodoro,
     })
 })
 </script>
 
 <template>
     <div class="timers">
-        <template v-if="currentPomorodo <= 7">
+        <template v-if="currentPomodoro <= 7">
             <img
-                v-for="index of Math.floor(currentPomorodo)"
+                v-for="index of Math.floor(currentPomodoro)"
                 :key="index"
                 src="@/assets/images/retro-alarm-clock.png"
                 width="12"
@@ -39,7 +39,7 @@ const currentPomorodo = computed(() => {
         </template>
         <template v-else>
             <img src="@/assets/images/retro-alarm-clock.png" width="12" />
-            <span class="counts">{{ currentPomorodo }}</span>
+            <span class="counts">{{ currentPomodoro }}</span>
         </template>
     </div>
 </template>

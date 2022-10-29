@@ -5,11 +5,11 @@ import { formatDate } from '@/utils/dayjsFormat'
 /*========== component props ========== */
 
 const props = defineProps({
-    pomorodoSelectedTaskId: {
+    pomodoroSelectedTaskId: {
         type: String,
         required: true,
     },
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -26,7 +26,7 @@ const props = defineProps({
 /*========== component emit ========== */
 
 const emit = defineEmits([
-    'update:pomorodoSelectedTaskId',
+    'update:pomodoroSelectedTaskId',
     'update:cacheUpdateTaskId',
 ])
 
@@ -77,18 +77,18 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
     >
         <a class="list-item">
             <HomeStartTimer
-                :id="'pomorodo-selected-task' + task.id"
+                :id="'pomodoro-selected-task' + task.id"
                 class="start-timer"
-                name="pomorodo-selected-task"
+                name="pomodoro-selected-task"
                 :value="task.id"
-                :checked-value="pomorodoSelectedTaskId"
-                @update:value="$emit('update:pomorodoSelectedTaskId', task.id)"
+                :checked-value="pomodoroSelectedTaskId"
+                @update:value="$emit('update:pomodoroSelectedTaskId', task.id)"
             />
             <section class="content">
                 <span class="text">{{ task.name }}</span>
                 <HomeListClocks
                     :total-expect-time="task.totalExpectTime"
-                    :pomorodo-settings="pomorodoSettings"
+                    :pomodoro-settings="pomodoroSettings"
                     @click.stop
                 />
             </section>

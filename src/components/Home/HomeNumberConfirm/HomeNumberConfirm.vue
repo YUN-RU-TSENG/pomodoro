@@ -15,7 +15,7 @@ defineEmits(['cancel', 'confirm', 'update:value'])
 <template>
     <form>
         <BaseInput
-            id="pomorodo-cache-add-form"
+            id="pomodoro-cache-add-form"
             class="number-input"
             type="number"
             placeholder="輸入數字"

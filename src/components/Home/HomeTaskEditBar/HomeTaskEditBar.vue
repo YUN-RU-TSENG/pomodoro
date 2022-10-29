@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
+import { useCovertBetweenTimeAndPomodoro } from '@/composables/useCovertBetweenTimeAndPomodoro'
 import { formatDate } from '@/utils/dayjsFormat'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -21,11 +21,11 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    pomorodoSelectedTaskId: {
+    pomodoroSelectedTaskId: {
         type: String,
         required: true,
     },
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -37,15 +37,15 @@ const emit = defineEmits([
     'update-task',
     'delete-task',
     'update:selected-task-id',
-    'update:pomorodo-selected-task-id',
-    'break-pomorodo',
+    'update:pomodoro-selected-task-id',
+    'break-pomodoro',
 ])
 
 /* ========== component logic ========== */
 
-// 轉換 pomorodo 與 time(second)
-const { covertTimeToPomorodo, covertPomorodoToTime } =
-    useCovertBetweenTimeAndPomorodo()
+// 轉換 pomodoro 與 time(second)
+const { covertTimeToPomodoro, covertPomodoroToTime } =
+    useCovertBetweenTimeAndPomodoro()
 
 // task form 狀態(包含驗證)
 const { taskForm, handleVeeSubmit, resetForm, formMeta } = useTaskForm()
@@ -185,9 +185,9 @@ function useTaskFromCache({ taskForm, props }) {
 
     const updateTaskFormByCacheAndResetCache = (item) => {
         if (item === 'totalExpectTime')
-            taskForm.value[item] = covertPomorodoToTime({
-                pomorodo: taskFormCache.value[item],
-                pomorodoTime: props.pomorodoSettings.pomorodo,
+            taskForm.value[item] = covertPomodoroToTime({
+                pomodoro: taskFormCache.value[item],
+                pomodoroTime: props.pomodoroSettings.pomodoro,
             })
         else taskForm.value[item] = taskFormCache.value[item]
 
@@ -239,13 +239,13 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                     name="home-task-edit-bar-is-finish"
                 />
                 <HomeStartTimer
-                    :id="'pomorodo-selected-task-editor' + selectedTaskId"
-                    name="pomorodo-selected-task-editor"
+                    :id="'pomodoro-selected-task-editor' + selectedTaskId"
+                    name="pomodoro-selected-task-editor"
                     :value="selectedTaskId"
-                    :checked-value="pomorodoSelectedTaskId"
+                    :checked-value="pomodoroSelectedTaskId"
                     @update:value="
                         $emit(
-                            'update:pomorodo-selected-task-id',
+                            'update:pomodoro-selected-task-id',
                             selectedTaskId
                         )
                     "
@@ -268,17 +268,17 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                         <h4>番茄鐘</h4>
                         <BasePopover width="200px">
                             <template #button>
-                                <button class="pomorodo">
+                                <button class="pomodoro">
                                     <img
                                         src="@/assets/images/retro-alarm-clock.png"
                                         width="14"
                                     />
                                     <span>{{
                                         taskForm.totalSpendTime
-                                            ? covertTimeToPomorodo({
+                                            ? covertTimeToPomodoro({
                                                   time: taskForm.totalSpendTime,
-                                                  pomorodoTime:
-                                                      pomorodoSettings.pomorodo,
+                                                  pomodoroTime:
+                                                      pomodoroSettings.pomodoro,
                                               })
                                             : '0'
                                     }}</span>
@@ -288,10 +288,10 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                                         width="14"
                                     />
                                     <span>{{
-                                        covertTimeToPomorodo({
+                                        covertTimeToPomodoro({
                                             time: taskForm.totalExpectTime,
-                                            pomorodoTime:
-                                                pomorodoSettings.pomorodo,
+                                            pomodoroTime:
+                                                pomodoroSettings.pomodoro,
                                         })
                                     }}</span>
                                 </button>
@@ -440,13 +440,13 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                             "
                         />
                         <HomeStartTimer
-                            :id="'pomorodo-selected-task' + selectedTaskId"
-                            name="pomorodo-selected-task"
+                            :id="'pomodoro-selected-task' + selectedTaskId"
+                            name="pomodoro-selected-task"
                             :value="selectedTaskId"
-                            :checked-value="pomorodoSelectedTaskId"
+                            :checked-value="pomodoroSelectedTaskId"
                             @update:value="
                                 $emit(
-                                    'update:pomorodo-selected-task-id',
+                                    'update:pomodoro-selected-task-id',
                                     selectedTaskId
                                 )
                             "
@@ -487,7 +487,7 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                     })
                 }}
             </p>
-            <button @click="$emit('delete-task'), $emit('break-pomorodo')">
+            <button @click="$emit('delete-task'), $emit('break-pomodoro')">
                 <img src="@/assets/images/trash--v1.png" width="20" />
             </button>
         </footer>
@@ -572,7 +572,7 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
             color: $gray-4;
         }
 
-        .pomorodo {
+        .pomodoro {
             font-size: 0;
             line-height: 0;
             span {

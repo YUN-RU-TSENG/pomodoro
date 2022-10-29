@@ -16,11 +16,11 @@ describe('HomeAddTask', () => {
         const wrapper = mount(HomeAddTask)
         expect(wrapper.text()).not.toBeNull()
     })
-    it('當以 modal(cacheTotalExpectTime) 更新表單 totalExpectTime，若是選中的 pomorodo 數量小於等於五，被選中數量的時鐘會呈現紅色', () => {
+    it('當以 modal(cacheTotalExpectTime) 更新表單 totalExpectTime，若是選中的 pomodoro 數量小於等於五，被選中數量的時鐘會呈現紅色', () => {
         const wrapper = mount(HomeAddTask)
         expect(wrapper.text()).not.toBeNull()
     })
-    it('當以 modal(cacheTotalExpectTime) 更新表單 totalExpectTime，若是選中的 pomorodo 數量大於五，只渲染一個時鐘，以及時鐘旁會顯示 pomorodo 數量', () => {
+    it('當以 modal(cacheTotalExpectTime) 更新表單 totalExpectTime，若是選中的 pomodoro 數量大於五，只渲染一個時鐘，以及時鐘旁會顯示 pomodoro 數量', () => {
         const wrapper = mount(HomeAddTask)
         expect(wrapper.text()).not.toBeNull()
     })

@@ -10,7 +10,7 @@ defineProps({
         type: Array,
         required: true,
     },
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -109,7 +109,7 @@ function useSubmitTaskForm({ handleVeeSubmit, emit }) {
         <section class="add-task-watch">
             <HomeAddTaskClocks
                 v-model:value="totalExpectTime"
-                :pomorodo-settings="pomorodoSettings"
+                :pomodoro-settings="pomodoroSettings"
             />
         </section>
         <div class="add-task-line"></div>

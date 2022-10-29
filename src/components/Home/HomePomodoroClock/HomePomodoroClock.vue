@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
+import { useCovertBetweenTimeAndPomodoro } from '@/composables/useCovertBetweenTimeAndPomodoro'
 
 /*========== component props ========== */
 
@@ -9,7 +9,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -21,7 +21,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    isShowPomorodoModal: {
+    isShowPomodoroModal: {
         type: Boolean,
         required: true,
     },
@@ -30,35 +30,35 @@ const props = defineProps({
 /*========== component emit ========== */
 
 const emit = defineEmits([
-    'open-pomorodo-modal',
-    'close-pomorodo-modal',
-    'stop-pomorodo',
-    'start-pomorodo',
-    'break-pomorodo',
+    'open-pomodoro-modal',
+    'close-pomodoro-modal',
+    'stop-pomodoro',
+    'start-pomodoro',
+    'break-pomodoro',
     'update-task',
     'delete-task',
 ])
 
 /*========== component logic ========== */
 
-const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
+const { covertTimeToPomodoro } = useCovertBetweenTimeAndPomodoro()
 
-const currentPomorodo = computed(() => {
-    return covertTimeToPomorodo({
+const currentPomodoro = computed(() => {
+    return covertTimeToPomodoro({
         time: props.selectedTask.totalSpendTime,
-        pomorodoTime: props.pomorodoSettings.pomorodo,
+        pomodoroTime: props.pomodoroSettings.pomodoro,
     })
 })
 
-const currentExpectPomorodo = computed(() => {
-    return covertTimeToPomorodo({
+const currentExpectPomodoro = computed(() => {
+    return covertTimeToPomodoro({
         time: props.selectedTask.totalExpectTime,
-        pomorodoTime: props.pomorodoSettings.pomorodo,
+        pomodoroTime: props.pomodoroSettings.pomodoro,
     })
 })
 
-const handlePomorodoShow = computed(() => {
-    if (props.selectedTaskId) return emit('open-pomorodo-modal')
+const handlePomodoroShow = computed(() => {
+    if (props.selectedTaskId) return emit('open-pomodoro-modal')
     return null
 })
 
@@ -98,22 +98,22 @@ const currentSmallDeg = computed(() => {
 </script>
 
 <template>
-    <!-- home-pomorodo -->
+    <!-- home-pomodoro -->
     <section
-        :class="['home-pomorodo', isShowPomorodoModal ? 'full' : 'small']"
-        @click="handlePomorodoShow"
+        :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']"
+        @click="handlePomodoroShow"
     >
-        <!-- home-pomorodo pomorodo-full -->
-        <div :class="['pomorodo-full', isShowPomorodoModal ? '' : 'un-show']">
-            <button class="toggle" @click.stop="$emit('close-pomorodo-modal')">
+        <!-- home-pomodoro pomodoro-full -->
+        <div :class="['pomodoro-full', isShowPomodoroModal ? '' : 'un-show']">
+            <button class="toggle" @click.stop="$emit('close-pomodoro-modal')">
                 <img src="@/assets/images/full-page-view-1.png" width="24" />
             </button>
             <section class="item">
                 <BaseCheckbox
-                    id="home-pomorodo-is-finish"
+                    id="home-pomodoro-is-finish"
                     class="checkbox"
                     :value="false"
-                    name="home-pomorodo-is-finish"
+                    name="home-pomodoro-is-finish"
                     @update:value="
                         $emit('update-task', {
                             ...selectedTask,
@@ -129,18 +129,18 @@ const currentSmallDeg = computed(() => {
                             src="@/assets/images/retro-alarm-clock.png"
                             width="12"
                         />
-                        <span>{{ currentPomorodo }}</span>
+                        <span>{{ currentPomodoro }}</span>
                         <span>/</span>
                         <img
                             src="@/assets/images/retro-alarm-clock.png"
                             width="12"
                         />
-                        <span>{{ currentExpectPomorodo }}</span>
+                        <span>{{ currentExpectPomodoro }}</span>
                     </div>
                 </section>
                 <button
                     class="close"
-                    @click="$emit('delete-task'), $emit('break-pomorodo')"
+                    @click="$emit('delete-task'), $emit('break-pomodoro')"
                 >
                     <img src="@/assets/images/delete-sign.png" width="12" />
                 </button>
@@ -180,20 +180,20 @@ const currentSmallDeg = computed(() => {
             <div class="buttons">
                 <button
                     v-if="!timer.isStart"
-                    @click.stop="$emit('start-pomorodo')"
+                    @click.stop="$emit('start-pomodoro')"
                 >
                     <img src="@/assets/images/circled-play.png" width="48" />
                 </button>
-                <button v-else @click.stop="$emit('stop-pomorodo')">
+                <button v-else @click.stop="$emit('stop-pomodoro')">
                     <img src="@/assets/images/circled-pause.png" width="48" />
                 </button>
-                <button @click.stop="$emit('break-pomorodo')">
+                <button @click.stop="$emit('break-pomodoro')">
                     <img src="@/assets/images/stop-squared.png" width="48" />
                 </button>
             </div>
         </div>
-        <!-- home-pomorodo pomorodo-small -->
-        <div :class="['pomorodo-small', isShowPomorodoModal ? 'un-show' : '']">
+        <!-- home-pomodoro pomodoro-small -->
+        <div :class="['pomodoro-small', isShowPomodoroModal ? 'un-show' : '']">
             <template v-if="selectedTaskId">
                 <button class="clock">
                     <svg height="36" width="36" viewBox="0 0 36 36" fill="red">
@@ -231,18 +231,18 @@ const currentSmallDeg = computed(() => {
                 <button
                     v-if="timer.isStart"
                     class="stop"
-                    @click.stop="$emit('stop-pomorodo')"
+                    @click.stop="$emit('stop-pomodoro')"
                 >
                     <img src="@/assets/images/circled-pause.png" width="32" />
                 </button>
                 <button
                     v-else
                     class="play"
-                    @click.stop="$emit('start-pomorodo')"
+                    @click.stop="$emit('start-pomodoro')"
                 >
                     <img src="@/assets/images/circled-play.png" width="32" />
                 </button>
-                <button class="break" @click.stop="$emit('break-pomorodo')">
+                <button class="break" @click.stop="$emit('break-pomodoro')">
                     <img src="@/assets/images/stop-squared.png" width="24" />
                 </button>
             </template>
@@ -254,7 +254,7 @@ const currentSmallDeg = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.home-pomorodo {
+.home-pomodoro {
     transition: all 0.3s ease;
     background-color: $green-1;
     box-shadow: 0 0 4px $gray-2;
@@ -281,7 +281,7 @@ const currentSmallDeg = computed(() => {
     }
 }
 
-.home-pomorodo .pomorodo-full {
+.home-pomodoro .pomodoro-full {
     padding-top: 120px;
     .toggle {
         position: absolute;
@@ -358,7 +358,7 @@ const currentSmallDeg = computed(() => {
     }
 }
 
-.home-pomorodo .pomorodo-small {
+.home-pomodoro .pomodoro-small {
     display: flex;
     padding: 6px;
     align-items: center;
@@ -397,7 +397,7 @@ const currentSmallDeg = computed(() => {
     }
 }
 
-.home-pomorodo .un-show {
+.home-pomodoro .un-show {
     display: none;
 }
 </style>

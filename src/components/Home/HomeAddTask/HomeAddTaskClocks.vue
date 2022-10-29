@@ -1,11 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
+import { useCovertBetweenTimeAndPomodoro } from '@/composables/useCovertBetweenTimeAndPomodoro'
 
 /* ========== component props ========== */
 
 const props = defineProps({
-    pomorodoSettings: {
+    pomodoroSettings: {
         type: Object,
         required: true,
     },
@@ -21,9 +21,9 @@ defineEmits(['update:value'])
 
 /* ========== component logic ========== */
 
-// 轉換 pomorodo 與 time(second)
-const { covertTimeToPomorodo, covertPomorodoToTime } =
-    useCovertBetweenTimeAndPomorodo()
+// 轉換 pomodoro 與 time(second)
+const { covertTimeToPomodoro, covertPomodoroToTime } =
+    useCovertBetweenTimeAndPomodoro()
 
 // 任務總時間快取，由於可以另外選擇使用 modal input，故需要此快取值
 const cacheTotalExpectTime = ref(0)
@@ -33,17 +33,17 @@ const resetCacheTotalExpectTime = () => {
     cacheTotalExpectTime.value = 0
 }
 
-// 當前任務總時間對應的 pomorodo 數量
-const currentTimeToPomorodo = computed(() => {
-    return covertTimeToPomorodo({
+// 當前任務總時間對應的 pomodoro 數量
+const currentTimeToPomodoro = computed(() => {
+    return covertTimeToPomodoro({
         time: props.value,
-        pomorodoTime: props.pomorodoSettings.pomorodo,
+        pomodoroTime: props.pomodoroSettings.pomodoro,
     })
 })
 
-// 當選中 N 個 pomorodo 時，符合選中數量的 pomorodo 呈現紅色
+// 當選中 N 個 pomodoro 時，符合選中數量的 pomodoro 呈現紅色
 const currentClockStyle = computed(() => (index) => {
-    if (index <= currentTimeToPomorodo.value)
+    if (index <= currentTimeToPomodoro.value)
         return getImageUrl('retro-alarm-clock-red.png')
     return getImageUrl('retro-alarm-clock.png')
 })
@@ -55,8 +55,8 @@ function getImageUrl(name) {
 
 <template>
     <div class="home-add-task-clock">
-        <!-- UI logic - pomorodo 小於 5 時，畫面呈現 5 個時鐘 -->
-        <template v-if="currentTimeToPomorodo <= 5">
+        <!-- UI logic - pomodoro 小於 5 時，畫面呈現 5 個時鐘 -->
+        <template v-if="currentTimeToPomodoro <= 5">
             <button
                 v-for="index of 5"
                 :key="index"
@@ -64,9 +64,9 @@ function getImageUrl(name) {
                 @click.prevent="
                     $emit(
                         'update:value',
-                        covertPomorodoToTime({
-                            pomorodo: index,
-                            pomorodoTime: pomorodoSettings.pomorodo,
+                        covertPomodoroToTime({
+                            pomodoro: index,
+                            pomodoroTime: pomodoroSettings.pomodoro,
                         })
                     )
                 "
@@ -74,13 +74,13 @@ function getImageUrl(name) {
                 <img :src="currentClockStyle(index)" width="22" />
             </button>
         </template>
-        <!-- UI logic - pomorodo 大於 5 時，呈現 1 個時鐘加上 pomorodo 數量 -->
+        <!-- UI logic - pomodoro 大於 5 時，呈現 1 個時鐘加上 pomodoro 數量 -->
         <template v-else>
             <button v-for="index of 1" :key="index" class="watch">
                 <img :src="currentClockStyle(index)" width="22" />
             </button>
             <p class="count">
-                {{ currentTimeToPomorodo }}
+                {{ currentTimeToPomodoro }}
             </p>
         </template>
         <BasePopover width="200px">
@@ -108,9 +108,9 @@ function getImageUrl(name) {
                             @click.prevent="
                                 $emit(
                                     'update:value',
-                                    covertPomorodoToTime({
-                                        pomorodo: cacheTotalExpectTime,
-                                        pomorodoTime: pomorodoSettings.pomorodo,
+                                    covertPomodoroToTime({
+                                        pomodoro: cacheTotalExpectTime,
+                                        pomodoroTime: pomodoroSettings.pomodoro,
                                     })
                                 ),
                                     slotProps.close(),

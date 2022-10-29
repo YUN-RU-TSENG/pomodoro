@@ -1,5 +1,5 @@
 {
-    "name": "pomorodo-todo",
+    "name": "pomodoro-todo",
     "version": "0.0.0",
     "scripts": {
         "dev": "vite",

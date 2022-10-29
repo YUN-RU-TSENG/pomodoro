@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import { useBaseLoading } from '@/components/Base/BaseLoading/index'
 import { useUserStore } from '@/stores/user'
 
@@ -8,7 +9,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: () => import('@/views/HomeView.vue'),
+            component: HomeView,
             meta: {
                 requireAuth: true,
             },

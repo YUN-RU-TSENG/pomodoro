@@ -1,9 +1,9 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
-import { usePomorodoClockStore } from '@/stores/pomorodoClock'
+import { usePomodoroClockStore } from '@/stores/pomodoroClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
-import { usePomorodoSetting } from '@/stores/pomorodoSetting'
+import { usePomodoroSetting } from '@/stores/pomodoroSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -48,41 +48,41 @@ const {
     debouncedUpdateTaskAndAutoRetryOnError,
 } = tasksStore
 
-// pinia - pomorodoClockStore
-const pomorodoClockStore = usePomorodoClockStore()
-const { selectedTaskId, timer, selectedTask, isShowPomorodoModal } =
-    storeToRefs(pomorodoClockStore)
+// pinia - pomodoroClockStore
+const pomodoroClockStore = usePomodoroClockStore()
+const { selectedTaskId, timer, selectedTask, isShowPomodoroModal } =
+    storeToRefs(pomodoroClockStore)
 const {
-    startPomorodo,
-    stopPomorodo,
-    breakPomorodo,
-    openPomorodoModal,
-    closePomorodoModal,
-} = pomorodoClockStore
+    startPomodoro,
+    stopPomodoro,
+    breakPomodoro,
+    openPomodoroModal,
+    closePomodoroModal,
+} = pomodoroClockStore
 
 // pinia - folderTypesStore
 const folderTypesStore = useFolderTypesStore()
 const { isLoadingFolderTypesAdd, folderTypes } = storeToRefs(folderTypesStore)
 const { getFolderTypes, addFolderType } = folderTypesStore
 
-// pinia - pomorodoSettingStore
-const pomorodoSettingStore = usePomorodoSetting()
+// pinia - pomodoroSettingStore
+const pomodoroSettingStore = usePomodoroSetting()
 const {
-    pomorodoSettings,
-    isLoadingPomorodoSettingGet,
-    errorOfPomorodoSettingGet,
-} = storeToRefs(pomorodoSettingStore)
-const { getPomorodoSettingAndAutoCreateDefaultValue } = pomorodoSettingStore
+    pomodoroSettings,
+    isLoadingPomodoroSettingGet,
+    errorOfPomodoroSettingGet,
+} = storeToRefs(pomodoroSettingStore)
+const { getPomodoroSettingAndAutoCreateDefaultValue } = pomodoroSettingStore
 
 /* ========== component logic ========== */
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
 const { handleLogout } = useHandleLogout({ logout, errorOfLogout })
-const { handleGetPomorodoSetting, isShowPomorodoSettingErrorModal } =
-    useHandleGetPomorodoSetting({
-        getPomorodoSettingAndAutoCreateDefaultValue,
-        errorOfPomorodoSettingGet,
+const { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal } =
+    useHandleGetPomodoroSetting({
+        getPomodoroSettingAndAutoCreateDefaultValue,
+        errorOfPomodoroSettingGet,
     })
 
 onBeforeMount(async () => {
@@ -92,8 +92,8 @@ onBeforeMount(async () => {
     // folder
     getFolderTypes()
 
-    // pomorodoSetting
-    handleGetPomorodoSetting()
+    // pomodoroSetting
+    handleGetPomodoroSetting()
 })
 
 /*========== component scoped composables function ========== */
@@ -120,21 +120,21 @@ function useHandleLogout({ logout, errorOfLogout }) {
     return { handleLogout }
 }
 
-// handleGetPomorodoSetting
-function useHandleGetPomorodoSetting({
-    getPomorodoSettingAndAutoCreateDefaultValue,
-    errorOfPomorodoSettingGet,
+// handleGetPomodoroSetting
+function useHandleGetPomodoroSetting({
+    getPomodoroSettingAndAutoCreateDefaultValue,
+    errorOfPomodoroSettingGet,
 }) {
-    const isShowPomorodoSettingErrorModal = ref(false)
+    const isShowPomodoroSettingErrorModal = ref(false)
 
-    const handleGetPomorodoSetting = async () => {
-        await getPomorodoSettingAndAutoCreateDefaultValue()
-        if (errorOfPomorodoSettingGet.value) {
-            isShowPomorodoSettingErrorModal.value = true
+    const handleGetPomodoroSetting = async () => {
+        await getPomodoroSettingAndAutoCreateDefaultValue()
+        if (errorOfPomodoroSettingGet.value) {
+            isShowPomodoroSettingErrorModal.value = true
         }
     }
 
-    return { handleGetPomorodoSetting, isShowPomorodoSettingErrorModal }
+    return { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal }
 }
 </script>
 
@@ -185,7 +185,7 @@ function useHandleGetPomorodoSetting({
                     />
                     <HomeAddTask
                         :folder-types="folderTypes"
-                        :pomorodo-settings="pomorodoSettings"
+                        :pomodoro-settings="pomodoroSettings"
                         @add-tasks="handleAddTask"
                     />
                     <HomeList
@@ -197,19 +197,19 @@ function useHandleGetPomorodoSetting({
                             v-for="task of filterTasks"
                             :key="task.id"
                             v-model:cache-update-task-id="selectedUpdateTaskId"
-                            v-model:pomorodo-selected-task-id="selectedTaskId"
+                            v-model:pomodoro-selected-task-id="selectedTaskId"
                             :task="task"
-                            :pomorodo-settings="pomorodoSettings"
+                            :pomodoro-settings="pomodoroSettings"
                         />
                     </HomeList>
                 </div>
                 <div v-if="selectedUpdateTaskId" class="task-detail">
                     <HomeTaskEditBar
                         v-model:selected-task-id="selectedUpdateTaskId"
-                        v-model:pomorodo-selected-task-id="selectedTaskId"
+                        v-model:pomodoro-selected-task-id="selectedTaskId"
                         style="height: calc(100vh - 45px - 24px)"
                         :folder-types="folderTypes"
-                        :pomorodo-settings="pomorodoSettings"
+                        :pomodoro-settings="pomodoroSettings"
                         :selected-task="selectedUpdateTask"
                         @update-task="
                             debouncedUpdateTaskAndAutoRetryOnError(
@@ -217,30 +217,30 @@ function useHandleGetPomorodoSetting({
                             )
                         "
                         @delete-task="deleteTask(selectedUpdateTaskId)"
-                        @break-pomorodo="breakPomorodo"
+                        @break-pomodoro="breakPomodoro"
                     />
                 </div>
             </section>
         </main>
-        <!-- home-pomorodo-clock -->
-        <HomePomorodoClock
-            class="home-pomorodo-clock"
+        <!-- home-pomodoro-clock -->
+        <HomePomodoroClock
+            class="home-pomodoro-clock"
             :timer="timer"
             :selected-task-id="selectedTaskId"
             :selected-task="selectedTask"
-            :is-show-pomorodo-modal="isShowPomorodoModal"
-            :pomorodo-settings="pomorodoSettings"
+            :is-show-pomodoro-modal="isShowPomodoroModal"
+            :pomodoro-settings="pomodoroSettings"
             @delete-task="deleteTask(selectedTaskId)"
             @update-task="debouncedUpdateTaskAndAutoRetryOnError"
-            @start-pomorodo="startPomorodo"
-            @stop-pomorodo="stopPomorodo"
-            @break-pomorodo="breakPomorodo"
-            @open-pomorodo-modal="openPomorodoModal"
-            @close-pomorodo-modal="closePomorodoModal"
+            @start-pomodoro="startPomodoro"
+            @stop-pomodoro="stopPomodoro"
+            @break-pomodoro="breakPomodoro"
+            @open-pomodoro-modal="openPomodoroModal"
+            @close-pomodoro-modal="closePomodoroModal"
         />
     </section>
     <BaseModal
-        v-if="isShowPomorodoSettingErrorModal"
+        v-if="isShowPomodoroSettingErrorModal"
         class="home-folder-modal-confirm"
     >
         <template #header> 初始錯誤 </template>
@@ -249,13 +249,13 @@ function useHandleGetPomorodoSetting({
         </template>
         <template #footer>
             <div class="error-model-footer">
-                <BaseButton color="primary" @click="handleGetPomorodoSetting"
+                <BaseButton color="primary" @click="handleGetPomodoroSetting"
                     >重新載入</BaseButton
                 >
             </div>
         </template>
     </BaseModal>
-    <BaseLoading v-if="isLoadingPomorodoSettingGet" text="加載用戶配置" />
+    <BaseLoading v-if="isLoadingPomodoroSettingGet" text="加載用戶配置" />
 </template>
 
 <style lang="scss" scoped>
@@ -340,7 +340,7 @@ function useHandleGetPomorodoSetting({
     }
 }
 
-.home-pomorodo-clock {
+.home-pomodoro-clock {
     position: fixed;
     top: auto;
     bottom: 24px;

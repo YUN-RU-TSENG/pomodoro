@@ -1,4 +1,4 @@
-# pomorodo-todo
+# pomodoro-todo
 
 ## Quick Start
 
@@ -11,4 +11,4 @@ npm run dev
 
 ## Source
 
--   [Pomorodo APP API Scheme - HackMD](https://hackmd.io/EHZZfDqiQp-gWNedbYFZqA)
+-   [Pomodoro APP API Scheme - HackMD](https://hackmd.io/EHZZfDqiQp-gWNedbYFZqA)

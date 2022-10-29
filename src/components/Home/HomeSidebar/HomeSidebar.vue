@@ -62,7 +62,7 @@ function getImageUrl(name) {
                                 ) + 'h'
                             }}
                         </p>
-                        <p class="pomorodo-time">{{ option.tasksNumber }}</p>
+                        <p class="pomodoro-time">{{ option.tasksNumber }}</p>
                     </a>
                 </li>
             </ul>
@@ -103,7 +103,7 @@ function getImageUrl(name) {
                                 ) + 'h'
                             }}
                         </p>
-                        <p class="pomorodo-time">{{ option.tasksNumber }}</p>
+                        <p class="pomodoro-time">{{ option.tasksNumber }}</p>
                     </a>
                 </li>
             </ul>
@@ -259,7 +259,7 @@ function getImageUrl(name) {
         color: $gray-3;
     }
 
-    .pomorodo-time {
+    .pomodoro-time {
         flex: 0 1 24px;
         text-align: right;
     }

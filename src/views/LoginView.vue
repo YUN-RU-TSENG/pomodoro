@@ -80,7 +80,7 @@ function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfLogin }) {
     <AuthenticationLayout class="user-validate">
         <AuthenticationForm
             title="Login"
-            text="Pomorodo todo 優雅的使用待辦清單以及番茄鐘"
+            text="Pomodoro todo 優雅的使用待辦清單以及番茄鐘"
             tip-text="沒有帳號？"
             tip-button-text="註冊"
             @submit-form="submitLogin"
