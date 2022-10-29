@@ -387,6 +387,7 @@ const currentSmallDeg = computed(() => {
 
     .empty {
         text-align: center;
+        padding-top: 6px;
     }
 
     .stop,

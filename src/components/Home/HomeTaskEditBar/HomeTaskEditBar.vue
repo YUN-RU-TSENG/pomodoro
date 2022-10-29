@@ -144,6 +144,7 @@ function useTaskForm() {
 function useAutoSubmitTaskForm({ handleVeeSubmit, emit, formMeta, taskForm }) {
     const submitUpdateTaskForm = handleVeeSubmit((formValue, { resetForm }) => {
         emit('update-task', { formValue, resetForm })
+        resetForm({ values: formValue })
     })
 
     watch(

@@ -206,7 +206,6 @@ function useHandleGetPomorodoSetting({
                     </HomeList>
                 </div>
                 <div v-if="selectedUpdateTaskId" class="task-detail">
-                    <!-- HomeTaskEditBar -->
                     <HomeTaskEditBar
                         v-model:selected-task-id="selectedUpdateTaskId"
                         v-model:pomorodo-selected-task-id="selectedTaskId"
