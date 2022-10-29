@@ -15,7 +15,7 @@ const props = defineProps({
     },
 })
 
-/* ========== component emits ========== */
+/* ========== component emit ========== */
 
 defineEmits(['update:value'])
 

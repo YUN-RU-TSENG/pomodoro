@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component props ========== */
+
 defineProps({
     color: {
         type: String,

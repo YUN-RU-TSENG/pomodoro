@@ -4,6 +4,8 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { colors } from './color'
 
+/* ========== component props ========== */
+
 const props = defineProps({
     visible: {
         type: Boolean,
@@ -11,10 +13,15 @@ const props = defineProps({
     },
 })
 
-const emits = defineEmits(['update:visible', 'on-submit'])
+/* ========== component emit ========== */
+
+const emit = defineEmits(['update:visible', 'on-submit'])
+
+/* ========== component logic ========== */
 
 const { onSubmit } = useFolderForm({ props })
 
+// folder form
 function useFolderForm({ props }) {
     const visible = toRef(props, 'visible')
 
@@ -37,8 +44,8 @@ function useFolderForm({ props }) {
 
     const onSubmit = handleSubmit(
         (value) => {
-            emits('on-submit', value)
-            emits('update:visible', false)
+            emit('on-submit', value)
+            emit('update:visible', false)
         },
         (e) => {
             console.error(e)
@@ -71,9 +78,9 @@ function useFolderForm({ props }) {
         </template>
         <template #footer>
             <div class="footer">
-                <BaseButton @click="$emit('update:visible', false)"
-                    >取消</BaseButton
-                >
+                <BaseButton @click="$emit('update:visible', false)">
+                    取消
+                </BaseButton>
                 <BaseButton color="primary" @click="onSubmit">確定</BaseButton>
             </div>
         </template>

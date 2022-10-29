@@ -4,10 +4,13 @@ import { useTasksStore } from '@/stores/tasks'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import dayjs from 'dayjs'
 
+// 依照當前選項過濾 tasks
 export const useFilterTasksStore = defineStore('filterTasks', () => {
+    // tasksStore
     const tasksStore = useTasksStore()
     const { tasks } = storeToRefs(tasksStore)
 
+    // filterTasksStore
     const filterTasksStore = useFolderTypesStore()
     const { folderTypes } = storeToRefs(filterTasksStore)
 

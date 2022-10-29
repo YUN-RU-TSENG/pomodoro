@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component props ========== */
+
 defineProps({ text: { type: String, default: '' } })
 </script>
 

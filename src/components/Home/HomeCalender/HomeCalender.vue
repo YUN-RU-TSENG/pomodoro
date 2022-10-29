@@ -1,7 +1,9 @@
 <script setup>
+import { computed } from 'vue'
 import { useCalender } from '@/composables/useCalender'
 import dayjs from 'dayjs'
-import { computed } from 'vue'
+
+/* ========== component props ========== */
 
 const props = defineProps({
     value: {
@@ -18,8 +20,13 @@ const props = defineProps({
     },
 })
 
+/* ========== component emit ========== */
+
 defineEmits(['cancel', 'confirm', 'update:value'])
 
+/* ========== component logic ========== */
+
+// calender state
 const {
     currentMonth,
     currentYear,
@@ -28,7 +35,7 @@ const {
     updateCurrentTime,
 } = useCalender()
 
-// 計算當前時間是否是限制內時間
+// time 是否是位在限制時間內（最早時間、最晚時間）
 const isOverTheLimitedPeriod = computed(() => (time) => {
     const now = dayjs(time)
     let isOverEarliestDeadline, isOverLatestDeadline

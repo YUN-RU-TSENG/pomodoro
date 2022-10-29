@@ -1,4 +1,6 @@
 <script setup>
+/*========== component props ========== */
+
 defineProps({
     value: {
         type: Number,
@@ -6,6 +8,7 @@ defineProps({
     },
 })
 
+/*========== component emit ========== */
 defineEmits(['cancel', 'confirm', 'update:value'])
 </script>
 

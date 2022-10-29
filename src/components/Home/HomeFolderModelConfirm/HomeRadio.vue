@@ -2,6 +2,8 @@
 import { toRef } from 'vue'
 import { useField } from 'vee-validate'
 
+/*========== component props ========== */
+
 const props = defineProps({
     name: { type: String, required: true },
     value: { type: String, required: true },
@@ -11,6 +13,8 @@ const props = defineProps({
     },
     color: { type: String, required: true },
 })
+
+/*========== component logic ========== */
 
 const name = toRef(props, 'name')
 

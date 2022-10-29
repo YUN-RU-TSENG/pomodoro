@@ -16,12 +16,11 @@ defineEmits(['add-folder-type', 'update:selected-filter-option'])
 
 /* ========== component logic ========== */
 
-// folder confirm 框是否可見
 const { visible: isFolderConfirmVisible } = useToggleComponent()
 
-// /*========== component scoped composables function ========== */
+/*========== component scoped composables function ========== */
 
-// // 取得 img url
+// 取得 img url
 function getImageUrl(name) {
     return new URL(`../../../assets/images/${name}`, import.meta.url).href
 }

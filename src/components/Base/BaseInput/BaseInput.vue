@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 
+/* ========== component props ========== */
+
 const props = defineProps({
     id: {
         type: String,
@@ -20,14 +22,16 @@ const props = defineProps({
     },
 })
 
-const emits = defineEmits(['update:value'])
+/* ========== component emit ========== */
+
+const emit = defineEmits(['update:value'])
 
 const inputTrimValue = computed({
     get() {
         return props.value
     },
     set(event) {
-        emits('update:value', event)
+        emit('update:value', event)
     },
 })
 </script>

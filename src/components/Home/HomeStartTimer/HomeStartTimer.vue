@@ -1,4 +1,6 @@
 <script setup>
+/*========== component props ========== */
+
 defineProps({
     id: {
         type: String,
@@ -14,6 +16,8 @@ defineProps({
     },
     name: { type: String, required: true },
 })
+
+/*========== component emit ========== */
 
 defineEmits(['update:value'])
 </script>

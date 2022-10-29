@@ -8,6 +8,7 @@ import {
     arrow as arrowFn,
 } from '@floating-ui/dom'
 
+// 使用 floating UI
 export function useFloating() {
     const strategy = ref('absolute')
     const arrowStrategy = ref('absolute')

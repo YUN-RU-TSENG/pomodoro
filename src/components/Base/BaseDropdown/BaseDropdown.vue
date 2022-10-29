@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component props ========== */
+
 defineProps({
     contents: {
         type: Array,
@@ -13,6 +15,8 @@ defineProps({
         required: true,
     },
 })
+
+/* ========== component emit ========== */
 
 defineEmits(['update:value', 'close-dropdown'])
 </script>

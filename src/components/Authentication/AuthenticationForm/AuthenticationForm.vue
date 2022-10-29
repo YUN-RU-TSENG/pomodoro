@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component props ========== */
+
 defineProps({
     title: {
         type: String,
@@ -17,6 +19,8 @@ defineProps({
         required: true,
     },
 })
+
+/* ========== component emit ========== */
 
 defineEmits(['submit-form', 'change-page'])
 </script>

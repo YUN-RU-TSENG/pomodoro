@@ -18,15 +18,15 @@ const props = defineProps({
     },
 })
 
-/* ========== component emits ========== */
+/* ========== component emit ========== */
 
-const emits = defineEmits(['update:value'])
+const emit = defineEmits(['update:value'])
 
 /* ========== component logic ========== */
 
 const checkboxValue = computed({
     set(newValue) {
-        emits('update:value', newValue)
+        emit('update:value', newValue)
     },
     get() {
         return props.value

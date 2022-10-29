@@ -1,7 +1,9 @@
 <script setup>
-import { ref } from 'vue'
+import { useToggleComponent } from '@/composables/useToggleComponent'
 
-const props = defineProps({
+/* ========== component props ========== */
+
+defineProps({
     text: {
         type: String,
         required: true,
@@ -12,7 +14,7 @@ const props = defineProps({
     },
 })
 
-const { isOpen, close, open } = useModalToggle()
+/* ========== component expose ========== */
 
 defineExpose({
     close,
@@ -20,32 +22,9 @@ defineExpose({
     isOpen,
 })
 
-function useModalToggle() {
-    const isOpen = ref(true)
+/* ========== component logic ========== */
 
-    /**
-     * @doc open modal and add class of body to prevent scroll
-     */
-    const open = () => {
-        isOpen.value = true
-        document.body.classList.add('modal-open')
-    }
-
-    /**
-     * @doc close modal and remove class of body
-     */
-    const close = () => {
-        isOpen.value = false
-        document.body.classList.remove('modal-open')
-        props.onDestroy()
-    }
-
-    return {
-        isOpen,
-        open,
-        close,
-    }
-}
+const { visible: isOpen, close, open } = useToggleComponent()
 </script>
 
 <template>

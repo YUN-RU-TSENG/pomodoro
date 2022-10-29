@@ -3,11 +3,17 @@
 
 defineProps({
     name: { type: String, required: true },
-    type: { type: String, default: 'text' },
+    type: {
+        type: String,
+        default: 'text',
+        validator(value) {
+            return ['text', 'password'].includes(value)
+        },
+    },
     value: { type: String, required: true },
 })
 
-/* ========== component emits ========== */
+/* ========== component emit ========== */
 
 defineEmits(['update:value'])
 </script>

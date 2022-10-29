@@ -2,6 +2,8 @@
 import { ref, nextTick, watch } from 'vue'
 import { formatDate } from '@/utils/dayjsFormat'
 
+/*========== component props ========== */
+
 const props = defineProps({
     pomorodoSelectedTaskId: {
         type: String,
@@ -21,7 +23,9 @@ const props = defineProps({
     },
 })
 
-const emits = defineEmits([
+/*========== component emit ========== */
+
+const emit = defineEmits([
     'update-task',
     'update:pomorodoSelectedTaskId',
     'update:cacheUpdateTaskId',
@@ -30,7 +34,7 @@ const emits = defineEmits([
 /* ========== component logic ========== */
 
 // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
-useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits })
+useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit })
 
 // 當顯示 editInputRef element 時，自動將 editInputRef element focus
 const { focusInput, isEdit, editInputRef } = useFocusInput()
@@ -54,7 +58,7 @@ function useFocusInput() {
 }
 
 // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務(清空選擇任務，同時依賴選擇任務顯示的 HomeTaskEditBar 就會關閉)
-function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
+function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
     const isAddEventListener = ref(false)
 
     // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
@@ -63,7 +67,7 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emits }) {
         const isInTaskDetailEditor = !!e.target.closest('.home-task-edit-box')
 
         if (!isInHomeListItem && !isInTaskDetailEditor) {
-            emits('update:cacheUpdateTaskId', '')
+            emit('update:cacheUpdateTaskId', '')
         }
     }
 

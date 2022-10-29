@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component props ========== */
+
 defineProps({
     contents: {
         type: Array,
@@ -13,6 +15,8 @@ defineProps({
         required: true,
     },
 })
+
+/* ========== component emit ========== */
 
 defineEmits(['update:value'])
 </script>
@@ -47,14 +51,15 @@ defineEmits(['update:value'])
 </template>
 
 <style scoped lang="scss">
-.home-dropdown {
-}
-
 .home-dropdown .dropdown-item {
     display: block;
 
     input {
         display: none;
+    }
+
+    input:checked ~ .box .checked {
+        visibility: visible;
     }
 
     .box {
@@ -83,10 +88,6 @@ defineEmits(['update:value'])
     .checked {
         visibility: collapse;
         margin-left: auto;
-    }
-
-    input:checked ~ .box .checked {
-        visibility: visible;
     }
 }
 </style>

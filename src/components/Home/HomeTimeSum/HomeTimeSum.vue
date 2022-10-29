@@ -1,4 +1,6 @@
 <script setup>
+/*========== component props ========== */
+
 defineProps({
     theSumOfExpectTimeOfTask: { type: Number, required: true },
     theSumOfSpendTimeOfTask: { type: Number, required: true },

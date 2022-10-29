@@ -1,4 +1,6 @@
 <script setup>
+/* ========== component emit ========== */
+
 defineEmits('update:visible')
 </script>
 

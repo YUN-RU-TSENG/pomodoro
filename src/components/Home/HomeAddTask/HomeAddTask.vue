@@ -16,18 +16,19 @@ defineProps({
     },
 })
 
-/* ========== component emits ========== */
+/* ========== component emit ========== */
 
-const emits = defineEmits(['add-tasks'])
+const emit = defineEmits(['add-tasks'])
 
 /* ========== component logic ========== */
 
 // add task form
 const { name, totalExpectTime, folder, handleVeeSubmit } = useAddTaskForm()
 
+// submit task form
 const { submitAddTaskForm } = useSubmitTaskForm({
     handleVeeSubmit,
-    emits,
+    emit,
 })
 
 /*========== component scoped composables function ========== */
@@ -82,9 +83,9 @@ function useAddTaskForm() {
 }
 
 // submit add task form
-function useSubmitTaskForm({ handleVeeSubmit, emits }) {
+function useSubmitTaskForm({ handleVeeSubmit, emit }) {
     const submitAddTaskForm = handleVeeSubmit((formValue, { resetForm }) => {
-        emits('add-tasks', { formValue, resetForm })
+        emit('add-tasks', { formValue, resetForm })
     })
 
     return {

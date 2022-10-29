@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
+/*========== component props ========== */
+
 const props = defineProps({
     totalExpectTime: {
         type: Number,
@@ -12,6 +14,8 @@ const props = defineProps({
         required: true,
     },
 })
+
+/*========== component logic ========== */
 
 const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 
@@ -27,7 +31,7 @@ const currentPomorodo = computed(() => {
     <div class="timers">
         <template v-if="currentPomorodo <= 7">
             <img
-                v-for="index of currentPomorodo"
+                v-for="index of Math.floor(currentPomorodo)"
                 :key="index"
                 src="@/assets/images/retro-alarm-clock.png"
                 width="12"

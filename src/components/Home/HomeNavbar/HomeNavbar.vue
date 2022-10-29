@@ -1,10 +1,15 @@
 <script setup>
+/*========== component props ========== */
+
 defineProps({
     user: {
         type: Object,
         required: true,
     },
 })
+
+/*========== component emit ========== */
+
 defineEmits(['user-logout'])
 </script>
 

@@ -7,7 +7,7 @@ import { usePomorodoSetting } from '@/stores/pomorodoSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 
 /* ========== router ========== */
 
@@ -86,7 +86,7 @@ const { handleGetPomorodoSetting, isShowPomorodoSettingErrorModal } =
         errorOfPomorodoSettingGet,
     })
 
-onMounted(async () => {
+onBeforeMount(async () => {
     // getTask
     getTasks()
 

@@ -1,4 +1,6 @@
 <script setup>
+/*========== component props ========== */
+
 defineProps({
     isLoading: { type: Boolean, required: true },
     title: {

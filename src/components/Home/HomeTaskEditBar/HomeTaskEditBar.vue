@@ -5,6 +5,7 @@ import { formatDate } from '@/utils/dayjsFormat'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import dayjs from 'dayjs'
+
 /* ========== component props ========== */
 
 const props = defineProps({
@@ -30,9 +31,9 @@ const props = defineProps({
     },
 })
 
-/* ========== component emits ========== */
+/* ========== component emit ========== */
 
-const emits = defineEmits([
+const emit = defineEmits([
     'update-task',
     'delete-task',
     'update:selected-task-id',
@@ -52,7 +53,7 @@ const { taskForm, handleVeeSubmit, resetForm, formMeta } = useTaskForm()
 // 當表單更新時，且通過驗證時，自動發送 update-task 事件
 useAutoSubmitTaskForm({
     handleVeeSubmit,
-    emits,
+    emit,
     formMeta,
     taskForm,
 })
@@ -140,9 +141,9 @@ function useTaskForm() {
 }
 
 // 當表單更新時，且通過驗證時，自動發送 update-task 事件
-function useAutoSubmitTaskForm({ handleVeeSubmit, emits, formMeta, taskForm }) {
+function useAutoSubmitTaskForm({ handleVeeSubmit, emit, formMeta, taskForm }) {
     const submitUpdateTaskForm = handleVeeSubmit((formValue, { resetForm }) => {
-        emits('update-task', { formValue, resetForm })
+        emit('update-task', { formValue, resetForm })
     })
 
     watch(

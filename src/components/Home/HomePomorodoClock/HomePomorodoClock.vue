@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useCovertBetweenTimeAndPomorodo } from '@/composables/useCovertBetweenTimeAndPomorodo'
 
+/*========== component props ========== */
+
 const props = defineProps({
     timer: {
         type: Object,
@@ -25,7 +27,9 @@ const props = defineProps({
     },
 })
 
-const emits = defineEmits([
+/*========== component emit ========== */
+
+const emit = defineEmits([
     'open-pomorodo-modal',
     'close-pomorodo-modal',
     'stop-pomorodo',
@@ -34,6 +38,8 @@ const emits = defineEmits([
     'update-task',
     'delete-task',
 ])
+
+/*========== component logic ========== */
 
 const { covertTimeToPomorodo } = useCovertBetweenTimeAndPomorodo()
 
@@ -52,7 +58,7 @@ const currentExpectPomorodo = computed(() => {
 })
 
 const handlePomorodoShow = computed(() => {
-    if (props.selectedTaskId) return emits('open-pomorodo-modal')
+    if (props.selectedTaskId) return emit('open-pomorodo-modal')
     return null
 })
 
@@ -174,7 +180,7 @@ const currentSmallDeg = computed(() => {
             <div class="buttons">
                 <button
                     v-if="!timer.isStart"
-                    @click.stop="$emits('start-pomorodo')"
+                    @click.stop="$emit('start-pomorodo')"
                 >
                     <img src="@/assets/images/circled-play.png" width="48" />
                 </button>

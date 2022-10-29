@@ -2,12 +2,16 @@
 import { useFloating } from '@/composables/useFloating'
 import { useToggleComponent } from '@/composables/useToggleComponent'
 
+/* ========== component props ========== */
+
 defineProps({
     width: {
         type: String,
         default: '300px',
     },
 })
+
+/* ========== component logic ========== */
 
 const {
     x,
