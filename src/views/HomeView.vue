@@ -45,7 +45,6 @@ const {
     getTasks,
     deleteTask,
     addTask,
-    updateTask,
     debouncedUpdateTaskAndAutoRetryOnError,
 } = tasksStore
 
@@ -201,7 +200,6 @@ function useHandleGetPomorodoSetting({
                             v-model:pomorodo-selected-task-id="selectedTaskId"
                             :task="task"
                             :pomorodo-settings="pomorodoSettings"
-                            @update-task="updateTask"
                         />
                     </HomeList>
                 </div>

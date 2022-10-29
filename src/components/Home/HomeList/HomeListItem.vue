@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { formatDate } from '@/utils/dayjsFormat'
 
 /*========== component props ========== */
@@ -26,7 +26,6 @@ const props = defineProps({
 /*========== component emit ========== */
 
 const emit = defineEmits([
-    'update-task',
     'update:pomorodoSelectedTaskId',
     'update:cacheUpdateTaskId',
 ])
@@ -36,26 +35,7 @@ const emit = defineEmits([
 // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務
 useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit })
 
-// 當顯示 editInputRef element 時，自動將 editInputRef element focus
-const { focusInput, isEdit, editInputRef } = useFocusInput()
-
 /*========== component scoped composables function ========== */
-
-// 當顯示 editInputRef 時，自動將 editInputRef focus
-function useFocusInput() {
-    const isEdit = ref(false)
-    const editInputRef = ref(null)
-
-    function focusInput() {
-        isEdit.value = true
-
-        // 確認 input 已經在 isEdit true 後渲染，再 focus
-        nextTick(() => {
-            editInputRef.value?.focus()
-        })
-    }
-    return { focusInput, isEdit, editInputRef }
-}
 
 // 當點中非 HomeListItem、非 HomeTaskEditBar 時，清空選中任務(清空選擇任務，同時依賴選擇任務顯示的 HomeTaskEditBar 就會關閉)
 function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
@@ -96,16 +76,6 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
         @click="$emit('update:cacheUpdateTaskId', task.id)"
     >
         <a class="list-item">
-            <BaseCheckbox
-                :id="'home-list-item-is-finish' + task.id"
-                class="checkbox"
-                name="home-list-item-is-finish"
-                :value="task.isFinish"
-                @click.stop
-                @update:value="
-                    $emit('update-task', { ...task, isFinish: $event })
-                "
-            />
             <HomeStartTimer
                 :id="'pomorodo-selected-task' + task.id"
                 class="start-timer"
@@ -115,25 +85,7 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
                 @update:value="$emit('update:pomorodoSelectedTaskId', task.id)"
             />
             <section class="content">
-                <input
-                    v-show="isEdit"
-                    ref="editInputRef"
-                    type="text"
-                    class="text"
-                    :value="task.name"
-                    @input="
-                        $emit('update-task', {
-                            ...task,
-                            name: $event.target.value,
-                        })
-                    "
-                    @blur="isEdit = false"
-                    @click.stop
-                />
-
-                <span v-show="!isEdit" class="text" @dblclick="focusInput">{{
-                    task.name
-                }}</span>
+                <span class="text">{{ task.name }}</span>
                 <HomeListClocks
                     :total-expect-time="task.totalExpectTime"
                     :pomorodo-settings="pomorodoSettings"
@@ -182,10 +134,6 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
         margin-right: 6px;
     }
 
-    .checkbox {
-        flex: 0 1 auto;
-    }
-
     .start-timer {
         flex: 0 1 auto;
     }
@@ -199,10 +147,6 @@ function useClearSelectCacheUpdateIdWhenClickWhiteSpace({ emit }) {
 
             font-size: 12px;
             line-height: 18px;
-        }
-
-        input.text {
-            background-color: $gray-1;
         }
 
         .timers {
