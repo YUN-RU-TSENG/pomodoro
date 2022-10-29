@@ -141,7 +141,7 @@ function useFilterTaskFolderOptions({ folderTypes }) {
                 name: folder.name,
                 filterFun: (tasks, folder) =>
                     tasks.filter((task) => {
-                        return task.folder === folder.name
+                        return task.folder === folder
                     }),
             }
         })
@@ -197,8 +197,7 @@ function useFilterTasks({ selectedFilterOption, tasks }) {
     const filterTasks = computed(() => {
         return selectedFilterOption.value.filterFun(
             tasks.value,
-            selectedFilterOption.value.key === 'folder' &&
-                selectedFilterOption.value.name
+            selectedFilterOption.value.name
         )
     })
 
