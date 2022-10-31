@@ -26,7 +26,7 @@ export const useTasksStore = defineStore('tasks', () => {
     })
 
     // tasks - get
-    const { tasks, getTasks, isLoadingTaskGet } = useGetTasks({
+    const { tasks, getTasks, isLoadingTaskGet, errorOfTaskGet } = useGetTasks({
         firebaseRefUserTask,
     })
 
@@ -50,10 +50,11 @@ export const useTasksStore = defineStore('tasks', () => {
     })
 
     // tasks - delete
-    const { deleteTask, isLoadingTaskDelete } = useDeleteTask({
-        getTasks,
-        selectedUpdateTaskId,
-    })
+    const { deleteTask, isLoadingTaskDelete, errorOfTaskDelete } =
+        useDeleteTask({
+            getTasks,
+            selectedUpdateTaskId,
+        })
 
     // tasks - debounce update
     const { debouncedUpdateTaskAndAutoRetryOnError } =
@@ -77,6 +78,7 @@ export const useTasksStore = defineStore('tasks', () => {
         tasks,
         getTasks,
         isLoadingTaskGet,
+        errorOfTaskGet,
         // tasks - add
         addTask,
         isLoadingTaskAdd,
@@ -92,6 +94,7 @@ export const useTasksStore = defineStore('tasks', () => {
         // tasks - delete
         deleteTask,
         isLoadingTaskDelete,
+        errorOfTaskDelete,
         // tasks - sum of tasks item
         theSumOfExpectTimeOfTask,
         theSumOfSpendTimeOfTask,
@@ -119,6 +122,7 @@ function useFirebaseTaskRef({ userStore }) {
 function useGetTasks({ firebaseRefUserTask }) {
     const tasks = ref([])
     const isLoadingTaskGet = ref(false)
+    const errorOfTaskGet = ref(null)
 
     /**
      * 讀取 task
@@ -126,6 +130,7 @@ function useGetTasks({ firebaseRefUserTask }) {
     const getTasks = async () => {
         try {
             isLoadingTaskGet.value = true
+            errorOfTaskGet.value = null
 
             const taskSnapshot = await getDocs(firebaseRefUserTask)
             const tasksSnapshotData = []
@@ -139,9 +144,11 @@ function useGetTasks({ firebaseRefUserTask }) {
 
             tasks.value = tasksSnapshotData
         } catch (error) {
+            errorOfTaskGet.value = error
             console.error(error)
+
             useBaseAlert({
-                text: '登入失敗 - ' + error.message,
+                text: '錯誤' + error.code,
             })
         } finally {
             isLoadingTaskGet.value = false
@@ -152,6 +159,7 @@ function useGetTasks({ firebaseRefUserTask }) {
         tasks,
         getTasks,
         isLoadingTaskGet,
+        errorOfTaskGet,
     }
 }
 
@@ -174,6 +182,10 @@ function useAddTask({ firebaseRefTask, getTasks, userStore }) {
         } catch (error) {
             console.error(error)
             errorOfTaskAdd.value = error
+
+            useBaseAlert({
+                text: '錯誤' + error.code,
+            })
         } finally {
             isLoadingTaskAdd.value = true
         }
@@ -199,7 +211,7 @@ function useUpdateTask({ tasks, getTasks }) {
     })
 
     // 更新 task
-    const updateTask = async (formValue) => {
+    const updateTask = async (formValue, showError = true) => {
         try {
             errorOfTaskUpdate.value = null
             isLoadingTaskUpdate.value = true
@@ -212,7 +224,12 @@ function useUpdateTask({ tasks, getTasks }) {
         } catch (error) {
             errorOfTaskUpdate.value = error
             console.error(error)
-            // ! 顯示錯誤，但要是可選的，因為 debounce 使用該 function，但不要顯示錯誤
+
+            // 顯示錯誤，但要是可選的，因為 debounce update 時使用該 function不要顯示錯誤
+            if (showError)
+                useBaseAlert({
+                    text: '錯誤' + error.code,
+                })
         } finally {
             isLoadingTaskUpdate.value = false
         }
@@ -242,7 +259,7 @@ function useDebouncedUpdateTaskAndAutoResendUpdateOnError({
     })
 
     const updateTaskAndAutoResendUpdateFormOnError = async (formValue) => {
-        await updateTask(formValue)
+        await updateTask(formValue, false)
 
         // 判斷當修改失敗，自動每三秒發送一次，一但成功，就取消當前的 每三秒發送一次的 interval Id
         if (errorOfTaskUpdate.value) {
@@ -265,11 +282,13 @@ function useDebouncedUpdateTaskAndAutoResendUpdateOnError({
 
 function useDeleteTask({ getTasks, selectedUpdateTaskId }) {
     const isLoadingTaskDelete = ref(false)
+    const errorOfTaskDelete = ref(null)
 
     // 刪除 task
     const deleteTask = async (cacheDeleteTaskId) => {
         try {
             isLoadingTaskDelete.value = true
+            errorOfTaskDelete.value = null
 
             const currentDocumentReference = doc(db, 'tasks', cacheDeleteTaskId)
 
@@ -279,12 +298,17 @@ function useDeleteTask({ getTasks, selectedUpdateTaskId }) {
             getTasks()
         } catch (error) {
             console.error(error)
+            errorOfTaskDelete.value = error
+
+            useBaseAlert({
+                text: '錯誤' + error.code,
+            })
         } finally {
             isLoadingTaskDelete.value = false
         }
     }
 
-    return { deleteTask, isLoadingTaskDelete }
+    return { deleteTask, isLoadingTaskDelete, errorOfTaskDelete }
 }
 
 function useSumOfTasksItem({ tasks }) {

@@ -104,6 +104,7 @@ function useRegister({ user }) {
         } catch (error) {
             console.error(error)
             errorOfRegister.value = error
+
             useBaseAlert({
                 text: '註冊失敗' + error,
             })

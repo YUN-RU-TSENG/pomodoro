@@ -17,7 +17,7 @@ export const usePomodoroClockStore = defineStore('pomodoroClock', () => {
         pomodoro: 45 * 60, // pomodoro 時長(秒)
         breakTime: 5 * 60, // breakTime 時長(秒)
         longBreakTime: 15 * 60, // longBreakTime 時長(秒)
-        longBreakInterval: 4 * 60, // longBreakTime 間隔回數
+        longBreakInterval: 4, // longBreakTime 間隔回數
         currentInterval: 0, // 當前回數
         isStart: false, // 是否正在倒數
         mode: 'pomodoro', // 當前模式，分為 pomodoro、longBreakTime、breakTime
@@ -46,6 +46,7 @@ export const usePomodoroClockStore = defineStore('pomodoroClock', () => {
         timer,
         selectedTask,
         tasksStore,
+        pomodoroSettingStore,
     })
 
     // 暫停 Pomodoro
@@ -101,6 +102,13 @@ function useWatchTaskToAutoStartPomodoro({
         // 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
         if (pomodoroSettingStore.errorOfPomodoroSettingGet) return
 
+        timer.value.pomodoro = pomodoroSettingStore.pomodoroSettings.pomodoro
+        timer.value.breakTime = pomodoroSettingStore.pomodoroSettings.breakTime
+        timer.value.longBreakTime =
+            pomodoroSettingStore.pomodoroSettings.longBreakTime
+        timer.value.longBreakInterval =
+            pomodoroSettingStore.pomodoroSettings.longBreakInterval
+
         // 先前有選擇任務 -->
         if (oldSelectedTaskId) {
             // - 1. interval 清空
@@ -138,7 +146,13 @@ function useWatchTaskToAutoStartPomodoro({
 /**
  * 開始 pomodoro
  */
-function useStartPomodoro({ intervalId, timer, selectedTask, tasksStore }) {
+function useStartPomodoro({
+    intervalId,
+    timer,
+    selectedTask,
+    tasksStore,
+    pomodoroSettingStore,
+}) {
     const startPomodoro = () => {
         timer.value.isStart = true
         const countDownDate = dayjs().add(timer.value.countDownTime, 'second')
@@ -158,9 +172,6 @@ function useStartPomodoro({ intervalId, timer, selectedTask, tasksStore }) {
             if (timer.value.mode === 'pomodoro')
                 timer.value.currentInterval += 1
 
-            // 執行其他完成倒數的任務，如鈴聲、打 API selectedTask
-            tasksStore.updateTask({ ...selectedTask.value })
-
             // 是否切換長休息
             const isLongBreakInterval =
                 timer.value.currentInterval % timer.value.longBreakInterval ===
@@ -174,6 +185,14 @@ function useStartPomodoro({ intervalId, timer, selectedTask, tasksStore }) {
                     isStart: false,
                 }
             } else if (timer.value.mode === 'pomodoro') {
+                // 更新用戶番茄任務時間
+                tasksStore.updateTask({
+                    ...selectedTask.value,
+                    totalSpendTime:
+                        selectedTask.value.totalSpendTime +
+                        pomodoroSettingStore.pomodoroSettings.pomodoro,
+                })
+
                 timer.value = {
                     ...timer.value,
                     mode: 'breakTime',

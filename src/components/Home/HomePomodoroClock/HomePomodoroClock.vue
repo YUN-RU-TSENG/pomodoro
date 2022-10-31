@@ -101,7 +101,7 @@ const currentSmallDeg = computed(() => {
     <!-- home-pomodoro -->
     <section :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']">
         <!-- home-pomodoro pomodoro-full -->
-        <div :class="['pomodoro-full', isShowPomodoroModal ? '' : 'un-show']">
+        <div v-if="isShowPomodoroModal" class="pomodoro-full">
             <button class="toggle" @click.stop="$emit('close-pomodoro-modal')">
                 <img src="@/assets/images/full-page-view-1.png" width="24" />
             </button>
@@ -109,7 +109,7 @@ const currentSmallDeg = computed(() => {
                 <BaseCheckbox
                     id="home-pomodoro-is-finish"
                     class="checkbox"
-                    :value="selectedTask.isFinish"
+                    :value="selectedTask?.isFinish"
                     name="home-pomodoro-is-finish"
                     @update:value="
                         $emit('update-task', {
@@ -190,10 +190,7 @@ const currentSmallDeg = computed(() => {
             </div>
         </div>
         <!-- home-pomodoro pomodoro-small -->
-        <div
-            :class="['pomodoro-small', isShowPomodoroModal ? 'un-show' : '']"
-            @click="handlePomodoroShow"
-        >
+        <div v-else class="pomodoro-small" @click="handlePomodoroShow">
             <template v-if="selectedTaskId">
                 <button class="clock">
                     <svg height="36" width="36" viewBox="0 0 36 36" fill="red">
