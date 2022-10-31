@@ -57,10 +57,10 @@ const currentExpectPomodoro = computed(() => {
     })
 })
 
-const handlePomodoroShow = computed(() => {
+const handlePomodoroShow = () => {
     if (props.selectedTaskId) return emit('open-pomodoro-modal')
     return null
-})
+}
 
 // 呈現倒數時間為 mm:ss 格式
 const currentFormatTime = computed(() => {
@@ -99,10 +99,7 @@ const currentSmallDeg = computed(() => {
 
 <template>
     <!-- home-pomodoro -->
-    <section
-        :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']"
-        @click="handlePomodoroShow"
-    >
+    <section :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']">
         <!-- home-pomodoro pomodoro-full -->
         <div :class="['pomodoro-full', isShowPomodoroModal ? '' : 'un-show']">
             <button class="toggle" @click.stop="$emit('close-pomodoro-modal')">
@@ -112,7 +109,7 @@ const currentSmallDeg = computed(() => {
                 <BaseCheckbox
                     id="home-pomodoro-is-finish"
                     class="checkbox"
-                    :value="false"
+                    :value="selectedTask.isFinish"
                     name="home-pomodoro-is-finish"
                     @update:value="
                         $emit('update-task', {
@@ -193,7 +190,10 @@ const currentSmallDeg = computed(() => {
             </div>
         </div>
         <!-- home-pomodoro pomodoro-small -->
-        <div :class="['pomodoro-small', isShowPomodoroModal ? 'un-show' : '']">
+        <div
+            :class="['pomodoro-small', isShowPomodoroModal ? 'un-show' : '']"
+            @click="handlePomodoroShow"
+        >
             <template v-if="selectedTaskId">
                 <button class="clock">
                     <svg height="36" width="36" viewBox="0 0 36 36" fill="red">
@@ -229,14 +229,14 @@ const currentSmallDeg = computed(() => {
                 </button>
                 <div class="text">{{ selectedTask.name }}</div>
                 <button
-                    v-if="timer.isStart"
+                    v-show="timer.isStart"
                     class="stop"
                     @click.stop="$emit('stop-pomodoro')"
                 >
                     <img src="@/assets/images/circled-pause.png" width="32" />
                 </button>
                 <button
-                    v-else
+                    v-show="!timer.isStart"
                     class="play"
                     @click.stop="$emit('start-pomodoro')"
                 >
