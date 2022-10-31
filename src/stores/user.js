@@ -89,6 +89,7 @@ function useRegister({ user }) {
     const register = async (formValue) => {
         try {
             isLoadingRegister.value = true
+            errorOfRegister.value = null
 
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
@@ -122,6 +123,7 @@ function useLogin({ user }) {
     const login = async (formValue) => {
         try {
             isLoadingLogin.value = true
+            errorOfLogin.value = null
 
             const userCredential = await signInWithEmailAndPassword(
                 auth,
@@ -159,6 +161,7 @@ function useLogout({ user }) {
     const logout = async () => {
         try {
             isLoadingLogout.value = true
+            errorOfLogout.value = null
 
             await signOut(auth)
 

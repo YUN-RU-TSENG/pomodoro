@@ -44,7 +44,7 @@ router.beforeEach(async (to) => {
     // 假如尚未加載完 firebase user 狀態，等其確認加載完成再繼續路由導向
     if (!userStore.isUserLoadFinish) {
         // 顯示等待組件
-        const { close } = useBaseLoading({ text: '啟動應用' })
+        const { close } = useBaseLoading()
         await userStore.getCurrentUser()
         // 關閉等待組件
         close()

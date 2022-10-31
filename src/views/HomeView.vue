@@ -6,12 +6,7 @@ import { useFolderTypesStore } from '@/stores/folderTypes'
 import { usePomodoroSetting } from '@/stores/pomodoroSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 import { onBeforeMount, ref } from 'vue'
-
-/* ========== router ========== */
-
-const router = useRouter()
 
 /* ========== pinia ========== */
 
@@ -115,7 +110,7 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
 function useHandleLogout({ logout, errorOfLogout }) {
     const handleLogout = async () => {
         await logout()
-        if (!errorOfLogout.value) router.push({ name: 'login' })
+        if (!errorOfLogout.value) location.reload()
     }
     return { handleLogout }
 }
