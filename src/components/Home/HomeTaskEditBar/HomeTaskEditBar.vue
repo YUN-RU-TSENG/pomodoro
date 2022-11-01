@@ -299,7 +299,7 @@ function useTaskSpendPomodoro({ covertTimeToPomodoro, props }) {
                                         width="14"
                                     />
                                     <span>{{
-                                        taskForm.totalSpendTime
+                                        taskForm.totalExpectTime
                                             ? covertTimeToPomodoro({
                                                   time: taskForm.totalExpectTime,
                                                   pomodoroTime:
