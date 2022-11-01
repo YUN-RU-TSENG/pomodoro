@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, readonly, computed } from 'vue'
 import { useCovertBetweenTimeAndPomodoro } from '@/composables/useCovertBetweenTimeAndPomodoro'
 import { formatDate } from '@/utils/dayjsFormat'
 import { useForm } from 'vee-validate'
@@ -71,6 +71,12 @@ const {
 // cache taskForm - subtask 子任務編輯快取，當確認後才會將快取直更新到 taskForm
 const { addSubtasks, cacheSubtask } = useTaskFromCacheOfSubtask({ taskForm })
 
+// 已花費時間的 pomodoro
+const { taskSpendPomodoro } = useTaskSpendPomodoro({
+    covertTimeToPomodoro,
+    props,
+})
+
 /*========== component scoped composables function ========== */
 
 // task form 狀態(包含驗證、重置)
@@ -94,7 +100,7 @@ function useTaskForm() {
             mentionDate: '',
             createAt: '',
         }),
-        initialValues: props.selectedTask,
+        initialValues: readonly(props.selectedTask),
     })
 
     const [
@@ -227,6 +233,19 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
         cacheSubtask,
     }
 }
+
+function useTaskSpendPomodoro({ covertTimeToPomodoro, props }) {
+    const taskSpendPomodoro = computed(() => {
+        return covertTimeToPomodoro({
+            time: props.selectedTask.totalSpendTime,
+            pomodoroTime: props.pomodoroSettings.pomodoro,
+        })
+    })
+
+    return {
+        taskSpendPomodoro,
+    }
+}
 </script>
 
 <template>
@@ -273,26 +292,20 @@ function useTaskFromCacheOfSubtask({ taskForm }) {
                                         src="@/assets/images/retro-alarm-clock.png"
                                         width="14"
                                     />
-                                    <span>{{
-                                        taskForm.totalSpendTime
-                                            ? covertTimeToPomodoro({
-                                                  time: taskForm.totalSpendTime,
-                                                  pomodoroTime:
-                                                      pomodoroSettings.pomodoro,
-                                              })
-                                            : '0'
-                                    }}</span>
+                                    <span>{{ taskSpendPomodoro }}</span>
                                     <span class="gray">/</span>
                                     <img
                                         src="@/assets/images/retro-alarm-clock.png"
                                         width="14"
                                     />
                                     <span>{{
-                                        covertTimeToPomodoro({
-                                            time: taskForm.totalExpectTime,
-                                            pomodoroTime:
-                                                pomodoroSettings.pomodoro,
-                                        })
+                                        taskForm.totalSpendTime
+                                            ? covertTimeToPomodoro({
+                                                  time: taskForm.totalExpectTime,
+                                                  pomodoroTime:
+                                                      pomodoroSettings.pomodoro,
+                                              })
+                                            : '0'
                                     }}</span>
                                 </button>
                             </template>

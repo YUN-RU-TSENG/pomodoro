@@ -207,7 +207,7 @@ function useUpdateTask({ tasks, getTasks }) {
         const [result] = tasks.value.filter(
             (task) => task.id === selectedUpdateTaskId.value
         )
-        return result ? JSON.parse(JSON.stringify(result)) : null
+        return result
     })
 
     // 更新 task

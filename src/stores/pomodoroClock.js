@@ -96,18 +96,21 @@ function useWatchTaskToAutoStartPomodoro({
     pomodoroSettingStore,
 }) {
     watch(selectedTaskId, (newSelectedTaskId, oldSelectedTaskId) => {
-        // 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
+        // 是否正在加載番茄鐘用戶設置，有則跳出
         if (pomodoroSettingStore.isLoadingPomodoroSettingGet) return
 
-        // 是否成功預加載番茄鐘用戶設置，無則跳出，並顯示錯誤
+        // 是否成功預加載番茄鐘用戶設置，無則跳出
         if (pomodoroSettingStore.errorOfPomodoroSettingGet) return
 
-        timer.value.pomodoro = pomodoroSettingStore.pomodoroSettings.pomodoro
-        timer.value.breakTime = pomodoroSettingStore.pomodoroSettings.breakTime
-        timer.value.longBreakTime =
-            pomodoroSettingStore.pomodoroSettings.longBreakTime
-        timer.value.longBreakInterval =
-            pomodoroSettingStore.pomodoroSettings.longBreakInterval
+        // 將 timer 依照用戶預設設置
+        timer.value = {
+            ...timer.value,
+            pomodoro: pomodoroSettingStore.pomodoroSettings.pomodoro,
+            breakTime: pomodoroSettingStore.pomodoroSettings.breakTime,
+            longBreakTime: pomodoroSettingStore.pomodoroSettings.longBreakTime,
+            longBreakInterval:
+                pomodoroSettingStore.pomodoroSettings.longBreakInterval,
+        }
 
         // 先前有選擇任務 -->
         if (oldSelectedTaskId) {
@@ -178,6 +181,7 @@ function useStartPomodoro({
                 0
 
             if (isLongBreakInterval) {
+                // 更新下次計時模式
                 timer.value = {
                     ...timer.value,
                     mode: 'longBreakTime',
@@ -192,7 +196,7 @@ function useStartPomodoro({
                         selectedTask.value.totalSpendTime +
                         pomodoroSettingStore.pomodoroSettings.pomodoro,
                 })
-
+                // 更新下次計時模式
                 timer.value = {
                     ...timer.value,
                     mode: 'breakTime',
@@ -200,6 +204,7 @@ function useStartPomodoro({
                     isStart: false,
                 }
             } else {
+                // 更新下次計時模式
                 timer.value = {
                     ...timer.value,
                     mode: 'pomodoro',
@@ -209,7 +214,7 @@ function useStartPomodoro({
             }
 
             // 依據用戶設置判斷是否自動執行下一次的 pomodoro
-            startPomodoro()
+            if (timer.value.autoContinue) startPomodoro()
         }, 300)
     }
 

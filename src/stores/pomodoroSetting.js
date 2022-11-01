@@ -36,7 +36,7 @@ function useGetPomodoroSettings({ userStore }) {
             pomodoro: 45 * 60, // pomodoro 時長(秒)
             breakTime: 5 * 60, // breakTime 時長(秒)
             longBreakTime: 15 * 60, // longBreakTime 時長(秒)
-            longBreakInterval: 4 * 60, // longBreakTime 間隔回數
+            longBreakInterval: 4, // longBreakTime 間隔回數
             uid: userStore.user.uid,
             autoContinue: false, // 是否自動繼續 Pomodoro
         }

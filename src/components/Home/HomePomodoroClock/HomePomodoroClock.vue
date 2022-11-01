@@ -99,7 +99,12 @@ const currentSmallDeg = computed(() => {
 
 <template>
     <!-- home-pomodoro -->
-    <section :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']">
+    <section
+        :class="['home-pomodoro', isShowPomodoroModal ? 'full' : 'small']"
+        :style="{
+            background: timer.mode === 'pomodoro' ? '#d34e4e' : '#4ed3a9',
+        }"
+    >
         <!-- home-pomodoro pomodoro-full -->
         <div v-if="isShowPomodoroModal" class="pomodoro-full">
             <button class="toggle" @click.stop="$emit('close-pomodoro-modal')">
@@ -156,7 +161,9 @@ const currentSmallDeg = computed(() => {
                         r="190"
                         cx="200"
                         cy="200"
-                        stroke="#4ed3a9"
+                        :stroke="
+                            timer.mode === 'pomodoro' ? '#d34e4e' : '#4ed3a9'
+                        "
                         fill="none"
                         :stroke-dasharray="currentDeg"
                         stroke-width="10"
@@ -206,7 +213,11 @@ const currentSmallDeg = computed(() => {
                             r="16"
                             cx="18"
                             cy="18"
-                            stroke="#4ed3a9"
+                            :stroke="
+                                timer.mode === 'pomodoro'
+                                    ? '#d34e4e'
+                                    : '#4ed3a9'
+                            "
                             fill="none"
                             :stroke-dasharray="currentSmallDeg"
                             stroke-width="2"
@@ -253,7 +264,6 @@ const currentSmallDeg = computed(() => {
 <style scoped lang="scss">
 .home-pomodoro {
     transition: all 0.3s ease;
-    background-color: $green-1;
     box-shadow: 0 0 4px $gray-2;
 
     &.full {
