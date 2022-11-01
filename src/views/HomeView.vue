@@ -7,6 +7,10 @@ import { usePomodoroSetting } from '@/stores/pomodoroSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
 import { storeToRefs } from 'pinia'
 import { onBeforeMount, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+/* ========== router ========== */
+const router = useRouter()
 
 /* ========== pinia ========== */
 
@@ -73,7 +77,7 @@ const { getPomodoroSettingAndAutoCreateDefaultValue } = pomodoroSettingStore
 
 // addTask
 const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
-const { handleLogout } = useHandleLogout({ logout, errorOfLogout })
+const { handleLogout } = useHandleLogout({ logout, errorOfLogout, router })
 const { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal } =
     useHandleGetPomodoroSetting({
         getPomodoroSettingAndAutoCreateDefaultValue,
@@ -107,10 +111,10 @@ function useHandleAddTask({ addTask, errorOfTaskAdd }) {
 }
 
 // logout
-function useHandleLogout({ logout, errorOfLogout }) {
+function useHandleLogout({ logout, errorOfLogout, router }) {
     const handleLogout = async () => {
         await logout()
-        if (!errorOfLogout.value) location.reload()
+        if (!errorOfLogout.value) router.push({ name: 'login' })
     }
     return { handleLogout }
 }

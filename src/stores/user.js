@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore, getActivePinia } from 'pinia'
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -21,9 +21,7 @@ export const useUserStore = defineStore('user', () => {
     const { isLoadingLogin, login, errorOfLogin } = useLogin({ user })
 
     // 登出
-    const { isLoadingLogout, logout, errorOfLogout } = useLogout({
-        user,
-    })
+    const { isLoadingLogout, logout, errorOfLogout } = useLogout()
 
     return {
         user,
@@ -155,7 +153,7 @@ function useLogin({ user }) {
 }
 
 // 登出
-function useLogout({ user }) {
+function useLogout() {
     const isLoadingLogout = ref(false)
     const errorOfLogout = ref(null)
 
@@ -166,10 +164,7 @@ function useLogout({ user }) {
 
             await signOut(auth)
 
-            user.value = {
-                email: null,
-                uid: null,
-            }
+            getActivePinia()._s.forEach((store) => store.$custom_reset())
         } catch (error) {
             errorOfLogout.value = error
             console.error(error)
