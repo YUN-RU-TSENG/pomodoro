@@ -261,7 +261,6 @@ function useHandleGetPomodoroSetting({
 }
 
 .home-navbar {
-    z-index: 9;
     position: relative;
 }
 
