@@ -214,7 +214,10 @@ function useStartPomodoro({
             }
 
             // 依據用戶設置判斷是否自動執行下一次的 pomodoro
-            if (timer.value.autoContinue) startPomodoro()
+            if (pomodoroSettingStore.pomodoroSettings.autoContinue) {
+                console.log('start')
+                startPomodoro()
+            }
         }, 300)
     }
 
