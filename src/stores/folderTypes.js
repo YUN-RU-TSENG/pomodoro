@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { collection, getDocs, addDoc, query, where } from 'firebase/firestore'
 import { db } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
@@ -43,10 +43,12 @@ export const useFolderTypesStore = defineStore('folderTypes', () => {
 function useFirebaseFolderTypeRef({ userStore }) {
     const firebaseRefFolderType = collection(db, 'folderTypes')
 
-    const firebaseRefUserFolderType = query(
-        collection(db, 'folderTypes'),
-        where('uid', '==', userStore.user.uid)
-    )
+    const firebaseRefUserFolderType = computed(() => {
+        return query(
+            collection(db, 'folderTypes'),
+            where('uid', '==', userStore.user.uid)
+        )
+    })
 
     return { firebaseRefFolderType, firebaseRefUserFolderType }
 }
@@ -58,7 +60,9 @@ function useGetFolderTypes({ firebaseRefUserFolderType }) {
     const getFolderTypes = async () => {
         try {
             isLoadingFolderTypesGet.value = true
-            const folderTypeSnapshot = await getDocs(firebaseRefUserFolderType)
+            const folderTypeSnapshot = await getDocs(
+                firebaseRefUserFolderType.value
+            )
             const folderTypesSnapshotData = []
 
             folderTypeSnapshot.forEach((folderTypeSnapshotData) => {

@@ -84,7 +84,7 @@ function useFolderForm({ props }) {
     <BaseModal
         v-if="visible"
         class="home-folder-modal-confirm"
-        @update:modal="$emit('update:visible', $event)"
+        @update:visible="$emit('update:visible', $event)"
     >
         <template #header> 創建標籤 </template>
         <template #body>

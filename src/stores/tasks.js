@@ -107,10 +107,12 @@ export const useTasksStore = defineStore('tasks', () => {
 function useFirebaseTaskRef({ userStore }) {
     const firebaseRefTask = collection(db, 'tasks')
 
-    const firebaseRefUserTask = query(
-        collection(db, 'tasks'),
-        where('uid', '==', userStore.user.uid),
-        orderBy('createAt')
+    const firebaseRefUserTask = computed(() =>
+        query(
+            collection(db, 'tasks'),
+            where('uid', '==', userStore.user.uid),
+            orderBy('createAt')
+        )
     )
 
     return {
@@ -132,7 +134,7 @@ function useGetTasks({ firebaseRefUserTask }) {
             isLoadingTaskGet.value = true
             errorOfTaskGet.value = null
 
-            const taskSnapshot = await getDocs(firebaseRefUserTask)
+            const taskSnapshot = await getDocs(firebaseRefUserTask.value)
             const tasksSnapshotData = []
 
             taskSnapshot.forEach((taskSnapshotData) => {
