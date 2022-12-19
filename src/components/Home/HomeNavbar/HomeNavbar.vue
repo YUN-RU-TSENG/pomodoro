@@ -27,7 +27,7 @@ defineEmits(['user-logout'])
         <div class="navbar-links">
             <ul>
                 <li>
-                    <button>
+                    <button @click="$router.push({ name: 'dashboard' })">
                         <img
                             src="@/assets/images/combo-chart--v1.png"
                             width="24"
@@ -40,7 +40,7 @@ defineEmits(['user-logout'])
                     </button>
                 </li>
                 <li>
-                    <button>
+                    <button @click="$router.push({ name: 'pomodoroSetting' })">
                         <img
                             src="@/assets/images/external-setting-essentials-pack-tanah-basah-glyph-tanah-basah.png"
                             width="24"

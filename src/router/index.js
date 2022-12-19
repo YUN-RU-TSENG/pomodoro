@@ -15,6 +15,22 @@ const router = createRouter({
             },
         },
         {
+            path: '/pomodoro-setting',
+            name: 'pomodoroSetting',
+            component: () => import('@/views/PomodoroSettingView.vue'),
+            meta: {
+                requireAuth: true,
+            },
+        },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: () => import('@/views/DashboardView.vue'),
+            meta: {
+                requireAuth: true,
+            },
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('@/views/LoginView.vue'),
