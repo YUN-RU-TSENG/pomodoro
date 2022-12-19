@@ -5,7 +5,6 @@ import { usePomodoroClockStore } from '@/stores/pomodoroClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { usePomodoroSetting } from '@/stores/pomodoroSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
-import { storeToRefs } from 'pinia'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -16,84 +15,53 @@ const router = useRouter()
 
 // pinia - userStore
 const userStore = useUserStore()
-const { user, errorOfLogout } = storeToRefs(userStore)
-const { logout } = userStore
 
 // pinia - filterTasksStore
 const filterTasksStore = useFilterTasksStore()
-const {
-    filterTasks,
-    filterTaskFolderOptionsFormatForSidebar,
-    filterTaskOptionsFormatForSidebar,
-    selectedFilterOption,
-} = storeToRefs(filterTasksStore)
 
 // pinia - tasksStore
 const tasksStore = useTasksStore()
-const {
-    isLoadingTaskGet,
-    errorOfTaskAdd,
-    selectedUpdateTaskId,
-    selectedUpdateTask,
-    theSumOfExpectTimeOfTask,
-    theSumOfSpendTimeOfTask,
-    theSumOfNumberOfUnFinishTasks,
-    theSumOfNumberOfFinishTasks,
-} = storeToRefs(tasksStore)
-const {
-    getTasks,
-    deleteTask,
-    addTask,
-    debouncedUpdateTaskAndAutoRetryOnError,
-} = tasksStore
 
 // pinia - pomodoroClockStore
 const pomodoroClockStore = usePomodoroClockStore()
-const { selectedTaskId, timer, selectedTask, isShowPomodoroModal } =
-    storeToRefs(pomodoroClockStore)
-const {
-    startPomodoro,
-    stopPomodoro,
-    breakPomodoro,
-    openPomodoroModal,
-    closePomodoroModal,
-} = pomodoroClockStore
 
 // pinia - folderTypesStore
 const folderTypesStore = useFolderTypesStore()
-const { isLoadingFolderTypesAdd, folderTypes } = storeToRefs(folderTypesStore)
-const { getFolderTypes, addFolderType } = folderTypesStore
 
 // pinia - pomodoroSettingStore
 const pomodoroSettingStore = usePomodoroSetting()
-const {
-    pomodoroSettings,
-    isLoadingPomodoroSettingGet,
-    errorOfPomodoroSettingGet,
-} = storeToRefs(pomodoroSettingStore)
-const { getPomodoroSettingAndAutoCreateDefaultValue } = pomodoroSettingStore
 
 /* ========== component logic ========== */
 
-// addTask
-const { handleAddTask } = useHandleAddTask({ addTask, errorOfTaskAdd })
-const { handleLogout } = useHandleLogout({ logout, errorOfLogout, router })
-const { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal } =
-    useHandleGetPomodoroSetting({
-        getPomodoroSettingAndAutoCreateDefaultValue,
-        errorOfPomodoroSettingGet,
-    })
-
 onBeforeMount(async () => {
     // getTask
-    getTasks()
+    tasksStore.getTasks()
 
     // folder
-    getFolderTypes()
+    folderTypesStore.getFolderTypes()
 
     // pomodoroSetting
     handleGetPomodoroSetting()
 })
+
+const { handleAddTask } = useHandleAddTask({
+    addTask: tasksStore.addTask,
+    errorOfTaskAdd: tasksStore.errorOfTaskAdd,
+})
+
+const { handleLogout } = useHandleLogout({
+    logout: userStore.logout,
+    errorOfLogout: userStore.errorOfLogout,
+    router,
+})
+
+const { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal } =
+    useHandleGetPomodoroSetting({
+        getPomodoroSettingAndAutoCreateDefaultValue:
+            pomodoroSettingStore.getPomodoroSettingAndAutoCreateDefaultValue,
+        errorOfPomodoroSettingGet:
+            pomodoroSettingStore.errorOfPomodoroSettingGet,
+    })
 
 /*========== component scoped composables function ========== */
 
@@ -142,29 +110,35 @@ function useHandleGetPomodoroSetting({
         <!-- home home-navbar -->
         <HomeNavbar
             class="home-navbar"
-            :user="user"
+            :user="userStore.user"
             @user-logout="handleLogout"
         />
         <!-- home home-workspace -->
         <main class="home-workspace">
             <!-- workspace-sidebar -->
             <HomeSidebar
-                v-model:selected-filter-option="selectedFilterOption"
+                v-model:selected-filter-option="
+                    filterTasksStore.selectedFilterOption
+                "
                 :filter-task-folder-options-format-for-sidebar="
-                    filterTaskFolderOptionsFormatForSidebar
+                    filterTasksStore.filterTaskFolderOptionsFormatForSidebar
                 "
                 :filter-task-options-format-for-sidebar="
-                    filterTaskOptionsFormatForSidebar
+                    filterTasksStore.filterTaskOptionsFormatForSidebar
                 "
                 class="workspace-sidebar"
-                :is-loading-folder-types-add="isLoadingFolderTypesAdd"
-                @add-folder-type="addFolderType($event)"
+                :is-loading-folder-types-add="
+                    folderTypesStore.isLoadingFolderTypesAdd
+                "
+                @add-folder-type="folderTypesStore.addFolderType($event)"
             />
             <!-- workspace-current-task -->
             <section class="workspace-current-task">
                 <div class="task-list">
                     <div class="list-title">
-                        <h2>{{ selectedFilterOption.name }}</h2>
+                        <h2>
+                            {{ filterTasksStore.selectedFilterOption.name }}
+                        </h2>
                         <button class="sort">
                             <img src="@/assets/images/sort.png" width="20" />
                         </button>
@@ -172,51 +146,71 @@ function useHandleGetPomodoroSetting({
                     <HomeTimeSum
                         class="home-time-sum"
                         :the-sum-of-expect-time-of-task="
-                            theSumOfExpectTimeOfTask
+                            tasksStore.theSumOfExpectTimeOfTask
                         "
-                        :the-sum-of-spend-time-of-task="theSumOfSpendTimeOfTask"
+                        :the-sum-of-spend-time-of-task="
+                            tasksStore.theSumOfSpendTimeOfTask
+                        "
                         :the-sum-of-number-of-un-finish-tasks="
-                            theSumOfNumberOfUnFinishTasks
+                            tasksStore.theSumOfNumberOfUnFinishTasks
                         "
                         :the-sum-of-number-of-finish-tasks="
-                            theSumOfNumberOfFinishTasks
+                            tasksStore.theSumOfNumberOfFinishTasks
                         "
                     />
                     <HomeAddTask
-                        :folder-types="folderTypes"
-                        :pomodoro-settings="pomodoroSettings"
+                        :folder-types="folderTypesStore.folderTypes"
+                        :pomodoro-settings="
+                            pomodoroSettingStore.pomodoroSettings
+                        "
                         @add-tasks="handleAddTask"
                     />
                     <HomeList
                         class="home-list"
-                        :is-loading="isLoadingTaskGet"
+                        :is-loading="tasksStore.isLoadingTaskGet"
                         title="Tasks"
                     >
                         <HomeListItem
-                            v-for="task of filterTasks"
+                            v-for="task of filterTasksStore.filterTasks"
                             :key="task.id"
-                            v-model:cache-update-task-id="selectedUpdateTaskId"
-                            v-model:pomodoro-selected-task-id="selectedTaskId"
+                            v-model:cache-update-task-id="
+                                tasksStore.selectedUpdateTaskId
+                            "
+                            v-model:pomodoro-selected-task-id="
+                                pomodoroClockStore.selectedTaskId
+                            "
                             :task="task"
-                            :pomodoro-settings="pomodoroSettings"
+                            :pomodoro-settings="
+                                pomodoroSettingStore.pomodoroSettings
+                            "
                         />
                     </HomeList>
                 </div>
-                <div v-if="selectedUpdateTaskId" class="task-detail">
+                <div v-if="tasksStore.selectedUpdateTaskId" class="task-detail">
                     <HomeTaskEditBar
-                        v-model:selected-task-id="selectedUpdateTaskId"
-                        v-model:pomodoro-selected-task-id="selectedTaskId"
+                        v-model:selected-task-id="
+                            tasksStore.selectedUpdateTaskId
+                        "
+                        v-model:pomodoro-selected-task-id="
+                            pomodoroClockStore.selectedTaskId
+                        "
                         style="height: calc(100vh - 45px - 24px)"
-                        :folder-types="folderTypes"
-                        :pomodoro-settings="pomodoroSettings"
-                        :selected-task="selectedUpdateTask"
+                        :folder-types="folderTypesStore.folderTypes"
+                        :pomodoro-settings="
+                            pomodoroSettingStore.pomodoroSettings
+                        "
+                        :selected-task="tasksStore.selectedUpdateTask"
                         @update-task="
-                            debouncedUpdateTaskAndAutoRetryOnError(
+                            tasksStore.debouncedUpdateTaskAndAutoRetryOnError(
                                 $event.formValue
                             )
                         "
-                        @delete-task="deleteTask(selectedUpdateTaskId)"
-                        @break-pomodoro="breakPomodoro"
+                        @delete-task="
+                            tasksStore.deleteTask(
+                                tasksStore.selectedUpdateTaskId
+                            )
+                        "
+                        @break-pomodoro="pomodoroClockStore.breakPomodoro"
                     />
                 </div>
             </section>
@@ -224,18 +218,20 @@ function useHandleGetPomodoroSetting({
         <!-- home-pomodoro-clock -->
         <HomePomodoroClock
             class="home-pomodoro-clock"
-            :timer="timer"
-            :selected-task-id="selectedTaskId"
-            :selected-task="selectedTask"
-            :is-show-pomodoro-modal="isShowPomodoroModal"
-            :pomodoro-settings="pomodoroSettings"
-            @delete-task="deleteTask(selectedTaskId)"
-            @update-task="debouncedUpdateTaskAndAutoRetryOnError"
-            @start-pomodoro="startPomodoro"
-            @stop-pomodoro="stopPomodoro"
-            @break-pomodoro="breakPomodoro"
-            @open-pomodoro-modal="openPomodoroModal"
-            @close-pomodoro-modal="closePomodoroModal"
+            :timer="pomodoroClockStore.timer"
+            :selected-task-id="pomodoroClockStore.selectedTaskId"
+            :selected-task="pomodoroClockStore.selectedTask"
+            :is-show-pomodoro-modal="pomodoroClockStore.isShowPomodoroModal"
+            :pomodoro-settings="pomodoroSettingStore.pomodoroSettings"
+            @delete-task="
+                tasksStore.deleteTask(pomodoroClockStore.selectedTaskId)
+            "
+            @update-task="tasksStore.debouncedUpdateTaskAndAutoRetryOnError"
+            @start-pomodoro="pomodoroClockStore.startPomodoro"
+            @stop-pomodoro="pomodoroClockStore.stopPomodoro"
+            @break-pomodoro="pomodoroClockStore.breakPomodoro"
+            @open-pomodoro-modal="pomodoroClockStore.openPomodoroModal"
+            @close-pomodoro-modal="pomodoroClockStore.closePomodoroModal"
         />
     </section>
     <BaseModal
@@ -254,7 +250,10 @@ function useHandleGetPomodoroSetting({
             </div>
         </template>
     </BaseModal>
-    <BaseLoading v-if="isLoadingPomodoroSettingGet" text="加載用戶配置" />
+    <BaseLoading
+        v-if="pomodoroSettingStore.isLoadingPomodoroSettingGet"
+        text="加載用戶配置"
+    />
 </template>
 
 <style lang="scss" scoped>
