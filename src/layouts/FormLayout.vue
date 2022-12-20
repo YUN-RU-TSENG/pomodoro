@@ -1,15 +1,15 @@
 <script setup></script>
 
 <template>
-    <div class="authentication">
-        <div class="authentication-wrapper">
+    <div class="form">
+        <div class="form-wrapper">
             <slot></slot>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.authentication {
+.form {
     display: flex;
     align-items: center;
     justify-content: center;

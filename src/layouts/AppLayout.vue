@@ -36,11 +36,11 @@ function useHandleLogout({ userStore, router }) {
         :user="userStore.user"
         @user-logout="handleLogout"
     />
-    <RouterView />
     <BaseLoading
         v-if="pomodoroSettingStore.isLoadingPomodoroSettingGet"
         text="加載用戶配置"
     />
+    <RouterView v-else />
 </template>
 
 <style lang="scss" scoped>

@@ -20,6 +20,7 @@ const props = defineProps({
         type: String,
         default: 'text',
     },
+    label: { type: String, default: '' },
 })
 
 /* ========== component emit ========== */
@@ -44,6 +45,7 @@ export default {
 
 <template>
     <label :for="id" class="base-input-label" :class="$attrs.class">
+        <p v-if="label" class="text">{{ label }}</p>
         <input
             :id="id"
             v-bind="{ ...$attrs, class: '' }"
@@ -74,6 +76,13 @@ export default {
 .base-input-label {
     display: inline-block;
     width: 100%;
+}
+
+.text {
+    text-align: left;
+    font-size: 14px;
+    line-height: 21px;
+    color: $gray-3;
 }
 
 .error {

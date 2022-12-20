@@ -1,6 +1,4 @@
 <script setup>
-/* ========== component props ========== */
-
 defineProps({
     title: {
         type: String,
@@ -10,40 +8,21 @@ defineProps({
         type: String,
         required: true,
     },
-    tipText: {
-        type: String,
-        required: true,
-    },
-    tipButtonText: {
-        type: String,
-        required: true,
-    },
 })
 
-/* ========== component emit ========== */
-
-defineEmits(['submit-form', 'change-page'])
+defineEmits(['submit-form'])
 </script>
 
 <template>
-    <BaseForm :title="title" :text="text" @submit-form="$emit('submit-form')">
-        <slot></slot>
-    </BaseForm>
-    <!-- <form class="authentication-box" @submit.prevent="$emit('submit-form')">
+    <form class="form-box" @submit.prevent="$emit('submit-form')">
         <h3>{{ title }}</h3>
         <p class="subtitle">{{ text }}</p>
         <slot></slot>
-    </form> -->
-    <section class="authentication-box">
-        <p>
-            {{ tipText }}
-            <a @click="$emit('change-page')">{{ tipButtonText }}</a>
-        </p>
-    </section>
+    </form>
 </template>
 
-<style lang="scss" scoped>
-.authentication-box {
+<style scoped lang="scss">
+.form-box {
     width: 320px;
     margin: 0 auto;
     padding: 32px 20px;

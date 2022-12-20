@@ -80,7 +80,7 @@ function useSubmitUserForm({ handleVeeUserFormSubmit, userStore }) {
 </script>
 
 <template>
-    <AuthenticationLayout class="user-validate">
+    <FormLayout class="user-validate">
         <AuthenticationForm
             title="Register"
             text="Pomodoro todo 優雅的使用待辦清單以及番茄鐘"
@@ -105,7 +105,7 @@ function useSubmitUserForm({ handleVeeUserFormSubmit, userStore }) {
             <BaseButton color="primary">註冊</BaseButton>
         </AuthenticationForm>
         <BaseLoading v-if="userStore.isLoadingRegister" />
-    </AuthenticationLayout>
+    </FormLayout>
 </template>
 
 <style lang="scss" scoped>

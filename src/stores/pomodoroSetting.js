@@ -4,12 +4,13 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
 import { useBaseModal } from '@/components/Base/BaseModal/index'
+import { useBaseAlert } from '@/components/Base/BaseAlert/index'
 
 export const usePomodoroSetting = defineStore('pomodoroSetting', () => {
     // userStore
     const userStore = useUserStore()
 
-    // pomodoroSettings
+    // pomodoroSettings - get
     const {
         pomodoroSettings,
         isLoadingPomodoroSettingGet,
@@ -17,14 +18,29 @@ export const usePomodoroSetting = defineStore('pomodoroSetting', () => {
         getPomodoroSettingAndAutoCreateDefaultValue,
     } = useGetPomodoroSettings({ userStore })
 
+    // pomodoroSettings - update
+    const {
+        updatePomodoroSettings,
+        isLoadingPomodoroSettingsUpdate,
+        errorOfPomodoroSettingsUpdate,
+    } = useUpdatePomodoroSettings({
+        userStore,
+        pomodoroSettings,
+    })
+
     // 載入該 store 後便同時加載用戶初始設置
     getPomodoroSettingAndAutoCreateDefaultValue()
 
     return {
         pomodoroSettings,
+        // pomodoroSettings - get
         isLoadingPomodoroSettingGet,
         errorOfPomodoroSettingGet,
         getPomodoroSettingAndAutoCreateDefaultValue,
+        // pomodoroSettings - update
+        updatePomodoroSettings,
+        isLoadingPomodoroSettingsUpdate,
+        errorOfPomodoroSettingsUpdate,
     }
 })
 
@@ -82,5 +98,45 @@ function useGetPomodoroSettings({ userStore }) {
         isLoadingPomodoroSettingGet,
         errorOfPomodoroSettingGet,
         getPomodoroSettingAndAutoCreateDefaultValue,
+    }
+}
+
+function useUpdatePomodoroSettings({ userStore, pomodoroSettings }) {
+    const isLoadingPomodoroSettingsUpdate = ref(false)
+    const errorOfPomodoroSettingsUpdate = ref(null)
+
+    const updatePomodoroSettings = async (data) => {
+        try {
+            isLoadingPomodoroSettingsUpdate.value = true
+            errorOfPomodoroSettingsUpdate.value = null
+
+            await setDoc(doc(db, 'pomodoroSettings', userStore.user.uid), {
+                uid: pomodoroSettings.value.uid,
+                ...data,
+            })
+
+            const docSnap = await getDoc(
+                doc(db, 'pomodoroSettings', userStore.user.uid)
+            )
+            pomodoroSettings.value = docSnap.data()
+        } catch (error) {
+            console.log({
+                uid: pomodoroSettings,
+                ...data,
+            })
+            console.error(error)
+            errorOfPomodoroSettingsUpdate.value = error
+
+            useBaseAlert({
+                text: '錯誤' + error.code,
+            })
+        } finally {
+            isLoadingPomodoroSettingsUpdate.value = false
+        }
+    }
+    return {
+        updatePomodoroSettings,
+        isLoadingPomodoroSettingsUpdate,
+        errorOfPomodoroSettingsUpdate,
     }
 }
