@@ -1,6 +1,5 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { ref } from 'vue'
@@ -14,8 +13,6 @@ const router = useRouter()
 
 // pinia - userStore
 const userStore = useUserStore()
-const { isLoadingRegister, errorOfRegister } = storeToRefs(userStore)
-const { register } = userStore
 
 /* ========== component logic ========== */
 
@@ -30,7 +27,7 @@ const {
 // submitRegister
 const { submitRegister } = useSubmitUserForm({
     handleVeeUserFormSubmit,
-    errorOfRegister,
+    userStore,
 })
 
 /*========== component scoped composables function ========== */
@@ -70,10 +67,10 @@ function useUserForm() {
 }
 
 // submit user form
-function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfRegister }) {
+function useSubmitUserForm({ handleVeeUserFormSubmit, userStore }) {
     const submitRegister = handleVeeUserFormSubmit(async (formValue) => {
-        await register(formValue)
-        if (!errorOfRegister.value) router.push({ name: 'home' })
+        await userStore.register(formValue)
+        if (!userStore.errorOfRegister) router.push({ name: 'home' })
     })
 
     return {
@@ -107,7 +104,7 @@ function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfRegister }) {
             />
             <BaseButton color="primary">註冊</BaseButton>
         </AuthenticationForm>
-        <BaseLoading v-if="isLoadingRegister" />
+        <BaseLoading v-if="userStore.isLoadingRegister" />
     </AuthenticationLayout>
 </template>
 

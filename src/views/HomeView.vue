@@ -8,19 +8,10 @@ import { useFilterTasksStore } from '@/stores/filterTasks'
 import { onBeforeMount } from 'vue'
 
 /* ========== pinia ========== */
-// pinia - filterTasksStore
 const filterTasksStore = useFilterTasksStore()
-
-// pinia - tasksStore
 const tasksStore = useTasksStore()
-
-// pinia - pomodoroClockStore
 const pomodoroClockStore = usePomodoroClockStore()
-
-// pinia - folderTypesStore
 const folderTypesStore = useFolderTypesStore()
-
-// pinia - pomodoroSettingStore
 const pomodoroSettingStore = usePomodoroSetting()
 
 /* ========== component logic ========== */

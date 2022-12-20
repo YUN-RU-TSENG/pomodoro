@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
@@ -11,10 +10,7 @@ const router = useRouter()
 
 /* ========== pinia ========== */
 
-// pinia - userStore
 const userStore = useUserStore()
-const { isLoadingLogin, errorOfLogin } = storeToRefs(userStore)
-const { login } = userStore
 
 /* ========== component logic ========== */
 
@@ -29,7 +25,7 @@ const {
 // submitUserLogin
 const { submitLogin } = useSubmitUserForm({
     handleVeeUserFormSubmit,
-    errorOfLogin,
+    userStore,
 })
 
 /*========== component scoped composables function ========== */
@@ -64,10 +60,10 @@ function useUserForm() {
 }
 
 // submit user form
-function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfLogin }) {
+function useSubmitUserForm({ handleVeeUserFormSubmit, userStore }) {
     const submitLogin = handleVeeUserFormSubmit(async (formValue) => {
-        await login(formValue)
-        if (!errorOfLogin.value) router.push({ name: 'home' })
+        await userStore.login(formValue)
+        if (!userStore.errorOfLogin) router.push({ name: 'home' })
     })
 
     return {
@@ -101,7 +97,7 @@ function useSubmitUserForm({ handleVeeUserFormSubmit, errorOfLogin }) {
             ></BaseInput>
             <BaseButton color="primary">登入</BaseButton>
         </AuthenticationForm>
-        <BaseLoading v-if="isLoadingLogin" />
+        <BaseLoading v-if="userStore.isLoadingLogin" />
     </AuthenticationLayout>
 </template>
 
