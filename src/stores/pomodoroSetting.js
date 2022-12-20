@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/utils/firebaseStore'
 import { useUserStore } from '@/stores/user'
+import { useBaseModal } from '@/components/Base/BaseModal/index'
 
 export const usePomodoroSetting = defineStore('pomodoroSetting', () => {
     // userStore
@@ -15,6 +16,9 @@ export const usePomodoroSetting = defineStore('pomodoroSetting', () => {
         errorOfPomodoroSettingGet,
         getPomodoroSettingAndAutoCreateDefaultValue,
     } = useGetPomodoroSettings({ userStore })
+
+    // 載入該 store 後便同時加載用戶初始設置
+    getPomodoroSettingAndAutoCreateDefaultValue()
 
     return {
         pomodoroSettings,
@@ -62,6 +66,12 @@ function useGetPomodoroSettings({ userStore }) {
         } catch (error) {
             console.error(error)
             errorOfPomodoroSettingGet.value = error
+
+            useBaseModal(null, {
+                header: '初始錯誤',
+                body: '加載用戶設置錯誤，請重新載入',
+                footer: '',
+            })
         } finally {
             isLoadingPomodoroSettingGet.value = false
         }

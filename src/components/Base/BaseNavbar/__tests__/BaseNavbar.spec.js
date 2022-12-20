@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import HomeNavbar from '../HomeNavbar.vue'
+import BaseNavbar from '../BaseNavbar.vue'
 
-describe('HomeNavbar', () => {
+describe('BaseNavbar', () => {
     it('renders properly', () => {
-        const wrapper = mount(HomeNavbar)
+        const wrapper = mount(BaseNavbar)
         expect(wrapper.text()).not.toBeNull()
     })
 })

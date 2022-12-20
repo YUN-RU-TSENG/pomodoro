@@ -1,21 +1,13 @@
 <script setup>
-import { useUserStore } from '@/stores/user'
+// import { useUserStore } from '@/stores/user'
 import { useTasksStore } from '@/stores/tasks'
 import { usePomodoroClockStore } from '@/stores/pomodoroClock'
 import { useFolderTypesStore } from '@/stores/folderTypes'
 import { usePomodoroSetting } from '@/stores/pomodoroSetting'
 import { useFilterTasksStore } from '@/stores/filterTasks'
-import { onBeforeMount, ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-/* ========== router ========== */
-const router = useRouter()
+import { onBeforeMount } from 'vue'
 
 /* ========== pinia ========== */
-
-// pinia - userStore
-const userStore = useUserStore()
-
 // pinia - filterTasksStore
 const filterTasksStore = useFilterTasksStore()
 
@@ -36,83 +28,32 @@ const pomodoroSettingStore = usePomodoroSetting()
 onBeforeMount(async () => {
     // getTask
     tasksStore.getTasks()
-
     // folder
     folderTypesStore.getFolderTypes()
-
-    // pomodoroSetting
-    handleGetPomodoroSetting()
 })
 
 const { handleAddTask } = useHandleAddTask({
-    addTask: tasksStore.addTask,
-    errorOfTaskAdd: tasksStore.errorOfTaskAdd,
+    tasksStore,
 })
-
-const { handleLogout } = useHandleLogout({
-    logout: userStore.logout,
-    errorOfLogout: userStore.errorOfLogout,
-    router,
-})
-
-const { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal } =
-    useHandleGetPomodoroSetting({
-        getPomodoroSettingAndAutoCreateDefaultValue:
-            pomodoroSettingStore.getPomodoroSettingAndAutoCreateDefaultValue,
-        errorOfPomodoroSettingGet:
-            pomodoroSettingStore.errorOfPomodoroSettingGet,
-    })
 
 /*========== component scoped composables function ========== */
 
 // addTask
-function useHandleAddTask({ addTask, errorOfTaskAdd }) {
+function useHandleAddTask({ tasksStore }) {
     const handleAddTask = async ({ formValue, resetForm }) => {
-        await addTask(formValue)
+        await tasksStore.addTask(formValue)
         // 判斷當添加成功，重置表單
-        if (!errorOfTaskAdd.value) resetForm()
+        if (!tasksStore.errorOfTaskAdd) resetForm()
     }
 
     return {
         handleAddTask,
     }
 }
-
-// logout
-function useHandleLogout({ logout, errorOfLogout, router }) {
-    const handleLogout = async () => {
-        await logout()
-        if (!errorOfLogout.value) router.push({ name: 'login' })
-    }
-    return { handleLogout }
-}
-
-// handleGetPomodoroSetting
-function useHandleGetPomodoroSetting({
-    getPomodoroSettingAndAutoCreateDefaultValue,
-    errorOfPomodoroSettingGet,
-}) {
-    const isShowPomodoroSettingErrorModal = ref(false)
-
-    const handleGetPomodoroSetting = async () => {
-        await getPomodoroSettingAndAutoCreateDefaultValue()
-        if (errorOfPomodoroSettingGet.value) {
-            isShowPomodoroSettingErrorModal.value = true
-        }
-    }
-
-    return { handleGetPomodoroSetting, isShowPomodoroSettingErrorModal }
-}
 </script>
 
 <template>
     <section class="home">
-        <!-- home home-navbar -->
-        <HomeNavbar
-            class="home-navbar"
-            :user="userStore.user"
-            @user-logout="handleLogout"
-        />
         <!-- home home-workspace -->
         <main class="home-workspace">
             <!-- workspace-sidebar -->
@@ -234,26 +175,6 @@ function useHandleGetPomodoroSetting({
             @close-pomodoro-modal="pomodoroClockStore.closePomodoroModal"
         />
     </section>
-    <BaseModal
-        v-if="isShowPomodoroSettingErrorModal"
-        class="home-folder-modal-confirm"
-    >
-        <template #header> 初始錯誤 </template>
-        <template #body>
-            <p class="error-model-text">加載用戶設置錯誤，請重新載入</p>
-        </template>
-        <template #footer>
-            <div class="error-model-footer">
-                <BaseButton color="primary" @click="handleGetPomodoroSetting"
-                    >重新載入</BaseButton
-                >
-            </div>
-        </template>
-    </BaseModal>
-    <BaseLoading
-        v-if="pomodoroSettingStore.isLoadingPomodoroSettingGet"
-        text="加載用戶配置"
-    />
 </template>
 
 <style lang="scss" scoped>
@@ -263,14 +184,8 @@ function useHandleGetPomodoroSetting({
     }
 }
 
-.home-navbar {
-    position: relative;
-}
-
 .home-workspace {
     display: flex;
-    position: relative;
-    z-index: 1;
 }
 
 .workspace-sidebar {
@@ -280,6 +195,7 @@ function useHandleGetPomodoroSetting({
 .home-time-sum {
     margin-bottom: 24px;
 }
+
 .workspace-current-task {
     flex: 1 1 auto;
     display: flex;

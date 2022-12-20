@@ -14,8 +14,8 @@ defineEmits(['user-logout'])
 </script>
 
 <template>
-    <nav class="home-navbar">
-        <!-- home-navbar navbar-user -->
+    <nav class="base-navbar">
+        <!-- base-navbar navbar-user -->
         <div class="navbar-user">
             <img
                 src="@/assets/images/external-User-users-those-icons-fill-those-icons-3.png"
@@ -23,7 +23,7 @@ defineEmits(['user-logout'])
             />
             <span>{{ user.email }}</span>
         </div>
-        <!-- home-navbar navbar-links -->
+        <!-- base-navbar navbar-links -->
         <div class="navbar-links">
             <ul>
                 <li>
@@ -37,6 +37,13 @@ defineEmits(['user-logout'])
                 <li>
                     <button>
                         <img src="@/assets/images/bell--v1.png" width="24" />
+                    </button>
+                </li>
+                <li>
+                    <button
+                        @click="$router.push({ name: 'home' }).catch(() => {})"
+                    >
+                        <img src="@/assets/images/home-page.png" width="24" />
                     </button>
                 </li>
                 <li>
@@ -58,7 +65,7 @@ defineEmits(['user-logout'])
 </template>
 
 <style scoped lang="scss">
-.home-navbar {
+.base-navbar {
     display: flex;
     align-items: center;
     padding: 10px 14px;
@@ -67,7 +74,7 @@ defineEmits(['user-logout'])
     box-shadow: 0px 0px 4px $gray-1;
 }
 
-.home-navbar .navbar-user {
+.base-navbar .navbar-user {
     img {
         vertical-align: middle;
         margin-right: 12px;
@@ -80,7 +87,7 @@ defineEmits(['user-logout'])
     }
 }
 
-.home-navbar .navbar-links {
+.base-navbar .navbar-links {
     margin-left: auto;
 
     li {

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import AppLayout from '../layouts/AppLayout.vue'
 import { useBaseLoading } from '@/components/Base/BaseLoading/index'
 import { useUserStore } from '@/stores/user'
 
@@ -8,27 +8,36 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: HomeView,
+            component: AppLayout,
             meta: {
                 requireAuth: true,
             },
-        },
-        {
-            path: '/pomodoro-setting',
-            name: 'pomodoroSetting',
-            component: () => import('@/views/PomodoroSettingView.vue'),
-            meta: {
-                requireAuth: true,
-            },
-        },
-        {
-            path: '/dashboard',
-            name: 'dashboard',
-            component: () => import('@/views/DashboardView.vue'),
-            meta: {
-                requireAuth: true,
-            },
+            children: [
+                {
+                    path: '',
+                    name: 'home',
+                    component: () => import('@/views/HomeView.vue'),
+                    meta: {
+                        requireAuth: true,
+                    },
+                },
+                {
+                    path: 'pomodoro-setting',
+                    name: 'pomodoroSetting',
+                    component: () => import('@/views/PomodoroSettingView.vue'),
+                    meta: {
+                        requireAuth: true,
+                    },
+                },
+                {
+                    path: 'dashboard',
+                    name: 'dashboard',
+                    component: () => import('@/views/DashboardView.vue'),
+                    meta: {
+                        requireAuth: true,
+                    },
+                },
+            ],
         },
         {
             path: '/login',
