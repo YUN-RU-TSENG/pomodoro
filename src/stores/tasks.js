@@ -227,7 +227,7 @@ function useUpdateTask({ tasks, getTasks }) {
             errorOfTaskUpdate.value = error
             console.error(error)
 
-            // 顯示錯誤，但要是可選的，因為 debounce update 時使用該 function不要顯示錯誤
+            // 顯示錯誤，但要是可選的，因為 debounce update 時使用該 function 不要顯示錯誤
             if (showError)
                 useBaseAlert({
                     text: '錯誤' + error.code,

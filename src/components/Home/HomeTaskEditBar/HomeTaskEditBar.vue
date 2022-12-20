@@ -99,6 +99,7 @@ function useTaskForm() {
             expectEndDate: '',
             mentionDate: '',
             createAt: '',
+            finishAt: '',
         }),
         initialValues: readonly(props.selectedTask),
     })
@@ -115,6 +116,7 @@ function useTaskForm() {
         mentionDate,
         expectEndDate,
         createAt,
+        finishAt,
     ] = useFieldModel([
         'name',
         'isFinish',
@@ -127,6 +129,7 @@ function useTaskForm() {
         'mentionDate',
         'expectEndDate',
         'createAt',
+        'finishAt',
     ])
 
     const taskForm = ref({
@@ -141,6 +144,16 @@ function useTaskForm() {
         mentionDate,
         expectEndDate,
         createAt,
+        finishAt,
+    })
+
+    // 更動完成時連帶更動完成的時間
+    watch(isFinish, (value) => {
+        if (value === true) {
+            finishAt.value = dayjs().toISOString()
+        } else {
+            finishAt.value = null
+        }
     })
 
     return { taskForm, handleVeeSubmit, resetForm, formMeta }
@@ -160,10 +173,6 @@ function useAutoSubmitTaskForm({ handleVeeSubmit, emit, formMeta, taskForm }) {
         },
         { deep: true }
     )
-
-    return {
-        submitUpdateTaskForm,
-    }
 }
 
 // 偵測 prop 傳入的 select id 值變動，一但偵測到變動就重置當前表單內容

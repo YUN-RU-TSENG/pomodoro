@@ -49,6 +49,7 @@ function useAddTaskForm() {
             createAt: yup.date().required(),
             expectEndDate: yup.date().required(),
             mentionDate: '',
+            finishAt: '',
         }),
         initialValues: {
             isFinish: false,
@@ -62,6 +63,7 @@ function useAddTaskForm() {
             createAt: dayjs().toISOString(),
             expectEndDate: dayjs().toISOString(),
             mentionDate: null,
+            finishAt: null,
         },
     })
 
