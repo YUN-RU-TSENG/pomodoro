@@ -28,9 +28,6 @@ export const usePomodoroSetting = defineStore('pomodoroSetting', () => {
         pomodoroSettings,
     })
 
-    // 載入該 store 後便同時加載用戶初始設置
-    getPomodoroSettingAndAutoCreateDefaultValue()
-
     return {
         pomodoroSettings,
         // pomodoroSettings - get

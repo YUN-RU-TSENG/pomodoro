@@ -37,8 +37,7 @@ const taskNoFinishQuantityOfWeek = computed(() => {
     // 迴圈任務，並且將值添加到空陣列
     for (let i = 0; i < props.tasksData.length; i++) {
         if (props.tasksData[i].isFinish) continue
-        if (props.tasksData[i].expectEndDate) continue
-
+        if (!props.tasksData[i].expectEndDate) continue
         const taskDate = dayjs(props.tasksData[i].expectEndDate)
         const isInWeek = taskDate.isBetween(dayjs().day(0), dayjs().day(6))
 
@@ -53,13 +52,13 @@ const taskNoFinishQuantityOfWeek = computed(() => {
 
 const data = ref({
     labels: [
+        '星期日',
         '星期一',
         '星期二',
         '星期三',
         '星期四',
         '星期五',
         '星期六',
-        '星期日',
     ],
     datasets: [
         {

@@ -19,6 +19,9 @@ const { handleLogout } = useHandleLogout({
     router,
 })
 
+// 載入該 pomodoroSettingStore store 後便同時加載用戶初始設置
+pomodoroSettingStore.getPomodoroSettingAndAutoCreateDefaultValue()
+
 /*========== component scoped composables function ========== */
 // logout
 function useHandleLogout({ userStore, router }) {
