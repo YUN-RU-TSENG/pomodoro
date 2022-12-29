@@ -84,7 +84,7 @@ const cachePomodoroSettings = ref({
 </template>
 
 <style lang="scss" scoped>
-.pomdoro-setting {
+.pomdoro-setting.pomdoro-setting {
     height: calc(100vh - 45px);
 }
 
