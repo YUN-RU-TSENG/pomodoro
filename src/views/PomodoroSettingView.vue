@@ -35,14 +35,14 @@ const cachePomodoroSettings = ref({
                 id="auth-login-email"
                 v-model:value="cachePomodoroSettings.breakTime"
                 type="number"
-                label="長休息（分鐘）"
+                label="短休息（分鐘）"
                 min="0"
             ></BaseInput>
             <BaseInput
                 id="auth-login-password"
                 v-model:value="cachePomodoroSettings.longBreakTime"
                 type="number"
-                label="短休息（分鐘）"
+                label="長休息（分鐘）"
                 min="0"
             ></BaseInput>
             <BaseInput

@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-    <div class="form">
+    <div class="form-layout">
         <div class="form-wrapper">
             <slot></slot>
         </div>
@@ -9,7 +9,7 @@
 </template>
 
 <style lang="scss" scoped>
-.form {
+.form-layout {
     display: flex;
     align-items: center;
     justify-content: center;

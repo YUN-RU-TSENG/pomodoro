@@ -19,6 +19,7 @@ export const useFolderTypesStore = defineStore('folderTypes', () => {
             userStore,
             firebaseRefUserFolderType,
         })
+
     const { addFolderType, isLoadingFolderTypesAdd } = useAddFolderType({
         firebaseRefFolderType,
         userStore,
