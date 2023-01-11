@@ -1,9 +1,20 @@
 # pomodoro-todo
-
+A simple to-do list, including Pomodoro feature
 
 ![截圖 2023-01-11 上午9 13 29](https://user-images.githubusercontent.com/41847720/211695204-d2b726cb-40bd-427d-8efe-a789ad9e1789.png)
 ![截圖 2023-01-11 上午9 13 55](https://user-images.githubusercontent.com/41847720/211695227-aa4ea0aa-dfab-4d63-91a4-3fea732ff459.png)
 ![截圖 2023-01-11 上午9 13 42](https://user-images.githubusercontent.com/41847720/211695239-823a4745-0638-44e8-8077-4cd0410b00ac.png)
+
+## 使用技術
+- Vue(Vue3)
+- Pinia
+- Vue Router
+- Vite
+- dayjs
+- Vue-chart(chartjs)
+- floating-ui
+- Firebase 後端採用 Firebase 建立
+- ESLint、Prettier、lint-staged、husky
 
 ## Quick Start
 
