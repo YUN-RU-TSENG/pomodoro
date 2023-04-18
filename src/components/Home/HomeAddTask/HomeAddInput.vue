@@ -1,6 +1,5 @@
 <script setup>
 /* ========== component props ========== */
-aaa
 defineProps({
     name: { type: String, required: true },
     type: {
